@@ -12,7 +12,7 @@ module Librarian
         path
       end
 
-      def cache!
+      def cache!(dependencies)
       end
 
       def install!

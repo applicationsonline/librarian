@@ -62,7 +62,8 @@ module Librarian
       sources = specfile.dependencies.map{|d| d.source}.uniq
       sources.each do |s|
         debug { "Caching #{s}" }
-        s.cache!
+        sdeps = specfile.dependencies.select{|d| d.source == s}.uniq
+        s.cache!(sdeps)
       end
       specfile.dependencies.each do |d|
         debug { "Installing #{d.name}" }

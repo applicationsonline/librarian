@@ -25,7 +25,7 @@ module Librarian
         "#{uri} at #{ref || DEFAULTS[:ref]}"
       end
 
-      def cache!
+      def cache!(dependencies)
         unless repository.git?
           repository.path.rmtree if repository.path.exist?
           repository.path.mkpath
