@@ -21,6 +21,10 @@ module Librarian
           end
         end
 
+        def run(path)
+          instance_eval(path.read, path.to_s, 1)
+        end
+
       end
     end
   end

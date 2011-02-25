@@ -48,7 +48,7 @@ module Librarian
 
       def run(specfile)
         Target.new(dependency_name, dependency_type, source_types).tap do |target|
-          Receiver.new(target).instance_eval(specfile.path.read, specfile.path.to_s, 1)
+          Receiver.new(target).run(specfile.path)
         end
       end
 
