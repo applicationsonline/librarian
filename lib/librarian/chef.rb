@@ -1,6 +1,7 @@
 require 'librarian/specfile'
 require 'librarian/source'
 require 'librarian/chef/cookbook'
+require 'librarian/chef/source'
 
 module Librarian
 
@@ -9,6 +10,7 @@ module Librarian
 
       dependency :cookbook => Librarian::Chef::Cookbook
 
+      source :site => Librarian::Chef::Source::Site
       source :git => Librarian::Source::Git
       source :path => Librarian::Source::Path
 
