@@ -12,7 +12,9 @@ module Librarian
           @dependency_type = dependency_type
           @source_types = source_types
           @dependencies = []
-          @sources = []
+          SCOPABLES.each do |scopable|
+            instance_variable_set(:"@#{scopable}", [])
+          end
         end
 
         def dependency(name, *args)
