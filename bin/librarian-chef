@@ -5,10 +5,10 @@ $:.unshift(lib) unless $:.include?(lib)
 
 require 'librarian'
 require 'librarian/chef'
-require 'librarian/cli'
+require 'librarian/chef/cli'
 
 begin
-  Librarian::Cli.start
+  Librarian::Chef::Cli.start
 rescue Librarian::Error => e
   Librarian.ui.error e.message
   Librarian.ui.debug e.backtrace.join("\n")

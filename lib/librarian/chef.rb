@@ -4,23 +4,35 @@ require 'librarian/chef/cookbook'
 require 'librarian/chef/source'
 
 module Librarian
+  module Chef
+    extend self
+    include Librarian
+    extend Librarian
 
-  class Specfile
-    class Dsl
+    class Dsl < Specfile::Dsl
+      dependency :cookbook => Cookbook
 
-      dependency :cookbook => Librarian::Chef::Cookbook
-
-      source :site => Librarian::Chef::Source::Site
-      source :git => Librarian::Source::Git
-      source :path => Librarian::Source::Path
-
+      source :site => Source::Site
+      source :git => Source::Git
+      source :path => Source::Path
     end
+
+    module Overrides
+      def specfile_name
+        'Cheffile'
+      end
+
+      def install_path
+        project_path.join('cookbooks')
+      end
+
+      def dsl_class
+        Dsl
+      end
+    end
+
+    include Overrides
+    extend Overrides
+
   end
-
-  self.specfile_name = 'Cheffile'
-
-  def self.install_path
-    project_path.join('cookbooks')
-  end
-
 end

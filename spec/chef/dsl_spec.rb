@@ -2,7 +2,7 @@ require 'librarian'
 require 'librarian/chef'
 
 module Librarian
-  class Specfile
+  module Chef
 
     describe Dsl do
 

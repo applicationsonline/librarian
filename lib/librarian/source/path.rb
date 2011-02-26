@@ -1,11 +1,15 @@
+require 'librarian/particularity'
+
 module Librarian
   module Source
     class Path
 
+      include Particularity
+
       attr_reader :path
 
       def initialize(path, options)
-        @path = Pathname.new(path).expand_path(Librarian.project_path)
+        @path = Pathname.new(path).expand_path(root_module.project_path)
       end
 
       def to_s
@@ -32,7 +36,7 @@ module Librarian
       end
 
       def dependency_install_path(dependency)
-        Librarian.install_path.join(dependency.name)
+        root_module.install_path.join(dependency.name)
       end
 
       def install!(dependency)
@@ -49,11 +53,11 @@ module Librarian
     private
 
       def relative_path_to(path)
-        Librarian.project_relative_path_to(path)
+        root_module.project_relative_path_to(path)
       end
 
       def debug
-        Librarian.ui.debug "[Librarian] #{yield}"
+        root_module.ui.debug "[Librarian] #{yield}"
       end
 
     end

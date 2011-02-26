@@ -2,11 +2,14 @@ require 'fileutils'
 require 'pathname'
 require 'digest'
 
+require 'librarian/particularity'
 require 'librarian/source/git/repository'
 
 module Librarian
   module Source
     class Git
+
+      include Particularity
 
       DEFAULTS = {
         :ref => 'master'
@@ -37,13 +40,13 @@ module Librarian
       def repository_cache_path
         @repository_cache_path ||= begin
           dir = Digest::MD5.hexdigest(uri)
-          Librarian.cache_path.join("source/git/#{dir}")
+          root_module.cache_path.join("source/git/#{dir}")
         end
       end
 
       def repository
         @repository ||= begin
-          Repository.new(repository_cache_path)
+          Repository.new(root_module, repository_cache_path)
         end
       end
 
@@ -61,7 +64,7 @@ module Librarian
       end
 
       def dependency_install_path(dependency)
-        Librarian.install_path.join(dependency.name)
+        root_module.install_path.join(dependency.name)
       end
 
       def install!(dependency)
@@ -78,11 +81,11 @@ module Librarian
     private
 
       def relative_path_to(path)
-        Librarian.project_relative_path_to(path)
+        root_module.project_relative_path_to(path)
       end
 
       def debug
-        Librarian.ui.debug "[Librarian] #{yield}"
+        root_module.ui.debug "[Librarian] #{yield}"
       end
 
     end

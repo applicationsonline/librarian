@@ -4,19 +4,20 @@ module Librarian
       class Repository
 
         class << self
-          def clone!(path, repository_url)
+          def clone!(root_module, path, repository_url)
             path = Pathname.new(path)
             path.mkpath
-            git = new(path)
+            git = new(root_module, path)
             git.clone!(repository_url)
             git
           end
         end
 
-        attr_reader :path
+        attr_reader :root_module, :path
 
-        def initialize(path)
+        def initialize(root_module, path)
           path = Pathname.new(path)
+          @root_module = root_module
           @path = path
         end
 
@@ -47,11 +48,11 @@ module Librarian
         end
 
         def relative_path_to(path)
-          Librarian.project_relative_path_to(path)
+          root_module.project_relative_path_to(path)
         end
 
         def debug
-          Librarian.ui.debug "[Librarian] #{yield}"
+          root_module.ui.debug "[Librarian] #{yield}"
         end
 
         def within

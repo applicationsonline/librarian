@@ -5,9 +5,9 @@ module Librarian
 
     attr_reader :path, :dependencies
 
-    def initialize(path)
+    def initialize(dsl_class, path)
       @path = path
-      dsl_target = Dsl.run(self)
+      dsl_target = dsl_class.run(self)
       @dependencies = dsl_target.dependencies
     end
 

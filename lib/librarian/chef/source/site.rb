@@ -2,10 +2,14 @@ require 'uri'
 require 'net/http'
 require 'json'
 
+require 'librarian/chef/particularity'
+
 module Librarian
   module Chef
     module Source
       class Site
+
+        include Particularity
 
         attr_reader :uri
 
@@ -39,13 +43,13 @@ module Librarian
         end
 
         def install_path(dependency)
-          Librarian.install_path.join(dependency.name)
+          root_module.install_path.join(dependency.name)
         end
 
         def cache_path
           @cache_path ||= begin
             dir = Digest::MD5.hexdigest(uri)
-            Librarian.cache_path.join("source/chef/site/#{dir}")
+            root_module.cache_path.join("source/chef/site/#{dir}")
           end
         end
 
@@ -103,11 +107,11 @@ module Librarian
       private
 
         def relative_path_to(path)
-          Librarian.project_relative_path_to(path)
+          root_module.project_relative_path_to(path)
         end
 
         def debug
-          Librarian.ui.debug "[Librarian] #{yield}"
+          root_module.ui.debug "[Librarian] #{yield}"
         end
 
       end
