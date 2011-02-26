@@ -5,12 +5,16 @@ module Librarian
 
         SCOPABLES = [:sources]
 
-        attr_reader :dependency_name, :dependency_type, :source_types, :dependencies
+        attr_reader :dependency_name, :dependency_type
+        attr_reader :source_types, :source_types_map, :source_type_names
+        attr_reader :dependencies
 
         def initialize(dependency_name, dependency_type, source_types)
           @dependency_name = dependency_name
           @dependency_type = dependency_type
           @source_types = source_types
+          @source_types_map = Hash[source_types]
+          @source_type_names = source_types.map{|t| t[0]}
           @dependencies = []
           SCOPABLES.each do |scopable|
             instance_variable_set(:"@#{scopable}", [])
@@ -25,11 +29,8 @@ module Librarian
         end
 
         def source(name, param = nil, options = {})
-          if name.is_a?(Hash)
-            type, name, param, options = *extract_source_parts(name)
-          else
-            type = source_type_from_name(name)
-          end
+          name, param, options = *normalize_source_options(name, param, options)
+          type = source_types_map[name]
           source = type.new(param, options)
           if !block_given?
             @sources = @sources.dup << source
@@ -55,18 +56,21 @@ module Librarian
           end
         end
 
-        def source_type_from_name(name)
-          source_types.select{|t| t[0] == name}.first[1]
+        def normalize_source_options(name, param, options)
+          if name.is_a?(Hash)
+            extract_source_parts(name)
+          else
+            [name, param, options]
+          end
         end
 
         def extract_source_parts(options)
-          unless type = source_types.select{|t| options.key?(t[0])}.first
+          unless name = source_type_names.find{|name| options.key?(name)}
             nil
           else
-            name, type = *type
             options = options.dup
             param = options.delete(name)
-            [type, name, param, options]
+            [name, param, options]
           end
         end
 
@@ -74,7 +78,8 @@ module Librarian
           unless source_parts = extract_source_parts(options)
             nil
           else
-            type, name, param, options = *source_parts
+            name, param, options = *source_parts
+            type = source_types_map[name]
             type.new(param, options)
           end
         end
