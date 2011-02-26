@@ -11,35 +11,70 @@ module Librarian
 
         def initialize(uri, options = {})
           @uri = uri
+          @cache_path = nil
         end
 
         def cache!(dependencies)
-          metadata_cache_path.rmtree if metadata_cache_path.exist?
-          metadata_cache_path.mkpath
+          cache_path.rmtree if cache_path.exist?
+          cache_path.mkpath
           dependencies.each do |dep|
             download!(dep)
           end
         end
 
         def install!(dependency)
-          dependency_cache_path = metadata_cache_path.join(dependency.name)
-          metadata = JSON.parse(dependency_cache_path.join("metadata.json").read)
-          unpacked_dir = "version-#{Digest::MD5.hexdigest(metadata['latest_version'])}"
-          archive_file = unpacked_dir + ".tgz"
-          Dir.chdir(dependency_cache_path) do
+          cache_path = dependency_cache_path(dependency)
+          metadata = JSON.parse(metadata_cache_path(dependency).read)
+          version_uri = metadata['latest_version']
+          archive_file = version_archive_cache_file(dependency, version_uri)
+          Dir.chdir(cache_path) do
+            # version_unpacked_cache_path is where this gets extracted to
             `tar -xzf #{archive_file}`
           end
-          install_path = Librarian.install_path.join(dependency.name)
+          install_path = install_path(dependency)
           install_path.rmtree if install_path.exist?
-          FileUtils.cp_r(dependency_cache_path.join(dependency.name), install_path)
-          dependency_cache_path.join(dependency.name).rmtree
+          unpacked_path = version_unpacked_cache_path(dependency, version_uri)
+          FileUtils.cp_r(unpacked_path, install_path)
+          unpacked_path.rmtree
         end
 
-        def metadata_cache_path
-          @metadata_cache_path ||= begin
+        def install_path(dependency)
+          Librarian.install_path.join(dependency.name)
+        end
+
+        def cache_path
+          @cache_path ||= begin
             dir = Digest::MD5.hexdigest(uri)
             Librarian.cache_path.join("source/chef/site/#{dir}")
           end
+        end
+
+        def dependency_cache_path(dependency)
+          cache_path.join(dependency.name)
+        end
+
+        def metadata_cache_path(dependency)
+          dependency_cache_path(dependency).join("metadata.json")
+        end
+
+        def version_metadata_cache_path(dependency, version_uri)
+          dependency_cache_path(dependency).join("version-#{Digest::MD5.hexdigest(version_uri)}.json")
+        end
+
+        def version_archive_cache_file(dependency, version_uri)
+          Pathname.new("version-#{Digest::MD5.hexdigest(version_uri)}.tgz")
+        end
+
+        def version_archive_cache_path(dependency, version_uri)
+          dependency_cache_path(dependency).join(version_archive_cache_file(dependency, version_uri))
+        end
+
+        def version_unpacked_cache_file(dependency, version_uri)
+          Pathname.new(dependency.name)
+        end
+
+        def version_unpacked_cache_path(dependency, version_uri)
+          dependency_cache_path(dependency).join(version_unpacked_cache_file(dependency, version_uri))
         end
 
         def dependency_uri(dependency)
@@ -47,21 +82,19 @@ module Librarian
         end
 
         def download!(dependency)
-          dependency_cache_path = metadata_cache_path.join(dependency.name)
+          dependency_cache_path = cache_path.join(dependency.name)
           dependency_cache_path.mkpath
           dep_uri = dependency_uri(dependency)
           metadata = JSON.parse(Net::HTTP.get(URI.parse(dep_uri)))
-          dependency_cache_path.join("metadata.json").open('wb') do |f|
+          metadata_cache_path(dependency).open('wb') do |f|
             f.write(JSON.dump(metadata))
           end
           metadata['versions'].map do |v|
             version = JSON.parse(Net::HTTP.get(URI.parse(v)))
-            version_file = "version-#{Digest::MD5.hexdigest(v)}.json"
-            dependency_cache_path.join(version_file).open('wb') do |f|
+            version_metadata_cache_path(dependency, v).open('wb') do |f|
               f.write(JSON.dump(version))
             end
-            archive_file = "version-#{Digest::MD5.hexdigest(v)}.tgz"
-            dependency_cache_path.join(archive_file).open('wb') do |f|
+            version_archive_cache_path(dependency, v).open('wb') do |f|
               f.write(Net::HTTP.get(URI.parse(version['file'])))
             end
           end
