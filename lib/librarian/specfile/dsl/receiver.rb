@@ -21,8 +21,19 @@ module Librarian
           end
         end
 
-        def run(path)
-          instance_eval(path.read, path.to_s, 1)
+        def run(specfile = nil)
+          if block_given?
+            instance_eval(&Proc.new)
+          else
+            case specfile
+            when Specfile
+              instance_eval(specfile.path.read, specfile.path.to_s, 1)
+            when String
+              instance_eval(specfile)
+            when Proc
+              instance_eval(&specfile)
+            end
+          end
         end
 
       end

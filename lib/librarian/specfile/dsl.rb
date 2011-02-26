@@ -6,8 +6,8 @@ module Librarian
     class Dsl
 
       class << self
-        def run(specfile)
-          new.run(specfile)
+        def run(specfile = nil, &block)
+          new.run(specfile, &block)
         end
 
       private
@@ -46,9 +46,14 @@ module Librarian
         self.class.source_types
       end
 
-      def run(specfile)
+      def run(specfile = nil)
         Target.new(dependency_name, dependency_type, source_types).tap do |target|
-          Receiver.new(target).run(specfile.path)
+          receiver = Receiver.new(target)
+          if block_given?
+            receiver.run(&Proc.new)
+          else
+            receiver.run(specfile)
+          end
         end
       end
 
