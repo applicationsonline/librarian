@@ -34,7 +34,7 @@ module Librarian
             git 'https://github.com/opscode/cookbooks.git' do
               cookbook 'apt'
             end
-          end
+          end.dependencies
           deps.should_not be_empty
           deps.first.name.should == 'apt'
           deps.first.source.uri.should =~ /opscode\/cookbooks/
