@@ -50,8 +50,12 @@ module Librarian
         end
       end
 
+      def path
+        @path ||= repository.path
+      end
+
       def manifest_search_paths(dependency)
-        paths = [repository.path, repository.path.join(dependency.name)]
+        paths = [path, path.join(dependency.name)]
         paths.select{|s| s.exist?}
       end
 
