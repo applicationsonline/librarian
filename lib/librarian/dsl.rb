@@ -9,7 +9,7 @@ module Librarian
         new.run(specfile, &block)
       end
 
-      private
+    private
 
       def dependency(options)
         dependency_name = options.keys.first
