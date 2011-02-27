@@ -1,6 +1,7 @@
 require 'librarian/specfile'
 require 'librarian/source'
 require 'librarian/chef/cookbook'
+require 'librarian/chef/particularity'
 require 'librarian/chef/source'
 
 module Librarian

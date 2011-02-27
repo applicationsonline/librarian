@@ -1,22 +1,23 @@
-require 'librarian/chef/particularity'
 require 'librarian/cli'
+require 'librarian/chef'
 
 module Librarian
   module Chef
     class Cli < Librarian::Cli
 
       include Particularity
+      extend Particularity
 
       desc "clean", "Cleans out the cache and install paths."
       def clean
-        Librarian::Chef.ensure!
-        Librarian::Chef.clean!
+        root_module.ensure!
+        root_module.clean!
       end
 
       desc "install", "Installs all of the cookbooks you specify."
       def install
-        Librarian::Chef.ensure!
-        Librarian::Chef.install!
+        root_module.ensure!
+        root_module.install!
       end
 
     end

@@ -1,5 +1,6 @@
 require 'librarian/version'
 require 'librarian/dependency'
+require 'librarian/particularity'
 require 'librarian/source'
 require 'librarian/specfile'
 require 'librarian/ui'

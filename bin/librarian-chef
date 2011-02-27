@@ -3,18 +3,5 @@
 lib = File.expand_path('../../lib', __FILE__)
 $:.unshift(lib) unless $:.include?(lib)
 
-require 'librarian'
-require 'librarian/chef'
 require 'librarian/chef/cli'
-
-begin
-  Librarian::Chef::Cli.start
-rescue Librarian::Error => e
-  Librarian.ui.error e.message
-  Librarian.ui.debug e.backtrace.join("\n")
-  exit (e.respond_to?(:status_code) ? e.status_code : 1)
-rescue Interrupt => e
-  Librarian.ui.error "\nQuitting..."
-  Librarian.ui.debug e.backtrace.join("\n")
-  exit 1
-end
+Librarian::Chef::Cli.bin!
