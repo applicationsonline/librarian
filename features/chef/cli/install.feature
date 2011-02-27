@@ -32,6 +32,7 @@ Feature: cli/catalog
 
 
 
+  @wip
   Scenario: A simple Cheffile with one cookbook with one dependency
     Given a directory named "cookbook-soures/main"
     Given a file named "cookbook-sources/main/metadata.yaml" with:
