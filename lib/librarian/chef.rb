@@ -1,7 +1,7 @@
 require 'librarian/specfile'
 require 'librarian/source'
 require 'librarian/chef/cookbook'
-require 'librarian/chef/particularity'
+require 'librarian/chef/dsl'
 require 'librarian/chef/source'
 
 module Librarian
@@ -9,14 +9,6 @@ module Librarian
     extend self
     include Librarian
     extend Librarian
-
-    class Dsl < Specfile::Dsl
-      dependency :cookbook => Cookbook
-
-      source :site => Source::Site
-      source :git => Source::Git
-      source :path => Source::Path
-    end
 
     module Overrides
       def specfile_name

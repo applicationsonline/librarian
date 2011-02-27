@@ -1,3 +1,4 @@
+require 'librarian/source'
 require 'librarian/chef/source/site'
 require 'librarian/chef/particularity'
 
