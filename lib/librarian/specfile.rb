@@ -1,5 +1,3 @@
-require 'librarian/specfile/dsl'
-
 module Librarian
   class Specfile
 
