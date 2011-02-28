@@ -8,46 +8,65 @@ module Librarian
 
       context "a simple specfile - a single source, a single dependency, no transitive dependencies" do
 
-        it "should run with a source given as hash options on a dependency" do
-          deps = Dsl.run do
+        it "should run with a hash source" do
+          spec = Dsl.run do
             cookbook 'apt',
               :git => 'https://github.com/opscode/cookbooks.git'
-          end.dependencies
-          deps.should_not be_empty
-          deps.first.name.should == 'apt'
-          deps.first.source.uri.should =~ /opscode\/cookbooks/
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'apt'
+          spec.dependencies.first.source.uri.should =~ /opscode\/cookbooks/
+          spec.sources.should be_empty
         end
 
-        it "should run with a hash block source" do
-          deps = Dsl.run do
+        it "should run with a block hash source" do
+          spec = Dsl.run do
             source :git => 'https://github.com/opscode/cookbooks.git' do
               cookbook 'apt'
             end
-          end.dependencies
-          deps.should_not be_empty
-          deps.first.name.should == 'apt'
-          deps.first.source.uri.should =~ /opscode\/cookbooks/
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'apt'
+          spec.dependencies.first.source.uri.should =~ /opscode\/cookbooks/
+          spec.sources.should be_empty
         end
 
-        it "should run with a named block source" do
-          deps = Dsl.run do
+        it "should run with a block named source" do
+          spec = Dsl.run do
             git 'https://github.com/opscode/cookbooks.git' do
               cookbook 'apt'
             end
-          end.dependencies
-          deps.should_not be_empty
-          deps.first.name.should == 'apt'
-          deps.first.source.uri.should =~ /opscode\/cookbooks/
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'apt'
+          spec.dependencies.first.source.uri.should =~ /opscode\/cookbooks/
+          spec.sources.should be_empty
         end
 
-        it "should run with a default source" do
-          deps = Dsl.run do
+        it "should run with a default hash source" do
+          spec = Dsl.run do
+            source :git => 'https://github.com/opscode/cookbooks.git'
+            cookbook 'apt'
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'apt'
+          spec.dependencies.first.source.uri.should =~ /opscode\/cookbooks/
+          spec.sources.should_not be_empty
+          spec.sources.size.should == 1
+          spec.dependencies.first.source.should == spec.sources.first
+        end
+
+        it "should run with a default named source" do
+          spec = Dsl.run do
             git 'https://github.com/opscode/cookbooks.git'
             cookbook 'apt'
-          end.dependencies
-          deps.should_not be_empty
-          deps.first.name.should == 'apt'
-          deps.first.source.uri.should =~ /opscode\/cookbooks/
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'apt'
+          spec.dependencies.first.source.uri.should =~ /opscode\/cookbooks/
+          spec.sources.should_not be_empty
+          spec.sources.size.should == 1
+          spec.dependencies.first.source.should == spec.sources.first
         end
 
       end
