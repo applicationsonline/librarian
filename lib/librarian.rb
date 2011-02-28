@@ -46,7 +46,7 @@ module Librarian
 
   def ensure!
     unless project_path
-      raise Error, "Cannot find #{Librarian.specfile_name}!"
+      raise Error, "Cannot find #{specfile_name}!"
     end
   end
 
