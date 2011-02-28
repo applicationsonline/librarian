@@ -1,1 +1,1 @@
-default: --tags ~@wip
+default: --tags ~@wip --format progress
