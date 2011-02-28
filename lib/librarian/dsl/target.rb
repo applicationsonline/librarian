@@ -6,7 +6,7 @@ module Librarian
 
       attr_reader :dependency_name, :dependency_type
       attr_reader :source_types, :source_types_map, :source_type_names
-      attr_reader :dependencies
+      attr_reader :dependencies, *SCOPABLES
 
       def initialize(dependency_name, dependency_type, source_types)
         @dependency_name = dependency_name
