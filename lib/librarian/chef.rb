@@ -7,7 +7,6 @@ require 'librarian/chef/source'
 module Librarian
   module Chef
     extend self
-    include Librarian
     extend Librarian
 
     module Overrides
@@ -24,7 +23,6 @@ module Librarian
       end
     end
 
-    include Overrides
     extend Overrides
 
   end
