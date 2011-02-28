@@ -1,5 +1,7 @@
 require 'pathname'
 
+require 'librarian/support/abstract_method'
+
 require 'librarian/version'
 require 'librarian/dependency'
 require 'librarian/particularity'
@@ -10,15 +12,9 @@ require 'librarian/ui'
 module Librarian
   extend self
 
-  class Error < Exception
-  end
+  include Support::AbstractMethod
 
-  class << self
-    def abstract_method(*names)
-      names.each do |name|
-        define_method(name) { raise Exception, "Cannot use Librarian##{name} directly." }
-      end
-    end
+  class Error < Exception
   end
 
   attr_accessor :ui
