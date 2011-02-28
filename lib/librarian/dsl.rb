@@ -4,6 +4,9 @@ require 'librarian/dsl/target'
 module Librarian
   class Dsl
 
+    class Error < Exception
+    end
+
     class << self
       def run(specfile = nil, &block)
         new.run(specfile, &block)

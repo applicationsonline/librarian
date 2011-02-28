@@ -23,6 +23,9 @@ module Librarian
       def dependency(name, *args)
         options = args.last.is_a?(Hash) ? args.pop : {}
         source = source_from_options(options) || @sources.last
+        unless source
+          raise Error, "#{dependency_name} #{name} is specified without a source!"
+        end
         dep = dependency_type.new(name, args, source)
         @dependencies << dep
       end

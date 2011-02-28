@@ -6,6 +6,28 @@ module Librarian
 
     describe Dsl do
 
+      context "a single dependency but no applicable source" do
+
+        it "should not run without any sources" do
+          expect do
+            Dsl.run do
+              cookbook 'apt'
+            end
+          end.to raise_error(Dsl::Error)
+        end
+
+        it "should not run when a block source is defined but the dependency is outside the block" do
+          expect do
+            Dsl.run do
+              git 'https://github.com/opscode/cookbooks.git' do
+              end
+              cookbook 'apt'
+            end
+          end.to raise_error(Dsl::Error)
+        end
+
+      end
+
       context "a simple specfile - a single source, a single dependency, no transitive dependencies" do
 
         it "should run with a hash source" do
