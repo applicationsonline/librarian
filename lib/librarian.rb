@@ -1,3 +1,5 @@
+require 'pathname'
+
 require 'librarian/version'
 require 'librarian/dependency'
 require 'librarian/particularity'
