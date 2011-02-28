@@ -6,7 +6,7 @@ module Librarian
 
     describe Dsl do
 
-      context "simple" do
+      context "a simple specfile - a single source, a single dependency, no transitive dependencies" do
 
         it "should run with a source given as hash options on a dependency" do
           deps = Dsl.run do
