@@ -11,7 +11,17 @@ module Librarian
   class Error < Exception
   end
 
+  class << self
+    def abstract_method(*names)
+      names.each do |name|
+        define_method(name) { raise Exception, "Cannot use Librarian##{name} directly." }
+      end
+    end
+  end
+
   attr_accessor :ui
+
+  abstract_method :specfile_name, :dsl_class, :install_path
 
   def project_path
     @project_path ||= begin
@@ -22,20 +32,12 @@ module Librarian
     end
   end
 
-  def specfile_name
-    raise Exception, "Cannot use Librarian#specfile_name directly."
-  end
-
   def specfile_path
     project_path.join(specfile_name)
   end
 
   def cache_path
     project_path.join('tmp/librarian/cache')
-  end
-
-  def install_path
-    raise Error, "Not implemented"
   end
 
   def project_relative_path_to(path)
