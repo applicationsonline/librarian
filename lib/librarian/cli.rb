@@ -9,13 +9,6 @@ module Librarian
     include Particularity
     extend Particularity
 
-    def initialize(*)
-      super
-      the_shell = (options["no-color"] ? Thor::Shell::Basic.new : shell)
-      root_module.ui = UI::Shell.new(the_shell)
-      root_module.ui.debug! if options["verbose"]
-    end
-
     class << self
       def bin!
         begin
@@ -30,6 +23,27 @@ module Librarian
           exit 1
         end
       end
+    end
+
+    def initialize(*)
+      super
+      the_shell = (options["no-color"] ? Thor::Shell::Basic.new : shell)
+      root_module.ui = UI::Shell.new(the_shell)
+      root_module.ui.debug! if options["verbose"]
+    end
+
+    desc "clean", "Cleans out the cache and install paths."
+    method_option "verbose"
+    def clean
+      root_module.ensure!
+      root_module.clean!
+    end
+
+    desc "install", "Installs all of the cookbooks you specify."
+    method_option "verbose"
+    def install
+      root_module.ensure!
+      root_module.install!
     end
 
   end
