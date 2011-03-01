@@ -44,7 +44,7 @@ module Librarian
 
             def check_manifest(dependency, manifest_path)
               manifest = read_manifest(manifest_path)
-              manifest["name"] = dependency.name
+              manifest["name"] == dependency.name
             end
 
           end
