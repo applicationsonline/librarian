@@ -20,7 +20,7 @@ Feature: cli/catalog
       cookbook 'apt',
         :path => 'cookbook-sources'
       """
-    When I run "librarian-chef install"
+    When I run "librarian-chef install --verbose"
     Then the exit status should be 0
     And a directory named "cookbooks/apt" should exist
     And the file "cookbooks/apt/metadata.yaml" should contain exactly:
@@ -54,7 +54,7 @@ Feature: cli/catalog
       path 'cookbook-sources'
       cookbook 'main'
       """
-    When I run "librarian-chef install"
+    When I run "librarian-chef install --verbose"
     Then the exit status should be 0
     And a directory named "cookbooks/main" should exist
     And the file "cookbooks/main/metadata.yaml" should contain exactly:
