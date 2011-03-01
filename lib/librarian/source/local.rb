@@ -1,9 +1,15 @@
+require 'librarian/support/abstract_method'
+
 module Librarian
   module Source
     # Requires that the including source class have methods:
     #   #path
     #   #root_module
     module Local
+
+      include Support::AbstractMethod
+
+      abstract_method :path
 
       def install!(dependency)
         cache_path = dependency_cache_path(dependency)
@@ -14,10 +20,6 @@ module Librarian
         end
         debug { "Copying #{relative_path_to(cache_path)} to #{relative_path_to(install_path)}" }
         FileUtils.cp_r(cache_path, install_path)
-      end
-
-      def path
-        raise Exception, "Local#path must be overridden."
       end
 
       def manifest_search_paths(dependency)
