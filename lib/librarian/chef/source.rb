@@ -19,8 +19,8 @@ module Librarian
 
             MANIFESTS = %w(metadata.json metadata.yml metadata.yaml)
 
-            def create(path)
-              manifest?(path) ? new(path) : nil
+            def create(dependency, path)
+              manifest?(dependency, path) ? new(path) : nil
             end
 
             def manifest?(dependency, path)
@@ -28,8 +28,6 @@ module Librarian
               manifest_path = manifest_path(path)
               manifest_path && check_manifest(dependency, manifest_path)
             end
-
-          private
 
             def manifest_path(path)
               MANIFESTS.map{|s| path.join(s)}.find{|s| s.exist?}

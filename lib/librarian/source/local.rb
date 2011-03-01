@@ -23,7 +23,7 @@ module Librarian
       end
 
       def manifests(dependency)
-        manifest_search_paths(dependency).map{|p| manifest_class.create(p)}.flatten[0, 1]
+        manifest_search_paths(dependency).map{|p| manifest_class.create(dependency, p)}.compact[0, 1]
       end
 
       def manifest_search_paths(dependency)

@@ -5,6 +5,7 @@ require 'librarian/support/abstract_method'
 require 'librarian/version'
 require 'librarian/dependency'
 require 'librarian/particularity'
+require 'librarian/resolver'
 require 'librarian/source'
 require 'librarian/specfile'
 require 'librarian/ui'
@@ -63,15 +64,13 @@ module Librarian
 
   def install!
     specfile = Specfile.new(dsl_class, specfile_path)
-    sources = specfile.dependencies.map{|d| d.source}.uniq
-    sources.each do |s|
-      debug { "Caching #{s}" }
-      sdeps = specfile.dependencies.select{|d| d.source == s}.uniq
-      s.cache!(sdeps)
-    end
-    specfile.dependencies.each do |d|
-      debug { "Installing #{d.name}" }
-      d.source.install!(d)
+    resolver = Resolver.new(self, specfile.source)
+    manifests = resolver.resolve(specfile.dependencies)
+    manifests.each do |manifest|
+      debug { "Installing #{manifest.name}" }
+      dependency = specfile.dependencies.find{|d| d.name == manifest.name}
+      source = dependency ? dependency.source : specfile.source
+      source.install!(manifest)
     end
   end
 
