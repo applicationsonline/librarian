@@ -1,6 +1,5 @@
 require 'librarian/specfile'
 require 'librarian/source'
-require 'librarian/chef/cookbook'
 require 'librarian/chef/dsl'
 require 'librarian/chef/source'
 

@@ -1,11 +1,10 @@
 require 'librarian/dsl'
-require 'librarian/chef/cookbook'
 require 'librarian/chef/source'
 
 module Librarian
   module Chef
     class Dsl < Librarian::Dsl
-      dependency :cookbook => Cookbook
+      dependency :cookbook => Dependency
 
       source :site => Source::Site
       source :git => Source::Git

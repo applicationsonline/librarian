@@ -22,17 +22,21 @@ module Librarian
         FileUtils.cp_r(cache_path, install_path)
       end
 
+      def manifests(dependency)
+        manifest_search_paths(dependency).map{|p| manifest_class.create(p)}.flatten[0, 1]
+      end
+
       def manifest_search_paths(dependency)
         paths = [path, path.join(dependency.name)]
         paths.select{|s| s.exist?}
       end
 
       def manifest?(dependency)
-        manifest_search_paths(dependency).any?{|s| dependency.manifest?(s)}
+        manifest_search_paths(dependency).any?{|p| manifest_class.manifest?(dependency, p)}
       end
 
       def dependency_cache_path(dependency)
-        manifest_search_paths(dependency).select{|s| dependency.manifest?(s)}.first
+        manifest_search_paths(dependency).select{|p| manifest_class.manifest?(dependency, p)}.first
       end
 
       def dependency_install_path(dependency)

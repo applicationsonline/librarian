@@ -5,8 +5,19 @@ module Librarian
 
     def initialize(name, version, dependencies)
       @name = name
-      @version = version
-      @dependencies = dependencies
+      @version = Gem::Version.new(version)
+      @dependencies = _normalize_dependencies(dependencies)
+    end
+
+  private
+
+    def _normalize_dependencies(dependencies)
+      case dependencies
+      when Hash
+        dependencies.map{|k, v| Dependency.new(k, v, nil)}
+      else
+        dependencies
+      end
     end
 
   end
