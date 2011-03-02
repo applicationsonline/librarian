@@ -110,16 +110,21 @@ module Librarian
           dependency_cache_path(dependency).join("metadata.json")
         end
 
+        def version_cache_path(dependency, version_uri)
+          dependency_cache_path(dependency).join(Digest::MD5.hexdigest(version_uri))
+        end
+
         def version_metadata_cache_path(dependency, version_uri)
-          dependency_cache_path(dependency).join("version-#{Digest::MD5.hexdigest(version_uri)}.json")
+          version_cache_path(dependency, version_uri).join("version.json")
         end
 
         def version_archive_cache_file(dependency, version_uri)
-          Pathname.new("version-#{Digest::MD5.hexdigest(version_uri)}.tgz")
+          Pathname.new("archive.tgz")
         end
 
         def version_archive_cache_path(dependency, version_uri)
-          dependency_cache_path(dependency).join(version_archive_cache_file(dependency, version_uri))
+          version_archive_cache_file = version_archive_cache_file(dependency, version_uri)
+          version_cache_path(dependency, version_uri).join(version_archive_cache_file)
         end
 
         def version_unpacked_cache_file(dependency, version_uri)
@@ -127,15 +132,17 @@ module Librarian
         end
 
         def version_unpacked_cache_path(dependency, version_uri)
-          dependency_cache_path(dependency).join(version_unpacked_cache_file(dependency, version_uri))
+          version_unpacked_cache_file = version_unpacked_cache_file(dependency, version_uri)
+          version_cache_path(dependency, version_uri).join(version_unpacked_cache_file)
         end
 
         def version_package_cache_file(dependency, version_uri)
-          Pathname.new("version-#{Digest::MD5.hexdigest(version_uri)}")
+          Pathname.new("package")
         end
 
         def version_package_cache_path(dependency, version_uri)
-          dependency_cache_path(dependency).join(version_package_cache_file(dependency, version_uri))
+          version_package_cache_file = version_package_cache_file(dependency, version_uri)
+          version_cache_path(dependency, version_uri).join(version_package_cache_file)
         end
 
         def dependency_uri(dependency)
@@ -153,6 +160,8 @@ module Librarian
         end
 
         def cache_version_metadata!(dependency, version_uri)
+          version_cache_path = version_cache_path(dependency, version_uri)
+          version_cache_path.mkpath
           version_metadata_blob = Net::HTTP.get(URI.parse(version_uri))
           version_metadata_cache_path(dependency, version_uri).open('wb') do |f|
             f.write(version_metadata_blob)
