@@ -1,14 +1,64 @@
+require 'fileutils'
+require 'pathname'
 require 'uri'
 require 'net/http'
 require 'json'
+require 'yaml'
 require 'digest'
 
+require 'librarian/manifest'
 require 'librarian/chef/particularity'
 
 module Librarian
   module Chef
     module Source
       class Site
+
+        class Manifest
+
+          MANIFESTS = %w(metadata.json metadata.yml metadata.yaml)
+
+          attr_reader :name, :version_uri, :source
+
+          def initialize(name, version_uri, source)
+            @name, @version_uri, @source = name, version_uri, source
+            @version_metadata, @version = nil, nil
+            @version_manifest, @dependencies = nil, nil
+          end
+
+          def version_metadata
+            @version_metadata ||= begin
+              source.cache_version_metadata!(self, version_uri)
+              path = source.version_metadata_cache_path(self, version_uri)
+              JSON.parse(path.read)
+            end
+          end
+
+          def version_manifest
+            @version_manifest ||= begin
+              source.cache_version_package!(self, version_uri, version_metadata['file'])
+              package_cache_path = source.version_package_cache_path(self, version_uri)
+              manifest_path = MANIFESTS.map{|p| package_cache_path.join(p)}.find{|p| p.exist?}
+              read_manifest(manifest_path)
+            end
+          end
+
+          def dependencies
+            @dependencies ||= version_manifest['dependencies'].map{|k, v| Dependency.new(k, v, nil)}
+          end
+
+          def read_manifest(manifest_path)
+            case manifest_path.extname
+            when ".json" then JSON.parse(manifest_path.read)
+            when ".yml", ".yaml" then YAML.load(manifest_path.read)
+            end
+          end
+
+          def version
+            @version ||= Gem::Version.new(version_metadata['version'])
+          end
+
+        end
 
         include Particularity
 
@@ -19,28 +69,25 @@ module Librarian
           @cache_path = nil
         end
 
-        def cache!(*dependencies)
-          cache_path.rmtree if cache_path.exist?
+        def cache!(dependencies)
           cache_path.mkpath
-          dependencies.each do |dep|
-            download!(dep)
+          dependencies.each do |dependency|
+            cache_metadata!(dependency)
           end
         end
 
-        def install!(dependency)
-          cache_path = dependency_cache_path(dependency)
-          metadata = JSON.parse(metadata_cache_path(dependency).read)
-          version_uri = metadata['latest_version']
-          archive_file = version_archive_cache_file(dependency, version_uri)
-          Dir.chdir(cache_path) do
-            # version_unpacked_cache_path is where this gets extracted to
-            `tar -xzf #{archive_file}`
-          end
-          install_path = install_path(dependency)
+        def install!(manifest)
+          install_path = install_path(manifest)
           install_path.rmtree if install_path.exist?
-          unpacked_path = version_unpacked_cache_path(dependency, version_uri)
-          FileUtils.cp_r(unpacked_path, install_path)
-          unpacked_path.rmtree
+          package_path = version_package_cache_path(manifest, manifest.version_uri)
+          FileUtils.cp_r(package_path, install_path)
+        end
+
+        # NOTE:
+        #   Assumes the Opscode Site API responds with versions in reverse sorted order
+        def manifests(dependency)
+          metadata = JSON.parse(metadata_cache_path(dependency).read)
+          metadata['versions'].map{|version_uri| Manifest.new(dependency.name, version_uri, self)}
         end
 
         def install_path(dependency)
@@ -82,27 +129,47 @@ module Librarian
           dependency_cache_path(dependency).join(version_unpacked_cache_file(dependency, version_uri))
         end
 
+        def version_package_cache_file(dependency, version_uri)
+          Pathname.new("version-#{Digest::MD5.hexdigest(version_uri)}")
+        end
+
+        def version_package_cache_path(dependency, version_uri)
+          dependency_cache_path(dependency).join(version_package_cache_file(dependency, version_uri))
+        end
+
         def dependency_uri(dependency)
           "#{uri}/cookbooks/#{dependency.name}"
         end
 
-        def download!(dependency)
+        def cache_metadata!(dependency)
           dependency_cache_path = cache_path.join(dependency.name)
           dependency_cache_path.mkpath
           dep_uri = dependency_uri(dependency)
-          metadata = JSON.parse(Net::HTTP.get(URI.parse(dep_uri)))
+          metadata_blob = Net::HTTP.get(URI.parse(dep_uri))
           metadata_cache_path(dependency).open('wb') do |f|
-            f.write(JSON.dump(metadata))
+            f.write(metadata_blob)
           end
-          metadata['versions'].map do |v|
-            version = JSON.parse(Net::HTTP.get(URI.parse(v)))
-            version_metadata_cache_path(dependency, v).open('wb') do |f|
-              f.write(JSON.dump(version))
-            end
-            version_archive_cache_path(dependency, v).open('wb') do |f|
-              f.write(Net::HTTP.get(URI.parse(version['file'])))
-            end
+        end
+
+        def cache_version_metadata!(dependency, version_uri)
+          version_metadata_blob = Net::HTTP.get(URI.parse(version_uri))
+          version_metadata_cache_path(dependency, version_uri).open('wb') do |f|
+            f.write(version_metadata_blob)
           end
+        end
+
+        def cache_version_package!(dependency, version_uri, file_uri)
+          dependency_cache_path = dependency_cache_path(dependency)
+          version_archive_cache_path = version_archive_cache_path(dependency, version_uri)
+          version_archive_cache_path.open('wb') do |f|
+            f.write(Net::HTTP.get(URI.parse(file_uri)))
+          end
+          Dir.chdir(dependency_cache_path) do
+            `tar -xzf #{version_archive_cache_path}`
+          end
+          version_unpacked_temp_path = dependency_cache_path.join(dependency.name)
+          version_package_cache_path = version_package_cache_path(dependency, version_uri)
+          FileUtils.move(version_unpacked_temp_path, version_package_cache_path)
         end
 
       private
