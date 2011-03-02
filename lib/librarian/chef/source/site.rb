@@ -18,7 +18,7 @@ module Librarian
           @cache_path = nil
         end
 
-        def cache!(dependencies)
+        def cache!(*dependencies)
           cache_path.rmtree if cache_path.exist?
           cache_path.mkpath
           dependencies.each do |dep|
