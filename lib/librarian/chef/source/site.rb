@@ -5,6 +5,8 @@ require 'net/http'
 require 'json'
 require 'digest'
 
+require 'librarian/helpers/debug'
+
 require 'librarian/manifest'
 require 'librarian/chef/manifest'
 require 'librarian/chef/particularity'
@@ -68,6 +70,7 @@ module Librarian
 
         end
 
+        include Helpers::Debug
         include Particularity
 
         attr_reader :uri
@@ -180,16 +183,6 @@ module Librarian
           version_unpacked_temp_path = dependency_cache_path.join(dependency.name)
           version_package_cache_path = version_package_cache_path(dependency, version_uri)
           FileUtils.move(version_unpacked_temp_path, version_package_cache_path)
-        end
-
-      private
-
-        def relative_path_to(path)
-          root_module.project_relative_path_to(path)
-        end
-
-        def debug
-          root_module.ui.debug "[Librarian] #{yield}"
         end
 
       end
