@@ -1,5 +1,6 @@
 require 'pathname'
 
+require 'librarian/helpers/debug'
 require 'librarian/support/abstract_method'
 
 require 'librarian/version'
@@ -14,6 +15,7 @@ module Librarian
   extend self
 
   include Support::AbstractMethod
+  include Helpers::Debug
 
   class Error < Exception
   end
@@ -73,8 +75,8 @@ module Librarian
 
 private
 
-  def debug
-    ui.debug "[Librarian] #{yield}"
+  def root_module
+    self
   end
 
 end
