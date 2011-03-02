@@ -1,5 +1,7 @@
 require 'tsort'
 
+require 'librarian/helpers/debug'
+
 require 'librarian/dependency'
 
 module Librarian
@@ -12,6 +14,8 @@ module Librarian
         self[node].each(&block)
       end
     end
+
+    include Helpers::Debug
 
     attr_reader :root_module
 
@@ -38,16 +42,6 @@ module Librarian
       manifest_pairs = GraphHash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
       manifest_names = manifest_pairs.tsort
       manifest_names.map{|n| manifests[n]}
-    end
-
-  private
-
-    def relative_path_to(path)
-      root_module.project_relative_path_to(path)
-    end
-
-    def debug
-      root_module.ui.debug "[Librarian] #{yield}"
     end
 
   end
