@@ -20,28 +20,6 @@ module Librarian
         paths.select{|s| s.exist?}
       end
 
-      def manifest?(dependency)
-        manifest_search_paths(dependency).any?{|p| manifest_class.manifest?(dependency, p)}
-      end
-
-      def dependency_cache_path(dependency)
-        manifest_search_paths(dependency).select{|p| manifest_class.manifest?(dependency, p)}.first
-      end
-
-      def dependency_install_path(dependency)
-        root_module.install_path.join(dependency.name)
-      end
-
-    private
-
-      def relative_path_to(path)
-        root_module.project_relative_path_to(path)
-      end
-
-      def debug
-        root_module.ui.debug "[Librarian] #{yield}"
-      end
-
     end
   end
 end
