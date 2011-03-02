@@ -34,28 +34,28 @@ module Librarian
             @version_manifest = nil
           end
 
-          def cache_version!
+          def fetch_version!
             version_metadata['version']
           end
 
-          def cache_dependencies!
+          def fetch_dependencies!
             version_manifest['dependencies'].map{|k, v| Dependency.new(k, v, nil)}
           end
 
           def version_metadata
-            @version_metadata ||= cache_version_metadata!
+            @version_metadata ||= fetch_version_metadata!
           end
 
-          def cache_version_metadata!
+          def fetch_version_metadata!
             source.cache_version_metadata!(self, version_uri)
             JSON.parse(metadata_cache_path.read)
           end
 
           def version_manifest
-            @version_manifest ||= cache_version_manifest!
+            @version_manifest ||= fetch_version_manifest!
           end
 
-          def cache_version_manifest!
+          def fetch_version_manifest!
             source.cache_version_package!(self, version_uri, version_metadata['file'])
             manifest_path = manifest_path(package_cache_path)
             read_manifest(manifest_path)

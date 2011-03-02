@@ -37,18 +37,18 @@ module Librarian
           end
 
           def manifest
-            @manifest ||= cache_manifest!
+            @manifest ||= fetch_manifest!
           end
 
-          def cache_manifest!
+          def fetch_manifest!
             read_manifest(manifest_path(path))
           end
 
-          def cache_version!
+          def fetch_version!
             manifest['version']
           end
 
-          def cache_dependencies!
+          def fetch_dependencies!
             manifest['dependencies']
           end
 

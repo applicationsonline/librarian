@@ -9,7 +9,7 @@ module Librarian
 
     attr_reader :source, :name
 
-    abstract_method :cache_version!, :cache_dependencies!
+    abstract_method :fetch_version!, :fetch_dependencies!
     abstract_method :install!
 
     def initialize(source, name)
@@ -20,11 +20,11 @@ module Librarian
     end
 
     def version
-      @version ||= _normalize_version(cache_version!)
+      @version ||= _normalize_version(fetch_version!)
     end
 
     def dependencies
-      @dependencies ||= _normalize_dependencies(cache_dependencies!)
+      @dependencies ||= _normalize_dependencies(fetch_dependencies!)
     end
 
   private
