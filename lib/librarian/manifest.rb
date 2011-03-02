@@ -10,6 +10,7 @@ module Librarian
     attr_reader :source, :name
 
     abstract_method :cache_version!, :cache_dependencies!
+    abstract_method :install!
 
     def initialize(source, name)
       @source = source

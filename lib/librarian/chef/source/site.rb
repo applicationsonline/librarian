@@ -54,6 +54,18 @@ module Librarian
             read_manifest(manifest_path)
           end
 
+          def install!
+            debug { "Installing #{name}-#{version}" }
+            cache_path = source.version_package_cache_path(self, version_uri)
+            install_path = root_module.install_path.join(name)
+            if install_path.exist?
+              debug { "Deleting #{relative_path_to(install_path)}" }
+              install_path.rmtree
+            end
+            debug { "Copying #{relative_path_to(cache_path)} to #{relative_path_to(install_path)}" }
+            FileUtils.cp_r(cache_path, install_path)
+          end
+
         end
 
         include Particularity
@@ -70,13 +82,6 @@ module Librarian
           dependencies.each do |dependency|
             cache_metadata!(dependency)
           end
-        end
-
-        def install!(manifest)
-          install_path = install_path(manifest)
-          install_path.rmtree if install_path.exist?
-          package_path = version_package_cache_path(manifest, manifest.version_uri)
-          FileUtils.cp_r(package_path, install_path)
         end
 
         # NOTE:

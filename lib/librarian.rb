@@ -67,8 +67,7 @@ module Librarian
     resolver = Resolver.new(self, specfile.source)
     manifests = resolver.resolve(specfile.dependencies)
     manifests.each do |manifest|
-      debug { "Installing #{manifest.name}-#{manifest.version}" }
-      manifest.source.install!(manifest)
+      manifest.install!
     end
   end
 

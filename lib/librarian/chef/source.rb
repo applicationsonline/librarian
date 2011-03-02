@@ -1,3 +1,4 @@
+require 'fileutils'
 require 'pathname'
 
 require 'librarian/source'
@@ -54,6 +55,17 @@ module Librarian
 
           def cache_dependencies!
             manifest['dependencies']
+          end
+
+          def install!
+            debug { "Installing #{name}-#{version}" }
+            install_path = root_module.install_path.join(name)
+            if install_path.exist?
+              debug { "Deleting #{relative_path_to(install_path)}" }
+              install_path.rmtree
+            end
+            debug { "Copying #{relative_path_to(path)} to #{relative_path_to(install_path)}" }
+            FileUtils.cp_r(path, install_path)
           end
 
         end
