@@ -1,9 +1,11 @@
+require 'librarian/helpers/debug'
 require 'librarian/support/abstract_method'
 
 module Librarian
   class Manifest
 
     include Support::AbstractMethod
+    include Helpers::Debug
 
     attr_reader :source, :name
 
@@ -25,6 +27,10 @@ module Librarian
     end
 
   private
+
+    def root_module
+      source.root_module
+    end
 
     def _normalize_version(version)
       Gem::Version.new(version)
