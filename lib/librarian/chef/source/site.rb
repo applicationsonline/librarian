@@ -14,37 +14,46 @@ module Librarian
     module Source
       class Site
 
-        class Manifest
+        class Manifest < Librarian::Manifest
 
           MANIFESTS = %w(metadata.json metadata.yml metadata.yaml)
 
-          attr_reader :name, :version_uri, :source
+          attr_reader :version_uri
 
-          def initialize(name, version_uri, source)
-            @name, @version_uri, @source = name, version_uri, source
+          def initialize(source, name, version_uri)
+            super(source, name)
+            @version_uri = version_uri
             @version_metadata, @version = nil, nil
             @version_manifest, @dependencies = nil, nil
           end
 
+          def cache_version!
+            version_metadata['version']
+          end
+
+          def cache_dependencies!
+            version_manifest['dependencies'].map{|k, v| Dependency.new(k, v, nil)}
+          end
+
           def version_metadata
-            @version_metadata ||= begin
-              source.cache_version_metadata!(self, version_uri)
-              path = source.version_metadata_cache_path(self, version_uri)
-              JSON.parse(path.read)
-            end
+            @version_metadata ||= cache_version_metadata!
+          end
+
+          def cache_version_metadata!
+            source.cache_version_metadata!(self, version_uri)
+            path = source.version_metadata_cache_path(self, version_uri)
+            JSON.parse(path.read)
           end
 
           def version_manifest
-            @version_manifest ||= begin
-              source.cache_version_package!(self, version_uri, version_metadata['file'])
-              package_cache_path = source.version_package_cache_path(self, version_uri)
-              manifest_path = MANIFESTS.map{|p| package_cache_path.join(p)}.find{|p| p.exist?}
-              read_manifest(manifest_path)
-            end
+            @version_manifest ||= cache_version_manifest!
           end
 
-          def dependencies
-            @dependencies ||= version_manifest['dependencies'].map{|k, v| Dependency.new(k, v, nil)}
+          def cache_version_manifest!
+            source.cache_version_package!(self, version_uri, version_metadata['file'])
+            package_cache_path = source.version_package_cache_path(self, version_uri)
+            manifest_path = MANIFESTS.map{|p| package_cache_path.join(p)}.find{|p| p.exist?}
+            read_manifest(manifest_path)
           end
 
           def read_manifest(manifest_path)
@@ -52,10 +61,6 @@ module Librarian
             when ".json" then JSON.parse(manifest_path.read)
             when ".yml", ".yaml" then YAML.load(manifest_path.read)
             end
-          end
-
-          def version
-            @version ||= Gem::Version.new(version_metadata['version'])
           end
 
         end
@@ -87,7 +92,7 @@ module Librarian
         #   Assumes the Opscode Site API responds with versions in reverse sorted order
         def manifests(dependency)
           metadata = JSON.parse(metadata_cache_path(dependency).read)
-          metadata['versions'].map{|version_uri| Manifest.new(dependency.name, version_uri, self)}
+          metadata['versions'].map{|version_uri| Manifest.new(self, dependency.name, version_uri)}
         end
 
         def install_path(dependency)

@@ -1,16 +1,34 @@
+require 'librarian/support/abstract_method'
+
 module Librarian
   class Manifest
 
-    attr_reader :source, :name, :version, :dependencies
+    include Support::AbstractMethod
 
-    def initialize(source, name, version = nil, dependencies = nil)
+    attr_reader :source, :name
+
+    abstract_method :cache_version!, :cache_dependencies!
+
+    def initialize(source, name)
       @source = source
       @name = name
-      @version = version && Gem::Version.new(version)
-      @dependencies = dependencies && _normalize_dependencies(dependencies)
+      @version = nil
+      @dependencies = nil
+    end
+
+    def version
+      @version ||= _normalize_version(cache_version!)
+    end
+
+    def dependencies
+      @dependencies ||= _normalize_dependencies(cache_dependencies!)
     end
 
   private
+
+    def _normalize_version(version)
+      Gem::Version.new(version)
+    end
 
     def _normalize_dependencies(dependencies)
       case dependencies
