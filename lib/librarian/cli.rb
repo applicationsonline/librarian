@@ -41,8 +41,10 @@ module Librarian
 
     desc "install", "Installs all of the cookbooks you specify."
     method_option "verbose"
+    method_option "clean"
     def install
       root_module.ensure!
+      root_module.clean! if options["clean"]
       root_module.install!
     end
 
