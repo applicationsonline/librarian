@@ -33,13 +33,11 @@ module Librarian
 
           end
 
-          attr_reader :path, :manifest_path
+          attr_reader :path
 
           def initialize(source, name, path)
             super(source, name)
-            path = Pathname.new(path)
-            manifest_path = self.class.manifest_path(path)
-            @path, @manifest_path = path, manifest_path
+            @path = Pathname.new(path)
           end
 
           def manifest
@@ -47,7 +45,7 @@ module Librarian
           end
 
           def cache_manifest!
-            self.class.read_manifest(manifest_path)
+            read_manifest(manifest_path(path))
           end
 
           def cache_version!
