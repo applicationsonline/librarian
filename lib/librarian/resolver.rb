@@ -13,14 +13,13 @@ module Librarian
       end
     end
 
-    attr_reader :root_module, :source
+    attr_reader :root_module
 
-    def initialize(root_module, source)
+    def initialize(root_module)
       @root_module = root_module
-      @source = source
     end
 
-    def resolve(dependencies)
+    def resolve(source, dependencies)
       manifests = {}
       queue = dependencies.dup
       until queue.empty?

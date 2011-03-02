@@ -66,8 +66,8 @@ module Librarian
 
   def install!
     specfile = Specfile.new(dsl_class, specfile_path)
-    resolver = Resolver.new(self, specfile.source)
-    manifests = resolver.resolve(specfile.dependencies)
+    resolver = Resolver.new(self)
+    manifests = resolver.resolve(specfile.source, specfile.dependencies)
     manifests.each do |manifest|
       manifest.install!
     end
