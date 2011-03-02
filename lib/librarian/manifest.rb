@@ -3,11 +3,11 @@ module Librarian
 
     attr_reader :source, :name, :version, :dependencies
 
-    def initialize(source, name, version, dependencies)
-      @name = name
-      @version = Gem::Version.new(version)
-      @dependencies = _normalize_dependencies(dependencies)
+    def initialize(source, name, version = nil, dependencies = nil)
       @source = source
+      @name = name
+      @version = version && Gem::Version.new(version)
+      @dependencies = dependencies && _normalize_dependencies(dependencies)
     end
 
   private
