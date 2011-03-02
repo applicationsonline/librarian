@@ -5,6 +5,14 @@ require 'librarian/dependency'
 module Librarian
   class Resolver
 
+    class GraphHash < Hash
+      include TSort
+      alias tsort_each_node each_key
+      def tsort_each_child(node, &block)
+        self[node].each(&block)
+      end
+    end
+
     attr_reader :root_module, :source
 
     def initialize(root_module, source)
@@ -29,21 +37,9 @@ module Librarian
           manifests[dependency.name] = manifest
         end
       end
-      manifest_pairs = Hash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
-      manifest_names = tsort(manifest_pairs)
+      manifest_pairs = GraphHash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
+      manifest_names = manifest_pairs.tsort
       manifest_names.map{|n| manifests[n]}
-    end
-
-    def tsort(graph)
-      graph = graph.dup
-      class << graph
-        include TSort
-        alias tsort_each_node each_key
-        def tsort_each_child(node, &block)
-          self[node].each(&block)
-        end
-      end
-      graph.tsort
     end
 
   private
