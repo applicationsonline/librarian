@@ -1,12 +1,13 @@
 module Librarian
   class Manifest
 
-    attr_reader :name, :version, :dependencies
+    attr_reader :source, :name, :version, :dependencies
 
-    def initialize(name, version, dependencies)
+    def initialize(source, name, version, dependencies)
       @name = name
       @version = Gem::Version.new(version)
       @dependencies = _normalize_dependencies(dependencies)
+      @source = source
     end
 
   private

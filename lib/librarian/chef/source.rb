@@ -19,8 +19,8 @@ module Librarian
 
             MANIFESTS = %w(metadata.json metadata.yml metadata.yaml)
 
-            def create(dependency, path)
-              manifest?(dependency, path) ? new(path) : nil
+            def create(source, dependency, path)
+              manifest?(dependency, path) ? new(source, path) : nil
             end
 
             def manifest?(dependency, path)
@@ -49,14 +49,14 @@ module Librarian
 
           attr_reader :path, :manifest_path
 
-          def initialize(path)
+          def initialize(source, path)
             path = Pathname.new(path)
             manifest_path = self.class.manifest_path(path)
             manifest = self.class.read_manifest(manifest_path)
             name = manifest["name"]
             version = manifest["version"]
             dependencies = manifest["dependencies"]
-            super(name, version, dependencies)
+            super(source, name, version, dependencies)
             @path, @manifest_path = path, manifest_path
           end
 
