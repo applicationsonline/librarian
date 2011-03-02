@@ -19,12 +19,19 @@ module Librarian
         class Manifest < Manifest
 
           attr_reader :version_uri
+          attr_reader :cache_path, :metadata_cache_path, :package_cache_path, :install_path
 
           def initialize(source, name, version_uri)
             super(source, name)
             @version_uri = version_uri
-            @version_metadata, @version = nil, nil
-            @version_manifest, @dependencies = nil, nil
+
+            @cache_path = source.version_cache_path(self, version_uri)
+            @metadata_cache_path = cache_path.join('version.json')
+            @package_cache_path = cache_path.join('package')
+            @install_path = root_module.install_path.join(name)
+
+            @version_metadata = nil
+            @version_manifest = nil
           end
 
           def cache_version!
@@ -41,8 +48,7 @@ module Librarian
 
           def cache_version_metadata!
             source.cache_version_metadata!(self, version_uri)
-            path = source.version_metadata_cache_path(self, version_uri)
-            JSON.parse(path.read)
+            JSON.parse(metadata_cache_path.read)
           end
 
           def version_manifest
@@ -51,15 +57,12 @@ module Librarian
 
           def cache_version_manifest!
             source.cache_version_package!(self, version_uri, version_metadata['file'])
-            package_cache_path = source.version_package_cache_path(self, version_uri)
             manifest_path = manifest_path(package_cache_path)
             read_manifest(manifest_path)
           end
 
           def install!
             debug { "Installing #{name}-#{version}" }
-            cache_path = source.version_package_cache_path(self, version_uri)
-            install_path = root_module.install_path.join(name)
             if install_path.exist?
               debug { "Deleting #{relative_path_to(install_path)}" }
               install_path.rmtree
