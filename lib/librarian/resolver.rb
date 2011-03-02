@@ -19,7 +19,7 @@ module Librarian
         dependency = queue.shift
         unless manifests.key?(dependency.name)
           debug { "Resolving #{dependency.name}" }
-          dependency.source.cache!(dependency)
+          dependency.source.cache!([dependency])
           manifest = dependency.source.manifests(dependency).first
           subdeps = manifest.
             dependencies.
