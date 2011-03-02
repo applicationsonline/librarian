@@ -30,7 +30,7 @@ module Librarian
           manifest = dependency.manifests.first
           subdeps = manifest.
             dependencies.
-            select{|d| !manifests.key?(d.name)}.
+            reject{|d| manifests.key?(d.name)}.
             map{|d| Dependency.new(d.name, d.requirement.as_list, source)}
           queue.concat(subdeps)
           manifests[dependency.name] = manifest
