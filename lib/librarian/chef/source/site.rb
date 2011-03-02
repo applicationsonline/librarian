@@ -3,10 +3,10 @@ require 'pathname'
 require 'uri'
 require 'net/http'
 require 'json'
-require 'yaml'
 require 'digest'
 
 require 'librarian/manifest'
+require 'librarian/chef/manifest'
 require 'librarian/chef/particularity'
 
 module Librarian
@@ -14,9 +14,7 @@ module Librarian
     module Source
       class Site
 
-        class Manifest < Librarian::Manifest
-
-          MANIFESTS = %w(metadata.json metadata.yml metadata.yaml)
+        class Manifest < Manifest
 
           attr_reader :version_uri
 
@@ -52,15 +50,8 @@ module Librarian
           def cache_version_manifest!
             source.cache_version_package!(self, version_uri, version_metadata['file'])
             package_cache_path = source.version_package_cache_path(self, version_uri)
-            manifest_path = MANIFESTS.map{|p| package_cache_path.join(p)}.find{|p| p.exist?}
+            manifest_path = manifest_path(package_cache_path)
             read_manifest(manifest_path)
-          end
-
-          def read_manifest(manifest_path)
-            case manifest_path.extname
-            when ".json" then JSON.parse(manifest_path.read)
-            when ".yml", ".yaml" then YAML.load(manifest_path.read)
-            end
           end
 
         end
