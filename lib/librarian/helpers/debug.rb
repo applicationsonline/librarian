@@ -15,7 +15,9 @@ module Librarian
       end
 
       def debug
-        root_module.ui.debug "[Librarian] #{yield}"
+        if root_module.ui
+          root_module.ui.debug "[Librarian] #{yield}"
+        end
       end
 
     end
