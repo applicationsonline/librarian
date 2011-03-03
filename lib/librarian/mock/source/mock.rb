@@ -26,7 +26,7 @@ module Librarian
               def spec(name, &block)
                 @source[name] ||= []
                 Spec.new(@source[name]).instance_eval(&block) if block
-                @source[name].sort! {|a, b| Gem::Version(a) <=> Gem::Version(b)}
+                @source[name].sort! {|a, b| Gem::Version(a) <=> Gem::Version(b)}.reverse!
               end
             end
             class Spec
