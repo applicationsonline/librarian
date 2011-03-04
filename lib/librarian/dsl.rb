@@ -25,29 +25,40 @@ module Librarian
         end
       end
 
+      define_method(:source_types) { [] }
+
       def source(options)
         name = options.keys.first
         type = options[name]
-        types = respond_to?(:source_types) ? source_types : []
+        types = source_types
         types << [name, type]
         singleton_class = class << self; self end
         singleton_class.instance_eval do
           define_method(:source_types) { types }
         end
       end
+
+      define_method(:source_shortcuts) { {} }
+
+      def shortcut(options)
+        name = options.keys.first
+        instance = options[name]
+        instances = source_shortcuts
+        instances[name] = instance
+        singleton_class = class << self; self end
+        singleton_class.instance_eval do
+          define_method(:source_shortcuts) { instances }
+        end
+      end
+
+      def delegate_to_class(*names)
+        names.each do |name|
+          define_method(name) { self.class.send(name) }
+        end
+      end
     end
 
-    def dependency_name
-      self.class.dependency_name
-    end
-
-    def dependency_type
-      self.class.dependency_type
-    end
-
-    def source_types
-      self.class.source_types
-    end
+    delegate_to_class :dependency_name, :dependency_type, :source_types, :source_shortcuts
 
     def run(specfile = nil)
       Target.new(dependency_name, dependency_type, source_types).tap do |target|
