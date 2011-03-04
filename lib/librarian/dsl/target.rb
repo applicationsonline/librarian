@@ -31,16 +31,11 @@ module Librarian
         @dependencies << dep
       end
 
-      def source(name, param = nil, options = {})
+      def source(name, param = nil, options = {}, &block)
         name, param, options = *normalize_source_options(name, param, options)
         source = source_from_params(name, param, options)
-        if !block_given?
+        scope_or_directive(block) do
           @sources = @sources.dup << source
-        else
-          scope do
-            @sources = @sources.dup << source
-            yield
-          end
         end
       end
 
@@ -55,6 +50,17 @@ module Librarian
       ensure
         SCOPABLES.reverse.each do |scopable|
           instance_variable_set(:"@#{scopable}", currents[scopable])
+        end
+      end
+
+      def scope_or_directive(scoped_block = nil)
+        unless scoped_block
+          yield
+        else
+          scope do
+            yield
+            scoped_block.call
+          end
         end
       end
 
