@@ -39,7 +39,7 @@ module Librarian
         end
       end
 
-      private
+    private
 
       def scope
         currents = { }
