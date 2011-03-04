@@ -6,7 +6,7 @@ module Librarian
 
       attr_reader :dependency_name, :dependency_type
       attr_reader :source_types, :source_types_map, :source_type_names
-      attr_reader :dependencies, *SCOPABLES
+      attr_reader :dependencies, :source_cache, *SCOPABLES
 
       def initialize(dependency_name, dependency_type, source_types)
         @dependency_name = dependency_name
@@ -15,6 +15,7 @@ module Librarian
         @source_types_map = Hash[source_types]
         @source_type_names = source_types.map{|t| t[0]}
         @dependencies = []
+        @source_cache = {}
         SCOPABLES.each do |scopable|
           instance_variable_set(:"@#{scopable}", [])
         end
@@ -32,8 +33,7 @@ module Librarian
 
       def source(name, param = nil, options = {})
         name, param, options = *normalize_source_options(name, param, options)
-        type = source_types_map[name]
-        source = type.new(param, options)
+        source = source_from_params(name, param, options)
         if !block_given?
           @sources = @sources.dup << source
         else
@@ -80,7 +80,12 @@ module Librarian
         unless source_parts = extract_source_parts(options)
           nil
         else
-          name, param, options = *source_parts
+          source_from_params(*source_parts)
+        end
+      end
+
+      def source_from_params(name, param, options)
+        source_cache[[name, param, options]] ||= begin
           type = source_types_map[name]
           type.new(param, options)
         end
