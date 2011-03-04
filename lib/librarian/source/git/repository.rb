@@ -1,3 +1,5 @@
+require 'librarian/helpers/debug'
+
 module Librarian
   module Source
     class Git
@@ -12,6 +14,8 @@ module Librarian
             git
           end
         end
+
+        include Helpers::Debug
 
         attr_reader :root_module, :path
 
@@ -45,14 +49,6 @@ module Librarian
           text = "git #{text}"
           debug { "Running `#{text}` in #{relative_path_to(Dir.pwd)}" }
           `#{text}`
-        end
-
-        def relative_path_to(path)
-          root_module.project_relative_path_to(path)
-        end
-
-        def debug
-          root_module.ui.debug "[Librarian] #{yield}"
         end
 
         def within
