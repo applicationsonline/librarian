@@ -1,3 +1,4 @@
+require 'librarian/dependency'
 require 'librarian/dsl/receiver'
 require 'librarian/dsl/target'
 
@@ -14,9 +15,9 @@ module Librarian
 
     private
 
-      def dependency(options)
-        dependency_name = options.keys.first
-        dependency_type = options[dependency_name]
+      def dependency(name)
+        dependency_name = name
+        dependency_type = Dependency
         singleton_class = class << self; self end
         singleton_class.instance_eval do
           define_method(:dependency_name) { dependency_name }

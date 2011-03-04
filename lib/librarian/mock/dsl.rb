@@ -4,7 +4,7 @@ require 'librarian/mock/source'
 module Librarian
   module Mock
     class Dsl < Librarian::Dsl
-      dependency :dep => Dependency
+      dependency :dep
 
       source :src => Source::Mock
     end
