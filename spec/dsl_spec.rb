@@ -114,6 +114,56 @@ module Librarian
           spec.dependencies.first.source.should == spec.sources.first
         end
 
+        it "should run with a shortcut source hash definition" do
+          spec = Dsl.run do
+            source :b, :src => 'source-b'
+            dep 'dependency-1', :source => :b
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'dependency-1'
+          spec.dependencies.first.source.name.should == 'source-b'
+          spec.sources.should be_empty
+        end
+
+        it "should run with a shortcut source block definition" do
+          spec = Dsl.run do
+            source :b, proc { src 'source-b' }
+            dep 'dependency-1', :source => :b
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'dependency-1'
+          spec.dependencies.first.source.name.should == 'source-b'
+          spec.sources.should be_empty
+        end
+
+        it "should run with a default shortcut source hash definition" do
+          spec = Dsl.run do
+            source :b, :src => 'source-b'
+            source :b
+            dep 'dependency-1'
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'dependency-1'
+          spec.dependencies.first.source.name.should == 'source-b'
+          spec.sources.should_not be_empty
+          spec.sources.size.should == 1
+          spec.sources.first.name.should == 'source-b'
+        end
+
+        it "should run with a default shortcut source block definition" do
+          spec = Dsl.run do
+            source :b, proc { src 'source-b' }
+            source :b
+            dep 'dependency-1'
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'dependency-1'
+          spec.dependencies.first.source.name.should == 'source-b'
+          spec.sources.should_not be_empty
+          spec.sources.size.should == 1
+          spec.sources.first.name.should == 'source-b'
+        end
+
       end
 
     end
