@@ -40,6 +40,17 @@ module Librarian
           spec.sources.should be_empty
         end
 
+        it "should run with a shortcut source" do
+          spec = Dsl.run do
+            dep 'dependency-1',
+              :source => :a
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'dependency-1'
+          spec.dependencies.first.source.name.should == 'source-a'
+          spec.sources.should be_empty
+        end
+
         it "should run with a block hash source" do
           spec = Dsl.run do
             source :src => 'source-1' do
@@ -85,6 +96,19 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-1'
+          spec.sources.should_not be_empty
+          spec.sources.size.should == 1
+          spec.dependencies.first.source.should == spec.sources.first
+        end
+
+        it "should run with a default shortcut source" do
+          spec = Dsl.run do
+            source :a
+            dep 'dependency-1'
+          end
+          spec.dependencies.should_not be_empty
+          spec.dependencies.first.name.should == 'dependency-1'
+          spec.dependencies.first.source.name.should == 'source-a'
           spec.sources.should_not be_empty
           spec.sources.size.should == 1
           spec.dependencies.first.source.should == spec.sources.first

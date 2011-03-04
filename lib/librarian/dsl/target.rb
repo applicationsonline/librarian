@@ -5,15 +5,16 @@ module Librarian
       SCOPABLES = [:sources]
 
       attr_reader :dependency_name, :dependency_type
-      attr_reader :source_types, :source_types_map, :source_type_names
+      attr_reader :source_types, :source_types_map, :source_type_names, :source_shortcuts
       attr_reader :dependencies, :source_cache, *SCOPABLES
 
-      def initialize(dependency_name, dependency_type, source_types)
-        @dependency_name = dependency_name
-        @dependency_type = dependency_type
-        @source_types = source_types
+      def initialize(dsl)
+        @dependency_name = dsl.dependency_name
+        @dependency_type = dsl.dependency_type
+        @source_types = dsl.source_types
         @source_types_map = Hash[source_types]
         @source_type_names = source_types.map{|t| t[0]}
+        @source_shortcuts = dsl.source_shortcuts
         @dependencies = []
         @source_cache = {}
         SCOPABLES.each do |scopable|
@@ -67,18 +68,27 @@ module Librarian
       def normalize_source_options(name, param, options)
         if name.is_a?(Hash)
           extract_source_parts(name)
+        elsif param.nil?
+          extract_source_parts(source_shortcuts[name])
         else
           [name, param, options]
         end
       end
 
+      # HACK:
+      #   :source is a magic string!
+      # NOTE:
+      #   this method recurses when it finds a shortcut hash source.
       def extract_source_parts(options)
-        unless name = source_type_names.find{|name| options.key?(name)}
-          nil
-        else
+        if options.key?(:source)
+          options = source_shortcuts[options[:source]]
+          extract_source_parts(options)
+        elsif name = source_type_names.find{|name| options.key?(name)}
           options = options.dup
           param = options.delete(name)
           [name, param, options]
+        else
+          nil
         end
       end
 

@@ -40,11 +40,9 @@ module Librarian
 
       define_method(:source_shortcuts) { {} }
 
-      def shortcut(options)
-        name = options.keys.first
-        instance = options[name]
+      def shortcut(name, options)
         instances = source_shortcuts
-        instances[name] = instance
+        instances[name] = options
         singleton_class = class << self; self end
         singleton_class.instance_eval do
           define_method(:source_shortcuts) { instances }
@@ -61,7 +59,7 @@ module Librarian
     delegate_to_class :dependency_name, :dependency_type, :source_types, :source_shortcuts
 
     def run(specfile = nil)
-      Target.new(dependency_name, dependency_type, source_types).tap do |target|
+      Target.new(self).tap do |target|
         receiver = Receiver.new(target)
         if block_given?
           receiver.run(&Proc.new)

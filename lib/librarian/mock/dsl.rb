@@ -7,6 +7,8 @@ module Librarian
       dependency :dep
 
       source :src => Source::Mock
+
+      shortcut :a, :src => 'source-a'
     end
   end
 end
