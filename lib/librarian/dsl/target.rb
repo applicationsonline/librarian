@@ -2,6 +2,24 @@ module Librarian
   class Dsl
     class Target
 
+      class SourceShortcutDefinitionReceiver
+        def initialize(target)
+          singleton_class = class << self; self end
+          singleton_class.class_eval do
+            define_method(:source) do |options|
+              target.source_from_options(options)
+            end
+            target.source_types.each do |source_type|
+              name = source_type[0]
+              define_method(name) do |*args|
+                args.push({}) unless Hash === args.last
+                target.source_from_params(name, *args)
+              end
+            end
+          end
+        end
+      end
+
       SCOPABLES = [:sources]
 
       attr_reader :dependency_name, :dependency_type
@@ -14,11 +32,14 @@ module Librarian
         @source_types = dsl.source_types
         @source_types_map = Hash[source_types]
         @source_type_names = source_types.map{|t| t[0]}
-        @source_shortcuts = dsl.source_shortcuts
-        @dependencies = []
         @source_cache = {}
+        @source_shortcuts = {}
+        @dependencies = []
         SCOPABLES.each do |scopable|
           instance_variable_set(:"@#{scopable}", [])
+        end
+        dsl.source_shortcuts.each do |name, param|
+          define_source_shortcut(name, param)
         end
       end
 
@@ -32,15 +53,22 @@ module Librarian
         @dependencies << dep
       end
 
-      def source(name, param = nil, options = {}, &block)
-        name, param, options = *normalize_source_options(name, param, options)
-        source = source_from_params(name, param, options)
-        scope_or_directive(block) do
-          @sources = @sources.dup << source
+      def source(name, param = nil, options = nil, &block)
+        if !(Hash === name) && [Array, Hash, Proc].any?{|c| c === param} && !options && !block
+          define_source_shortcut(name, param)
+        elsif !(Hash === name) && !param && !options
+          source = source_shortcuts[name]
+          scope_or_directive(block) do
+            @sources = @sources.dup << source
+          end
+        else
+          name, param, options = *normalize_source_options(name, param, options || {})
+          source = source_from_params(name, param, options)
+          scope_or_directive(block) do
+            @sources = @sources.dup << source
+          end
         end
       end
-
-    private
 
       def scope
         currents = { }
@@ -68,22 +96,13 @@ module Librarian
       def normalize_source_options(name, param, options)
         if name.is_a?(Hash)
           extract_source_parts(name)
-        elsif param.nil?
-          extract_source_parts(source_shortcuts[name])
         else
           [name, param, options]
         end
       end
 
-      # HACK:
-      #   :source is a magic string!
-      # NOTE:
-      #   this method recurses when it finds a shortcut hash source.
       def extract_source_parts(options)
-        if options.key?(:source)
-          options = source_shortcuts[options[:source]]
-          extract_source_parts(options)
-        elsif name = source_type_names.find{|name| options.key?(name)}
+        if name = source_type_names.find{|name| options.key?(name)}
           options = options.dup
           param = options.delete(name)
           [name, param, options]
@@ -93,10 +112,12 @@ module Librarian
       end
 
       def source_from_options(options)
-        unless source_parts = extract_source_parts(options)
-          nil
-        else
+        if options[:source]
+          source_shortcuts[options[:source]]
+        elsif source_parts = extract_source_parts(options)
           source_from_params(*source_parts)
+        else
+          nil
         end
       end
 
@@ -105,6 +126,23 @@ module Librarian
           type = source_types_map[name]
           type.new(param, options)
         end
+      end
+
+      def source_from_source_shortcut_definition(definition)
+        case definition
+        when Array
+          source_from_params(*definition)
+        when Hash
+          source_from_options(definition)
+        when Proc
+          receiver = SourceShortcutDefinitionReceiver.new(self)
+          receiver.instance_eval(&definition)
+        end
+      end
+
+      def define_source_shortcut(name, definition)
+        source = source_from_source_shortcut_definition(definition)
+        source_shortcuts[name] = source
       end
 
     end
