@@ -9,6 +9,7 @@ module Librarian
     end
 
     class << self
+
       def run(specfile = nil, &block)
         new.run(specfile, &block)
       end
@@ -54,6 +55,7 @@ module Librarian
           define_method(name) { self.class.send(name) }
         end
       end
+
     end
 
     delegate_to_class :dependency_name, :dependency_type, :source_types, :source_shortcuts
