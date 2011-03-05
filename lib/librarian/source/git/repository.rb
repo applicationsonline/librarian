@@ -46,7 +46,7 @@ module Librarian
       private
 
         def run!(text)
-          text = "git #{text}"
+          text = "git #{text} --quiet"
           debug { "Running `#{text}` in #{relative_path_to(Dir.pwd)}" }
           `#{text}`
         end
