@@ -1,13 +1,15 @@
 module Librarian
   class Specfile
 
-    attr_reader :path, :dependencies, :source
+    attr_reader :dsl_class, :path, :dependencies, :source
 
     def initialize(dsl_class, path)
+      @dsl_class = dsl_class
       @path = path
-      spec = dsl_class.run(self)
-      @dependencies = spec.dependencies
-      @source = spec.source
+    end
+
+    def read
+      dsl_class.run(self)
     end
 
   end

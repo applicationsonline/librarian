@@ -23,7 +23,9 @@ module Librarian
       @root_module = root_module
     end
 
-    def resolve(source, dependencies)
+    def resolve(spec)
+      source = spec.source
+      dependencies = spec.dependencies
       manifests = {}
       queue = dependencies.dup
       until queue.empty?

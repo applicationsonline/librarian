@@ -65,10 +65,10 @@ module Librarian
   end
 
   def install!
-    specfile = Specfile.new(dsl_class, specfile_path)
+    spec = Specfile.new(dsl_class, specfile_path).read
     resolver = Resolver.new(self)
-    manifests = resolver.resolve(specfile.source, specfile.dependencies)
-    if resolver.resolved?(specfile.dependencies, manifests)
+    manifests = resolver.resolve(spec)
+    if resolver.resolved?(spec.dependencies, manifests)
       debug { "Resolved!" }
     else
       debug { "Mismatch!" }
