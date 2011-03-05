@@ -37,7 +37,7 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-1'
-          spec.sources.should be_empty
+          spec.source.should be_nil
         end
 
         it "should run with a shortcut source" do
@@ -48,7 +48,7 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-a'
-          spec.sources.should be_empty
+          spec.source.should be_nil
         end
 
         it "should run with a block hash source" do
@@ -60,7 +60,7 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-1'
-          spec.sources.should be_empty
+          spec.source.should be_nil
         end
 
         it "should run with a block named source" do
@@ -72,7 +72,7 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-1'
-          spec.sources.should be_empty
+          spec.source.should be_nil
         end
 
         it "should run with a default hash source" do
@@ -83,9 +83,8 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-1'
-          spec.sources.should_not be_empty
-          spec.sources.size.should == 1
-          spec.dependencies.first.source.should == spec.sources.first
+          spec.source.should_not be_nil
+          spec.dependencies.first.source.should == spec.source
         end
 
         it "should run with a default named source" do
@@ -96,9 +95,8 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-1'
-          spec.sources.should_not be_empty
-          spec.sources.size.should == 1
-          spec.dependencies.first.source.should == spec.sources.first
+          spec.source.should_not be_nil
+          spec.dependencies.first.source.should == spec.source
         end
 
         it "should run with a default shortcut source" do
@@ -109,9 +107,8 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-a'
-          spec.sources.should_not be_empty
-          spec.sources.size.should == 1
-          spec.dependencies.first.source.should == spec.sources.first
+          spec.source.should_not be_nil
+          spec.dependencies.first.source.should == spec.source
         end
 
         it "should run with a shortcut source hash definition" do
@@ -122,7 +119,7 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-b'
-          spec.sources.should be_empty
+          spec.source.should be_nil
         end
 
         it "should run with a shortcut source block definition" do
@@ -133,7 +130,7 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-b'
-          spec.sources.should be_empty
+          spec.source.should be_nil
         end
 
         it "should run with a default shortcut source hash definition" do
@@ -145,9 +142,8 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-b'
-          spec.sources.should_not be_empty
-          spec.sources.size.should == 1
-          spec.sources.first.name.should == 'source-b'
+          spec.source.should_not be_nil
+          spec.source.name.should == 'source-b'
         end
 
         it "should run with a default shortcut source block definition" do
@@ -159,9 +155,8 @@ module Librarian
           spec.dependencies.should_not be_empty
           spec.dependencies.first.name.should == 'dependency-1'
           spec.dependencies.first.source.name.should == 'source-b'
-          spec.sources.should_not be_empty
-          spec.sources.size.should == 1
-          spec.sources.first.name.should == 'source-b'
+          spec.source.should_not be_nil
+          spec.source.name.should == 'source-b'
         end
 
       end

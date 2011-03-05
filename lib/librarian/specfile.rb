@@ -7,7 +7,7 @@ module Librarian
       @path = path
       spec = dsl_class.run(self)
       @dependencies = spec.dependencies
-      @source = spec.sources.first
+      @source = spec.source
     end
 
   end

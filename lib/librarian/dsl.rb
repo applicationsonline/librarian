@@ -66,7 +66,7 @@ module Librarian
         else
           receiver.run(specfile)
         end
-      end
+      end.to_spec
     end
 
   end

@@ -23,7 +23,7 @@ module Librarian
           dep 'butter'
         end
         resolver = Resolver.new(Mock)
-        manifests = resolver.resolve(spec.sources.first, spec.dependencies)
+        manifests = resolver.resolve(spec.source, spec.dependencies)
         resolver.resolved?(spec.dependencies, manifests).should be_true
       end
 
@@ -53,7 +53,7 @@ module Librarian
           end
         end
         resolver = Resolver.new(Mock)
-        manifests = resolver.resolve(spec.sources.first, spec.dependencies)
+        manifests = resolver.resolve(spec.source, spec.dependencies)
         resolver.resolved?(spec.dependencies, manifests).should be_true
       end
 

@@ -1,3 +1,5 @@
+require 'librarian/spec'
+
 module Librarian
   class Dsl
     class Target
@@ -41,6 +43,10 @@ module Librarian
         dsl.source_shortcuts.each do |name, param|
           define_source_shortcut(name, param)
         end
+      end
+
+      def to_spec
+        Spec.new(@sources.first, @dependencies)
       end
 
       def dependency(name, *args)
