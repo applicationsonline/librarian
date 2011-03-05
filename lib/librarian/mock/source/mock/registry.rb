@@ -22,9 +22,13 @@ module Librarian
               def initialize(source)
                 @source = source
               end
-              def spec(name, &block)
+              def spec(name, version = nil, &block)
                 @source[name] ||= []
-                Spec.new(@source[name]).instance_eval(&block) if block
+                unless version
+                  Spec.new(@source[name]).instance_eval(&block) if block
+                else
+                  Spec.new(@source[name]).version(version, &block)
+                end
                 @source[name].sort! {|a, b| Gem::Version(a) <=> Gem::Version(b)}.reverse!
               end
             end

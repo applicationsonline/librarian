@@ -13,9 +13,7 @@ module Librarian
       it "should work" do
         Mock::Source::Mock::Registry.merge! do
           source 'source-1' do
-            spec 'butter' do
-              version '1.1'
-            end
+            spec 'butter', '1.1'
           end
         end
         spec = Mock::Dsl.run do
@@ -34,15 +32,11 @@ module Librarian
       it "should work" do
         Mock::Source::Mock::Registry.merge! do
           source 'source-1' do
-            spec 'butter' do
-              version '1.1'
-            end
+            spec 'butter', '1.1'
           end
           source 'source-2' do
-            spec 'jam' do
-              version '1.2' do
-                dependency 'butter', '>= 1.0'
-              end
+            spec 'jam', '1.2' do
+              dependency 'butter', '>= 1.0'
             end
           end
         end
