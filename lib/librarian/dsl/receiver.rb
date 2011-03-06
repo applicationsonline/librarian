@@ -26,13 +26,17 @@ module Librarian
         else
           case specfile
           when Specfile
-            instance_eval(specfile.path.read, specfile.path.to_s, 1)
+            eval(specfile.path.read, instance_binding, specfile.path.to_s, 1)
           when String
-            instance_eval(specfile)
+            eval(specfile, instance_binding)
           when Proc
             instance_eval(&specfile)
           end
         end
+      end
+
+      def instance_binding
+        binding
       end
 
     end
