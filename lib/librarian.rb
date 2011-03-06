@@ -17,7 +17,7 @@ module Librarian
   include Support::AbstractMethod
   include Helpers::Debug
 
-  class Error < Exception
+  class Error < StandardError
   end
 
   attr_accessor :ui
