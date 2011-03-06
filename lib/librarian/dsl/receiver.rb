@@ -1,3 +1,5 @@
+require 'librarian/specfile'
+
 module Librarian
   class Dsl
     class Receiver
