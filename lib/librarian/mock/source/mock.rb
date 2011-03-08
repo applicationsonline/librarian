@@ -19,6 +19,8 @@ module Librarian
           def fetch_dependencies!
             manifest[:dependencies]
           end
+          def install!
+          end
         end
 
         include Particularity
