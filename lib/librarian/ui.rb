@@ -2,19 +2,19 @@ require 'rubygems/user_interaction'
 
 module Librarian
   class UI
-    def warn
+    def warn(message = nil)
     end
 
-    def debug
+    def debug(message = nil)
     end
 
-    def error
+    def error(message = nil)
     end
 
-    def info
+    def info(message = nil)
     end
 
-    def confirm
+    def confirm(message = nil)
     end
 
     class Shell < UI
@@ -26,24 +26,24 @@ module Librarian
         @debug = ENV['DEBUG']
       end
 
-      def debug
-        @shell.say(yield) if @debug && !@quiet
+      def debug(message = nil)
+        @shell.say(message || yield) if @debug && !@quiet
       end
 
-      def info
-        @shell.say(yield) if !@quiet
+      def info(message = nil)
+        @shell.say(message || yield) if !@quiet
       end
 
-      def confirm
-        @shell.say(yield, :green) if !@quiet
+      def confirm(message = nil)
+        @shell.say(message || yield, :green) if !@quiet
       end
 
-      def warn
-        @shell.say(yield, :yellow)
+      def warn(message = nil)
+        @shell.say(message || yield, :yellow)
       end
 
-      def error
-        @shell.say(yield, :red)
+      def error(message = nil)
+        @shell.say(message || yield, :red)
       end
 
       def be_quiet!
