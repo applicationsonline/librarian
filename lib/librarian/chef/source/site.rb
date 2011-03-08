@@ -159,7 +159,9 @@ module Librarian
           dependency_cache_path = cache_path.join(dependency.name)
           dependency_cache_path.mkpath
           dep_uri = dependency_uri(dependency)
+          debug { "Caching #{dep_uri}" }
           metadata_blob = Net::HTTP.get(URI.parse(dep_uri))
+          JSON.parse(metadata_blob) # check that it's JSON
           metadata_cache_path(dependency).open('wb') do |f|
             f.write(metadata_blob)
           end
@@ -168,7 +170,9 @@ module Librarian
         def cache_version_metadata!(dependency, version_uri)
           version_cache_path = version_cache_path(dependency, version_uri)
           version_cache_path.mkpath
+          debug { "Caching #{version_uri}" }
           version_metadata_blob = Net::HTTP.get(URI.parse(version_uri))
+          JSON.parse(version_metadata_blob) # check that it's JSON
           version_metadata_cache_path(dependency, version_uri).open('wb') do |f|
             f.write(version_metadata_blob)
           end
