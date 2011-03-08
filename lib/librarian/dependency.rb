@@ -21,5 +21,9 @@ module Librarian
       source.manifests(self)
     end
 
+    def satisfied_by?(manifest)
+      manifest.satisfies?(self)
+    end
+
   end
 end

@@ -27,6 +27,10 @@ module Librarian
       @dependencies ||= _normalize_dependencies(fetch_dependencies!)
     end
 
+    def satisfies?(dependency)
+      dependency.requirement.satisfied_by?(version)
+    end
+
   private
 
     def root_module
