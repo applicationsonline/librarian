@@ -29,7 +29,7 @@ module Librarian
                 else
                   Spec.new(@source[name]).version(version, &block)
                 end
-                @source[name].sort! {|a, b| Gem::Version(a) <=> Gem::Version(b)}.reverse!
+                @source[name].sort! {|a, b| Gem::Version.new(a[:version]) <=> Gem::Version.new(b[:version])}.reverse!
               end
             end
 
