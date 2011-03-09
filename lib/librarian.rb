@@ -68,13 +68,12 @@ module Librarian
     spec = Specfile.new(dsl_class, specfile_path).read
     resolver = Resolver.new(self)
     manifests = resolver.resolve(spec)
-    if resolver.resolved?(spec.dependencies, manifests)
-      debug { "Resolved!" }
+    unless manifests
+      ui.info { "Could not resolve the dependencies." }
     else
-      debug { "Mismatch!" }
-    end
-    manifests.each do |manifest|
-      manifest.install!
+      manifests.each do |manifest|
+        manifest.install!
+      end
     end
   end
 
