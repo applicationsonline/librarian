@@ -25,5 +25,9 @@ module Librarian
       manifest.satisfies?(self)
     end
 
+    def to_s
+      "#{name} (#{requirement}) <#{source}>"
+    end
+
   end
 end
