@@ -145,12 +145,12 @@ module Librarian
         manifests_hash = Hash[manifests.map{|m| [m.name, m]}]
         deps_match = dependencies.all? do |dependency|
           manifest = manifests_hash[dependency.name]
-          dependency.requirement.satisfied_by?(manifest.version)
+          dependency.satisfied_by?(manifest)
         end
         mans_match = manifests.all? do |manifest|
           manifest.dependencies.all? do |dependency|
             manifest = manifests_hash[dependency.name]
-            dependency.requirement.satisfied_by?(manifest.version)
+            dependency.satisfied_by?(manifest)
           end
         end
         deps_match && mans_match
