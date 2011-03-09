@@ -41,7 +41,7 @@ module Librarian
           scope do
             if manifests.key?(dependency.name)
               unless dependency.satisfied_by?(manifests[dependency.name])
-                debug { "Conflicts with #{manifest}" }
+                debug { "Conflicts with #{manifests[dependency.name]}" }
                 failure = true
               else
                 debug { "Accords with all prior constraints" }
@@ -77,10 +77,17 @@ module Librarian
                         end
                         if resolution
                           debug { "Resolved #{dependency} at #{manifest}" }
+                        else
+                          debug { "Backtracking from #{manifest}" }
                         end
                       end
                     end
                   end
+                end
+                if resolution
+                  debug { "Resolved #{dependency}" }
+                else
+                  debug { "Failed to resolve #{dependency}" }
                 end
               end
               unless resolution
