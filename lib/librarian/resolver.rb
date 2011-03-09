@@ -51,29 +51,33 @@ module Librarian
               debug { "No known prior constraints" }
               resolution = nil
               related_dependencies = dependencies.select{|d| d.name == dependency.name}
-              debug { "Checking manifests" }
-              scope do
-                dependency.manifests.each do |manifest|
-                  unless resolution
-                    debug { "Checking #{manifest}" }
-                    scope do
-                      #debug { "Dependencies are "}
-                      if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
-                        d = dependencies.dup
-                        m = manifests.merge(dependency.name => manifest)
-                        a = manifest.dependencies.map { |d|
-                          d.source ? d :
-                          !dependency_source_map.key?(d.name) ? Dependency.new(d.name, d.requirement, source) :
-                          Dependency.new(d.name, d.requirement, dependency_source_map[d.name])
-                        }
-                        a.each do |d|
-                          debug { "Scheduling #{d}" }
+              unless dependency.manifests
+                debug { "No known manifests" }
+              else
+                debug { "Checking manifests" }
+                scope do
+                  dependency.manifests.each do |manifest|
+                    unless resolution
+                      debug { "Checking #{manifest}" }
+                      scope do
+                        #debug { "Dependencies are "}
+                        if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
+                          d = dependencies.dup
+                          m = manifests.merge(dependency.name => manifest)
+                          a = manifest.dependencies.map { |d|
+                            d.source ? d :
+                            !dependency_source_map.key?(d.name) ? Dependency.new(d.name, d.requirement, source) :
+                            Dependency.new(d.name, d.requirement, dependency_source_map[d.name])
+                          }
+                          a.each do |d|
+                            debug { "Scheduling #{d}" }
+                          end
+                          q = queue + a
+                          resolution = resolve(d, m, q)
                         end
-                        q = queue + a
-                        resolution = resolve(d, m, q)
-                      end
-                      if resolution
-                        debug { "Resolved #{dependency} at #{manifest}" }
+                        if resolution
+                          debug { "Resolved #{dependency} at #{manifest}" }
+                        end
                       end
                     end
                   end
@@ -130,18 +134,20 @@ module Librarian
     end
 
     def resolved?(dependencies, manifests)
-      manifests_hash = Hash[manifests.map{|m| [m.name, m]}]
-      deps_match = dependencies.all? do |dependency|
-        manifest = manifests_hash[dependency.name]
-        dependency.requirement.satisfied_by?(manifest.version)
-      end
-      mans_match = manifests.all? do |manifest|
-        manifest.dependencies.all? do |dependency|
+      manifests && begin
+        manifests_hash = Hash[manifests.map{|m| [m.name, m]}]
+        deps_match = dependencies.all? do |dependency|
           manifest = manifests_hash[dependency.name]
           dependency.requirement.satisfied_by?(manifest.version)
         end
+        mans_match = manifests.all? do |manifest|
+          manifest.dependencies.all? do |dependency|
+            manifest = manifests_hash[dependency.name]
+            dependency.requirement.satisfied_by?(manifest.version)
+          end
+        end
+        deps_match && mans_match
       end
-      deps_match && mans_match
     end
 
   end
