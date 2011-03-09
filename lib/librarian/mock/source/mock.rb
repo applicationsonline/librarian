@@ -36,7 +36,11 @@ module Librarian
         end
 
         def manifests(dependency)
-          registry[dependency.name].map{|v| Manifest.new(self, dependency.name, v)}
+          if d = registry[dependency.name]
+            d.map{|v| Manifest.new(self, dependency.name, v)}
+          else
+            nil
+          end
         end
 
         def cache!(dependencies)
