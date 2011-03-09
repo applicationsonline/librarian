@@ -18,6 +18,13 @@ module Librarian
       def dsl_class
         Dsl
       end
+
+      def registry(options = nil, &block)
+        registry = Source::Mock::Registry
+        registry.clear! if options && options[:clear]
+        registry.merge!(&block) if block
+        registry
+      end
     end
 
     extend Overrides

@@ -5,13 +5,13 @@ module Librarian
   describe Resolver do
 
     before do
-      Mock::Source::Mock::Registry.clear!
+      Mock.registry.clear!
     end
 
     context "a simple specfile" do
 
       it "should work" do
-        Mock::Source::Mock::Registry.merge! do
+        Mock.registry.merge! do
           source 'source-1' do
             spec 'butter', '1.1'
           end
@@ -30,7 +30,7 @@ module Librarian
     context "a specfile with a dep from one src depending on a dep from another src" do
 
       it "should work" do
-        Mock::Source::Mock::Registry.merge! do
+        Mock.registry.merge! do
           source 'source-1' do
             spec 'butter', '1.1'
           end
@@ -56,7 +56,7 @@ module Librarian
     context "a specfile with a dep depending on a nonexistent dep" do
 
       it "should not work" do
-        Mock::Source::Mock::Registry.merge! do
+        Mock.registry.merge! do
           source 'source-1' do
             spec 'jam', '1.2' do
               dependency 'butter', '>= 1.0'
@@ -77,7 +77,7 @@ module Librarian
     context "a specfile with conflicting constraints" do
 
       it "should not work" do
-        Mock::Source::Mock::Registry.merge! do
+        Mock.registry.merge! do
           source 'source-1' do
             spec 'butter', '1.0'
             spec 'butter', '1.1'
