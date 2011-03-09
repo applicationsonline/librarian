@@ -27,7 +27,7 @@ module Librarian
       end
 
       def to_s
-        "#{uri} at #{ref || DEFAULTS[:ref]}"
+        "#{uri}##{ref || DEFAULTS[:ref]}"
       end
 
       def cache!(dependencies)

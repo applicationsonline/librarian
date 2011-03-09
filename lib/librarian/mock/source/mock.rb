@@ -42,6 +42,10 @@ module Librarian
         def cache!(dependencies)
         end
 
+        def to_s
+          name
+        end
+
       end
     end
   end

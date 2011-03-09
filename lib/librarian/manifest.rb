@@ -19,6 +19,10 @@ module Librarian
       @dependencies = nil
     end
 
+    def to_s
+      "#{name}/#{version} <#{source}>"
+    end
+
     def version
       @version ||= _normalize_version(fetch_version!)
     end

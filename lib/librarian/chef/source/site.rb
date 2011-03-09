@@ -83,6 +83,10 @@ module Librarian
           @cache_path = nil
         end
 
+        def to_s
+          uri
+        end
+
         def cache!(dependencies)
           cache_path.mkpath
           dependencies.each do |dependency|
