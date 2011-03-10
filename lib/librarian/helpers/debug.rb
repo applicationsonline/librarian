@@ -16,7 +16,8 @@ module Librarian
 
       def debug
         if root_module.ui
-          root_module.ui.debug { "[Librarian] #{yield}" }
+          loc = caller.find{|l| !(l =~ /in `debug'$/)}
+          root_module.ui.debug { "[Librarian] #{yield} [#{loc}]" }
         end
       end
 
