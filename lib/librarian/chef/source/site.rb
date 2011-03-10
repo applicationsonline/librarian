@@ -62,7 +62,7 @@ module Librarian
           end
 
           def install!
-            debug { "Installing #{name}-#{version}" }
+            debug { "Installing #{self}" }
             if install_path.exist?
               debug { "Deleting #{relative_path_to(install_path)}" }
               install_path.rmtree
