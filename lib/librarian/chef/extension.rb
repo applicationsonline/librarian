@@ -16,10 +16,6 @@ module Librarian
       def install_path
         project_path.join('cookbooks')
       end
-
-      def dsl_class
-        Dsl
-      end
     end
 
     extend Overrides

@@ -65,7 +65,7 @@ module Librarian
   end
 
   def install!
-    spec = Specfile.new(dsl_class, specfile_path).read
+    spec = Specfile.new(self, specfile_path).read
     resolver = Resolver.new(self)
     manifests = resolver.resolve(spec)
     unless manifests
@@ -75,6 +75,10 @@ module Librarian
         manifest.install!
       end
     end
+  end
+
+  def dsl_class
+    self::Dsl
   end
 
 private

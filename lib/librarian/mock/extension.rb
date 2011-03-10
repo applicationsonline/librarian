@@ -15,10 +15,6 @@ module Librarian
         nil
       end
 
-      def dsl_class
-        Dsl
-      end
-
       def registry(options = nil, &block)
         registry = Source::Mock::Registry
         registry.clear! if options && options[:clear]
