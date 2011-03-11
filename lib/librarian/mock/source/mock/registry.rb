@@ -1,5 +1,3 @@
-require 'rubygems'
-
 module Librarian
   module Mock
     module Source
@@ -29,7 +27,7 @@ module Librarian
                 else
                   Spec.new(@source[name]).version(version, &block)
                 end
-                @source[name].sort! {|a, b| Gem::Version.new(a[:version]) <=> Gem::Version.new(b[:version])}.reverse!
+                @source[name].sort! {|a, b| Manifest::Version.new(a[:version]) <=> Manifest::Version.new(b[:version])}.reverse!
               end
             end
 

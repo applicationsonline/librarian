@@ -1,8 +1,13 @@
+require 'rubygems'
+
 require 'librarian/helpers/debug'
 require 'librarian/support/abstract_method'
 
 module Librarian
   class Manifest
+
+    class Version < Gem::Version
+    end
 
     include Support::AbstractMethod
     include Helpers::Debug
@@ -42,7 +47,7 @@ module Librarian
     end
 
     def _normalize_version(version)
-      Gem::Version.new(version)
+      Version.new(version)
     end
 
     def _normalize_dependencies(dependencies)

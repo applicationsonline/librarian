@@ -3,11 +3,14 @@ require 'rubygems'
 module Librarian
   class Dependency
 
+    class Requirement < Gem::Requirement
+    end
+
     attr_reader :name, :requirement, :source
 
     def initialize(name, requirement, source)
       @name = name
-      @requirement = Gem::Requirement.create(requirement)
+      @requirement = Requirement.create(requirement)
       @source = source
       @manifests = nil
     end
