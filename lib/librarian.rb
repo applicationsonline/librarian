@@ -9,6 +9,7 @@ require 'librarian/particularity'
 require 'librarian/resolver'
 require 'librarian/source'
 require 'librarian/specfile'
+require 'librarian/lockfile'
 require 'librarian/ui'
 
 module Librarian
