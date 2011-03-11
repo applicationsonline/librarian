@@ -173,27 +173,33 @@ module Librarian
 
         def cache_version_metadata!(dependency, version_uri)
           version_cache_path = version_cache_path(dependency, version_uri)
-          version_cache_path.mkpath
-          debug { "Caching #{version_uri}" }
-          version_metadata_blob = Net::HTTP.get(URI.parse(version_uri))
-          JSON.parse(version_metadata_blob) # check that it's JSON
-          version_metadata_cache_path(dependency, version_uri).open('wb') do |f|
-            f.write(version_metadata_blob)
+          unless version_cache_path.exist?
+            version_cache_path.mkpath
+            debug { "Caching #{version_uri}" }
+            version_metadata_blob = Net::HTTP.get(URI.parse(version_uri))
+            JSON.parse(version_metadata_blob) # check that it's JSON
+            version_metadata_cache_path(dependency, version_uri).open('wb') do |f|
+              f.write(version_metadata_blob)
+            end
           end
         end
 
         def cache_version_package!(dependency, version_uri, file_uri)
-          dependency_cache_path = dependency_cache_path(dependency)
           version_archive_cache_path = version_archive_cache_path(dependency, version_uri)
-          version_archive_cache_path.open('wb') do |f|
-            f.write(Net::HTTP.get(URI.parse(file_uri)))
+          unless version_archive_cache_path.exist?
+            version_archive_cache_path.open('wb') do |f|
+              f.write(Net::HTTP.get(URI.parse(file_uri)))
+            end
           end
-          Dir.chdir(dependency_cache_path) do
-            `tar -xzf #{version_archive_cache_path}`
-          end
-          version_unpacked_temp_path = dependency_cache_path.join(dependency.name)
           version_package_cache_path = version_package_cache_path(dependency, version_uri)
-          FileUtils.move(version_unpacked_temp_path, version_package_cache_path)
+          unless version_package_cache_path.exist?
+            dependency_cache_path = dependency_cache_path(dependency)
+            Dir.chdir(dependency_cache_path) do
+              `tar -xzf #{version_archive_cache_path}`
+            end
+            version_unpacked_temp_path = dependency_cache_path.join(dependency.name)
+            FileUtils.move(version_unpacked_temp_path, version_package_cache_path)
+          end
         end
 
       end
