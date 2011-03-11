@@ -25,6 +25,19 @@ module Librarian
 
         include Particularity
 
+        class << self
+          LOCK_NAME = 'MOCK'
+          def lock_name
+            LOCK_NAME
+          end
+          def from_lock_options(options)
+            new(options[:remote], options.reject{|k| k == :remote})
+          end
+          def to_lock_options(source)
+            {:remote => source.name}
+          end
+        end
+
         attr_reader :name
 
         def initialize(name, options)

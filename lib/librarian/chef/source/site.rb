@@ -76,6 +76,19 @@ module Librarian
         include Helpers::Debug
         include Particularity
 
+        class << self
+          LOCK_NAME = 'SITE'
+          def lock_name
+            LOCK_NAME
+          end
+          def from_lock_options(options)
+            new(options[:remote], options.reject{|k| k == :remote})
+          end
+          def to_lock_options(source)
+            {:remote => source.uri}
+          end
+        end
+
         attr_reader :uri
 
         def initialize(uri, options = {})

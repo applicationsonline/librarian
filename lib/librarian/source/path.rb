@@ -8,6 +8,19 @@ module Librarian
       include Particularity
       include Local
 
+      class << self
+        LOCK_NAME = 'PATH'
+        def lock_name
+          LOCK_NAME
+        end
+        def from_lock_options(options)
+          new(options[:remote], options.reject{|k| k == :remote})
+        end
+        def to_lock_options(source)
+          {:remote => source.path}
+        end
+      end
+
       attr_reader :path
 
       def initialize(path, options)
