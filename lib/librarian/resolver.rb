@@ -133,11 +133,15 @@ module Librarian
       unless resolution
         nil
       else
-        manifests = resolution[1]
-        manifest_pairs = GraphHash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
-        manifest_names = manifest_pairs.tsort
-        manifest_names.map{|n| manifests[n]}
+        sort(resolution[1])
       end
+    end
+
+    def sort(manifests)
+      manifests = Hash[manifests.map{|m| [m.name, m]}] if Array === manifests
+      manifest_pairs = GraphHash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
+      manifest_names = manifest_pairs.tsort
+      manifest_names.map{|n| manifests[n]}
     end
 
     def resolved?(dependencies, manifests)
