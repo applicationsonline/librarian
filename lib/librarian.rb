@@ -42,8 +42,12 @@ module Librarian
     Specfile.new(self, specfile_path)
   end
 
+  def lockfile_name
+    "#{specfile_name}.lock"
+  end
+
   def lockfile_path
-    Pathname.new("#{specfile_path}.lock")
+    project_path.join(lockfile_name)
   end
 
   def lockfile
@@ -104,6 +108,10 @@ module Librarian
       ui.info { "Could not resolve the dependencies." }
     else
       lockfile_text = lockfile.save(manifests)
+      debug { "Bouncing #{lockfile_name}" }
+      unless lockfile.save(lockfile.load(lockfile_text)) == lockfile_text
+        raise Exception, "Cannot bounce #{lockfile_name}!"
+      end
       lockfile_path.open('wb') { |f| f.write(lockfile_text) }
     end
   end
