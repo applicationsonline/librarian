@@ -67,6 +67,10 @@ module Librarian
         c.rmtree unless c.file?
       end
     end
+    if lockfile_path.exist?
+      debug { "Deleting #{project_relative_path_to(lockfile_path)}" }
+      lockfile_path.rmtree
+    end
   end
 
   def install!
