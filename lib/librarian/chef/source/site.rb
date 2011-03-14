@@ -42,6 +42,13 @@ module Librarian
             version_manifest['dependencies'].map{|k, v| Dependency.new(k, v, nil)}
           end
 
+          def version_uri
+            @version_uri ||= begin
+              source.cache!([self])
+              source.manifests(self).find{|m| m.version == version}.version_uri
+            end
+          end
+
           def version_uri=(version_uri)
             @version_uri = version_uri
           end
