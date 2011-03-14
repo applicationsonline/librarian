@@ -4,12 +4,8 @@ require 'librarian/mock'
 module Librarian
   describe Lockfile do
 
-    before do
-      Mock.registry.clear!
-    end
-
     it "should save" do
-      Mock.registry.merge! do
+      Mock.registry :clear => true do
         source 'source-1' do
           spec 'alpha', '1.1'
         end
@@ -27,7 +23,7 @@ module Librarian
     end
 
     it "should bounce" do
-      Mock.registry.merge! do
+      Mock.registry :clear => true do
         source 'source-1' do
           spec 'alpha', '1.1'
         end
