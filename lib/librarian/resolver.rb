@@ -27,7 +27,12 @@ module Librarian
         @level = 0
       end
 
-      def resolve(dependencies, manifests, queue)
+      def resolve(dependencies)
+        resolution = recursive_resolve([], {}, dependencies.dup)
+        resolution ? resolution[1] : nil
+      end
+
+      def recursive_resolve(dependencies, manifests, queue)
         if dependencies.empty?
           queue.each do |dependency|
             debug { "Scheduling #{dependency}" }
@@ -73,7 +78,7 @@ module Librarian
                             debug { "Scheduling #{d}" }
                           end
                           q = queue + a
-                          resolution = resolve(d, m, q)
+                          resolution = recursive_resolve(d, m, q)
                         end
                         if resolution
                           debug { "Resolved #{dependency} at #{manifest}" }
@@ -129,12 +134,8 @@ module Librarian
 
     def resolve(spec, manifests = {})
       implementation = Implementation.new(self, spec)
-      resolution = implementation.resolve([], {}, spec.dependencies.dup)
-      unless resolution
-        nil
-      else
-        sort(resolution[1])
-      end
+      resolution = implementation.resolve(spec.dependencies)
+      resolution ? sort(resolution) : nil
     end
 
     def sort(manifests)
