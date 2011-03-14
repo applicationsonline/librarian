@@ -70,7 +70,8 @@ module Librarian
                           m = manifests.merge(dependency.name => manifest)
                           a = manifest.dependencies.map { |d|
                             d.source ? d :
-                            !dependency_source_map.key?(d.name) ? Dependency.new(d.name, d.requirement, source) :
+                            !dependency_source_map.key?(d.name) ?
+                            Dependency.new(d.name, d.requirement, source) :
                             Dependency.new(d.name, d.requirement, dependency_source_map[d.name])
                           }
                           a.each do |d|
