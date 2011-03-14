@@ -12,7 +12,8 @@ module Librarian
       abstract_method :path
 
       def manifests(dependency)
-        manifest_search_paths(dependency).map{|p| manifest_class.create(self, dependency, p)}.compact[0, 1]
+        manifest = manifest_class.create(self, dependency, path)
+        [manifest].compact
       end
 
       def manifest_search_paths(dependency)

@@ -13,7 +13,12 @@ module Librarian
           class << self
 
             def create(source, dependency, path)
-              manifest?(dependency, path) ? new(source, dependency.name, path) : nil
+              manifest_search_paths = source.manifest_search_paths(dependency)
+              if manifest_search_paths.any? { |p| manifest?(dependency, p) }
+                new(source, dependency.name, path)
+              else
+                nil
+              end
             end
 
             def manifest?(dependency, path)
@@ -34,6 +39,11 @@ module Librarian
           def initialize(source, name, path)
             super(source, name)
             @path = Pathname.new(path)
+            @found_path = nil
+          end
+
+          def found_path
+            @found_path ||= source.manifest_search_paths(self).find{|p| self.class.manifest?(self, p)}
           end
 
           def manifest
@@ -41,7 +51,7 @@ module Librarian
           end
 
           def fetch_manifest!
-            read_manifest(manifest_path(path))
+            read_manifest(manifest_path(found_path))
           end
 
           def fetch_version!
@@ -59,8 +69,8 @@ module Librarian
               debug { "Deleting #{relative_path_to(install_path)}" }
               install_path.rmtree
             end
-            debug { "Copying #{relative_path_to(path)} to #{relative_path_to(install_path)}" }
-            FileUtils.cp_r(path, install_path)
+            debug { "Copying #{relative_path_to(found_path)} to #{relative_path_to(install_path)}" }
+            FileUtils.cp_r(found_path, install_path)
           end
 
         end
