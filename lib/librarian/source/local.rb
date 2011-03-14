@@ -16,6 +16,13 @@ module Librarian
         [manifest].compact
       end
 
+      def manifest(name, version, dependencies)
+        manifest = manifest_class.create(self, Dependency.new(name, nil, nil), path)
+        manifest.version = version
+        manifest.dependencies = dependencies
+        manifest
+      end
+
       def manifest_search_paths(dependency)
         paths = [path, path.join(dependency.name)]
         paths.select{|s| s.exist?}

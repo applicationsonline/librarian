@@ -82,8 +82,7 @@ module Librarian
           dependencies = manifest.dependencies.map do |d|
             Dependency.new(d.name, d.requirement, manifests[d.name].source)
           end
-          Manifest.new(
-            manifest.source,
+          manifest.source.manifest(
             manifest.name,
             manifest.version,
             dependencies

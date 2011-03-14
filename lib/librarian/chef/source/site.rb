@@ -19,15 +19,15 @@ module Librarian
         class Manifest < Manifest
 
           attr_reader :version_uri
-          attr_reader :cache_path, :metadata_cache_path, :package_cache_path, :install_path
+          attr_reader :install_path
 
-          def initialize(source, name, version_uri)
+          def initialize(source, name, version_uri = nil)
             super(source, name)
             @version_uri = version_uri
 
-            @cache_path = source.version_cache_path(self, version_uri)
-            @metadata_cache_path = cache_path.join('version.json')
-            @package_cache_path = cache_path.join('package')
+            @cache_path = nil
+            @metadata_cache_path = nil
+            @package_cache_path = nil
             @install_path = root_module.install_path.join(name)
 
             @version_metadata = nil
@@ -40,6 +40,20 @@ module Librarian
 
           def fetch_dependencies!
             version_manifest['dependencies'].map{|k, v| Dependency.new(k, v, nil)}
+          end
+
+          def version_uri=(version_uri)
+            @version_uri = version_uri
+          end
+
+          def cache_path
+            @cache_path ||= source.version_cache_path(self, version_uri)
+          end
+          def metadata_cache_path
+            @metadata_cache_path ||= cache_path.join('version.json')
+          end
+          def package_cache_path
+            @package_cache_path ||= cache_path.join('package')
           end
 
           def version_metadata
@@ -112,6 +126,13 @@ module Librarian
         def manifests(dependency)
           metadata = JSON.parse(metadata_cache_path(dependency).read)
           metadata['versions'].map{|version_uri| Manifest.new(self, dependency.name, version_uri)}
+        end
+
+        def manifest(name, version, dependencies)
+          manifest = Manifest.new(self, name)
+          manifest.version = version
+          manifest.dependencies = dependencies
+          manifest
         end
 
         def install_path(dependency)

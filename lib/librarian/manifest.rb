@@ -20,8 +20,10 @@ module Librarian
     def initialize(source, name)
       @source = source
       @name = name
-      @version = nil
-      @dependencies = nil
+      @fetched_version = nil
+      @defined_version = nil
+      @fetched_dependencies = nil
+      @defined_dependencies = nil
     end
 
     def to_s
@@ -29,11 +31,36 @@ module Librarian
     end
 
     def version
-      @version ||= _normalize_version(fetch_version!)
+      @defined_version || @fetched_version ||= _normalize_version(fetch_version!)
+    end
+
+    def version=(version)
+      @defined_version = _normalize_version(version)
+    end
+
+    def version?
+      if @defined_version
+        @fetched_version ||= _normalize_version(fetch_version!)
+        @defined_version == @fetched_version
+      end
     end
 
     def dependencies
-      @dependencies ||= _normalize_dependencies(fetch_dependencies!)
+      @defined_dependencies || @fetched_dependencies ||= _normalize_dependencies(fetch_dependencies!)
+    end
+
+    def dependencies=(dependencies)
+      @defined_dependencies = _normalize_dependencies(dependencies)
+    end
+
+    def dependencies?
+      if @defined_dependencies
+        @fetched_dependencies ||= _normalize_dependencies(fetch_dependencies!)
+        @defined_dependencies.zip(@fetched_dependencies).all? do |pair|
+          a, b = *pair
+          a.name == b.name && a.requirement == b.requirement
+        end
+      end
     end
 
     def satisfies?(dependency)
@@ -51,12 +78,10 @@ module Librarian
     end
 
     def _normalize_dependencies(dependencies)
-      case dependencies
-      when Hash
-        dependencies.map{|k, v| Dependency.new(k, v, nil)}
-      else
-        dependencies
+      if Hash === dependencies
+        dependencies = dependencies.map{|k, v| Dependency.new(k, v, nil)}
       end
+      dependencies.sort_by{|d| d.name}
     end
 
   end
