@@ -38,8 +38,20 @@ module Librarian
     project_path.join(specfile_name)
   end
 
+  def specfile
+    Specfile.new(self, specfile_path)
+  end
+
   def lockfile_path
     Pathname.new("#{specfile_path}.lock")
+  end
+
+  def lockfile
+    Lockfile.new(self, lockfile_path)
+  end
+
+  def resolver
+    Resolver.new(self)
   end
 
   def cache_path
@@ -74,8 +86,7 @@ module Librarian
   end
 
   def install!
-    spec = Specfile.new(self, specfile_path).read
-    resolver = Resolver.new(self)
+    spec = specfile.read
     manifests = resolver.resolve(spec)
     unless manifests
       ui.info { "Could not resolve the dependencies." }
@@ -87,13 +98,11 @@ module Librarian
   end
 
   def resolve!
-    spec = Specfile.new(self, specfile_path).read
-    resolver = Resolver.new(self)
+    spec = specfile.read
     manifests = resolver.resolve(spec)
     unless manifests
       ui.info { "Could not resolve the dependencies." }
     else
-      lockfile = Lockfile.new(self, nil)
       lockfile_text = lockfile.save(manifests)
       lockfile_path.open('wb') { |f| f.write(lockfile_text) }
     end
