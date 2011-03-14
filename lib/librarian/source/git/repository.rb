@@ -1,3 +1,5 @@
+require 'open3'
+
 require 'librarian/helpers/debug'
 
 module Librarian
@@ -43,12 +45,24 @@ module Librarian
           end
         end
 
+        def current_commit_hash
+          within do
+            command = "log -n 1 --pretty=oneline"
+            run!(command).split(' ').first
+          end
+        end
+
       private
 
         def run!(text)
           text = "git #{text} --quiet"
           debug { "Running `#{text}` in #{relative_path_to(Dir.pwd)}" }
-          `#{text}`
+          out = Open3.popen3(text) do |i, o, e, t|
+            raise Exception, e.read unless t.value.success?
+            o.read
+          end
+          debug { "    ->  #{out}" } if out.size > 0
+          out
         end
 
         def within

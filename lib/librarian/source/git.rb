@@ -22,7 +22,7 @@ module Librarian
           new(options[:remote], options.reject{|k| k == :remote})
         end
         def to_lock_options(source)
-          {:remote => source.uri, :ref => source.ref || DEFAULTS[:ref]}
+          {:remote => source.uri, :ref => source.ref, :sha => source.sha}
         end
       end
 
@@ -30,17 +30,18 @@ module Librarian
         :ref => 'master'
       }
 
-      attr_reader :uri, :ref
+      attr_reader :uri, :ref, :sha
 
       def initialize(uri, options = {})
         @uri = uri
-        @ref = options[:ref]
+        @ref = options[:ref] || DEFAULTS[:ref]
+        @sha = options[:sha]
         @repository = nil
         @repository_cache_path = nil
       end
 
       def to_s
-        "#{uri}##{ref || DEFAULTS[:ref]}"
+        "#{uri}##{ref}"
       end
 
       def cache!(dependencies)
@@ -49,7 +50,10 @@ module Librarian
           repository.path.mkpath
           repository.clone!(uri)
         end
-        repository.checkout!(ref || DEFAULTS[:ref])
+        unless sha == repository.current_commit_hash
+          repository.checkout!(sha || ref)
+          @sha ||= repository.current_commit_hash
+        end
       end
 
       def repository_cache_path
