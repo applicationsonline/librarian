@@ -19,11 +19,13 @@ module Librarian
 
     class Shell < UI
       attr_writer :shell
+      attr_reader :debug_line_numbers
 
       def initialize(shell)
         @shell = shell
         @quiet = false
         @debug = ENV['DEBUG']
+        @debug_line_numbers = false
       end
 
       def debug(message = nil)
@@ -52,6 +54,10 @@ module Librarian
 
       def debug!
         @debug = true
+      end
+
+      def debug_line_numbers!
+        @debug_line_numbers = true
       end
     end
   end

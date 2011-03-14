@@ -18,11 +18,15 @@ module Librarian
 
       def debug
         if root_module.ui
-          loc = caller.find{|l| !(l =~ /in `debug'$/)}
-          if loc =~ /^(.+):(\d+):in `(.+)'$/
-            loc = "#{Pathname.new($1).relative_path_from(LIBRARIAN_PATH)}:#{$2}:in `#{$3}'"
+          if root_module.ui.respond_to? :debug_line_numbers and root_module.ui.debug_line_numbers
+            loc = caller.find{|l| !(l =~ /in `debug'$/)}
+            if loc =~ /^(.+):(\d+):in `(.+)'$/
+              loc = "#{Pathname.new($1).relative_path_from(LIBRARIAN_PATH)}:#{$2}:in `#{$3}'"
+            end
+            root_module.ui.debug { "[Librarian] #{yield} [#{loc}]" }
+          else
+            root_module.ui.debug { "[Librarian] #{yield}" }
           end
-          root_module.ui.debug { "[Librarian] #{yield} [#{loc}]" }
         end
       end
 
