@@ -48,5 +48,14 @@ module Librarian
       root_module.install!
     end
 
+    desc "resolve", "Resolves the cookbooks you specify."
+    method_option "verbose"
+    method_option "clean"
+    def resolve
+      root_module.ensure!
+      root_module.clean! if options["clean"]
+      root_module.resolve!
+    end
+
   end
 end
