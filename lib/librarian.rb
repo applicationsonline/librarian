@@ -90,14 +90,12 @@ module Librarian
   end
 
   def install!
-    spec = specfile.read
-    manifests = resolver.resolve(spec)
-    unless manifests
-      ui.info { "Could not resolve the dependencies." }
-    else
-      manifests.each do |manifest|
-        manifest.install!
-      end
+    unless lockfile_path.exist?
+      resolve!
+    end
+    manifests = lockfile.load(lockfile_path.read)
+    manifests.each do |manifest|
+      manifest.install!
     end
   end
 
