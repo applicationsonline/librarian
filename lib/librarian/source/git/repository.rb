@@ -45,6 +45,13 @@ module Librarian
           end
         end
 
+        def hash_from(reference)
+          within do
+            command = "rev-parse #{reference}"
+            run!(command)
+          end
+        end
+
         def current_commit_hash
           within do
             command = "log -n 1 --pretty=oneline"
