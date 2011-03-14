@@ -79,13 +79,14 @@ module Librarian
           end
         end
         manifests = manifests.map do |name, manifest|
+          dependencies = manifest.dependencies.map do |d|
+            Dependency.new(d.name, d.requirement, manifests[d.name].source)
+          end
           Manifest.new(
             manifest.source,
             manifest.name,
             manifest.version,
-            Hash[manifest.dependencies.map do |d| [d.name,
-              Dependency.new(d.name, d.requirement, manifests[d.name].source)
-            ]end]
+            dependencies
           )
         end
         Resolver.new(root_module).sort(manifests)
