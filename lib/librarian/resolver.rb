@@ -65,7 +65,6 @@ module Librarian
                     unless resolution
                       debug { "Checking #{manifest}" }
                       scope do
-                        #debug { "Dependencies are "}
                         if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
                           d = dependencies.dup
                           m = manifests.merge(dependency.name => manifest)
