@@ -19,10 +19,10 @@ module Librarian
           sources = type_manifests.map{|m| m.source}.uniq
           sources.each do |source|
             source_manifests = type_manifests.select{|m| source == m.source}
-            save_source(source, source_manifests) { |s| out << s }
+            save_source(source, source_manifests) { |s| out << "#{s}\n" }
           end
         end
-        out.join("\n") << "\n"
+        out.join
       end
 
     private
