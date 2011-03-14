@@ -116,6 +116,10 @@ module Librarian
     end
   end
 
+  def dsl(&block)
+    dsl_class.run(&block)
+  end
+
   def dsl_class
     self::Dsl
   end

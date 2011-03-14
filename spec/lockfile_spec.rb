@@ -14,7 +14,7 @@ module Librarian
           spec 'alpha', '1.1'
         end
       end
-      spec = Mock::Dsl.run do
+      spec = Mock.dsl do
         src 'source-1'
         dep 'alpha', '1.1'
       end
@@ -32,7 +32,7 @@ module Librarian
           spec 'alpha', '1.1'
         end
       end
-      spec = Mock::Dsl.run do
+      spec = Mock.dsl do
         src 'source-1'
         dep 'alpha', '1.1'
       end

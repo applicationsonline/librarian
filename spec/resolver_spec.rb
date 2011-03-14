@@ -16,7 +16,7 @@ module Librarian
             spec 'butter', '1.1'
           end
         end
-        spec = Mock::Dsl.run do
+        spec = Mock.dsl do
           src 'source-1'
           dep 'butter'
         end
@@ -40,7 +40,7 @@ module Librarian
             end
           end
         end
-        spec = Mock::Dsl.run do
+        spec = Mock.dsl do
           src 'source-1'
           src 'source-2' do
             dep 'jam'
@@ -63,7 +63,7 @@ module Librarian
             end
           end
         end
-        spec = Mock::Dsl.run do
+        spec = Mock.dsl do
           src 'source-1'
           dep 'jam'
         end
@@ -86,7 +86,7 @@ module Librarian
             end
           end
         end
-        spec = Mock::Dsl.run do
+        spec = Mock.dsl do
           src 'source-1'
           dep 'butter', '1.0'
           dep 'jam'
