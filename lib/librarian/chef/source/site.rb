@@ -203,12 +203,15 @@ module Librarian
         def cache_metadata!(dependency)
           dependency_cache_path = cache_path.join(dependency.name)
           dependency_cache_path.mkpath
-          dep_uri = dependency_uri(dependency)
-          debug { "Caching #{dep_uri}" }
-          metadata_blob = Net::HTTP.get(URI.parse(dep_uri))
-          JSON.parse(metadata_blob) # check that it's JSON
-          metadata_cache_path(dependency).open('wb') do |f|
-            f.write(metadata_blob)
+          metadata_cache_path = metadata_cache_path(dependency)
+          unless metadata_cache_path.exist?
+            dep_uri = dependency_uri(dependency)
+            debug { "Caching #{dep_uri}" }
+            metadata_blob = Net::HTTP.get(URI.parse(dep_uri))
+            JSON.parse(metadata_blob) # check that it's JSON
+            metadata_cache_path(dependency).open('wb') do |f|
+              f.write(metadata_blob)
+            end
           end
         end
 
