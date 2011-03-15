@@ -28,7 +28,7 @@ module Librarian
       end
 
       def to_s
-        path
+        path.to_s
       end
 
       def cache!(dependencies)
