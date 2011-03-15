@@ -21,9 +21,6 @@ module Librarian
         def from_lock_options(options)
           new(options[:remote], options.reject{|k| k == :remote})
         end
-        def to_lock_options(source)
-          {:remote => source.uri, :ref => source.ref, :sha => source.sha}
-        end
       end
 
       DEFAULTS = {
@@ -42,6 +39,10 @@ module Librarian
 
       def to_s
         "#{uri}##{ref}"
+      end
+
+      def to_lock_options
+        {:remote => uri, :ref => ref, :sha => sha}
       end
 
       def cache!(dependencies)

@@ -16,9 +16,6 @@ module Librarian
         def from_lock_options(options)
           new(options[:remote], options.reject{|k| k == :remote})
         end
-        def to_lock_options(source)
-          {:remote => source.path}
-        end
       end
 
       attr_reader :path
@@ -29,6 +26,10 @@ module Librarian
 
       def to_s
         path.to_s
+      end
+
+      def to_lock_options
+        {:remote => path}
       end
 
       def cache!(dependencies)

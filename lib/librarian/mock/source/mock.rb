@@ -33,15 +33,20 @@ module Librarian
           def from_lock_options(options)
             new(options[:remote], options.reject{|k| k == :remote})
           end
-          def to_lock_options(source)
-            {:remote => source.name}
-          end
         end
 
         attr_reader :name
 
         def initialize(name, options)
           @name = name
+        end
+
+        def to_s
+          name
+        end
+
+        def to_lock_options
+          {:remote => name}
         end
 
         def registry

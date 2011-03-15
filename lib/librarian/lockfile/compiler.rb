@@ -29,7 +29,7 @@ module Librarian
 
       def save_source(source, manifests)
         yield "#{source.class.lock_name}"
-        options = source.class.to_lock_options(source)
+        options = source.to_lock_options
         remote = options.delete(:remote)
         yield "  remote: #{remote}"
         options.to_a.sort{|a, b| a[0] <=> b[0]}.each do |o|
