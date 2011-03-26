@@ -54,8 +54,8 @@ module Librarian
 
         def current_commit_hash
           within do
-            command = "log -n 1 --pretty=oneline"
-            run!(command).split(' ').first
+            command = "rev-parse HEAD"
+            run!(command).strip!
           end
         end
 
