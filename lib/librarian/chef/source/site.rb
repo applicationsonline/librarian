@@ -88,8 +88,9 @@ module Librarian
               debug { "Deleting #{relative_path_to(install_path)}" }
               install_path.rmtree
             end
-            debug { "Copying #{relative_path_to(cache_path)} to #{relative_path_to(install_path)}" }
-            FileUtils.cp_r(cache_path, install_path)
+            package_cache_path = source.version_package_cache_path(self, version_uri)
+            debug { "Copying #{relative_path_to(package_cache_path)} to #{relative_path_to(install_path)}" }
+            FileUtils.cp_r(package_cache_path, install_path)
           end
 
         end
