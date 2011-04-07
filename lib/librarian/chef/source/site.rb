@@ -207,9 +207,15 @@ module Librarian
           dependency_cache_path.mkpath
           metadata_cache_path = metadata_cache_path(dependency)
           unless metadata_cache_path.exist?
-            dep_uri = dependency_uri(dependency)
+            dep_uri = URI.parse(dependency_uri(dependency))
             debug { "Caching #{dep_uri}" }
-            metadata_blob = Net::HTTP.get(URI.parse(dep_uri))
+            http = Net::HTTP.new(dep_uri.host, dep_uri.port)
+            request = Net::HTTP::Get.new(dep_uri.path)
+            response = http.start{|http| http.request(request)}
+            unless Net::HTTPSuccess === response
+              raise Error, "Could not cache #{dependency} from #{dep_uri} because #{response.code} #{response.message}!"
+            end
+            metadata_blob = response.body
             JSON.parse(metadata_blob) # check that it's JSON
             metadata_cache_path(dependency).open('wb') do |f|
               f.write(metadata_blob)
