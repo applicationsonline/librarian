@@ -56,7 +56,7 @@ module Librarian
               debug { "No known prior constraints" }
               resolution = nil
               related_dependencies = dependencies.select{|d| d.name == dependency.name}
-              unless dependency.manifests
+              unless dependency.manifests && dependency.manifests.first
                 debug { "No known manifests" }
               else
                 debug { "Checking manifests" }
