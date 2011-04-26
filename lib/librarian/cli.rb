@@ -19,7 +19,6 @@ module Librarian
           exit (e.respond_to?(:status_code) ? e.status_code : 1)
         rescue Interrupt => e
           root_module.ui.error "\nQuitting..."
-          root_module.ui.debug e.backtrace.join("\n")
           exit 1
         end
       end
