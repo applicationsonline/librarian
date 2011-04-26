@@ -15,25 +15,22 @@ module Librarian
           MANIFESTS.map{|s| path.join(s)}.find{|s| s.exist?}
         end
 
-        def read_manifest(manifest_path)
+        def read_manifest(name, manifest_path)
           case manifest_path.extname
           when ".json" then JSON.parse(manifest_path.read)
           when ".yml", ".yaml" then YAML.load(manifest_path.read)
-          when ".rb" then compile_manifest(manifest_path.dirname) ; read_manifest(manifest_path(manifest_path.dirname))
+          when ".rb" then compile_manifest(name, manifest_path.dirname) ; read_manifest(name, manifest_path(manifest_path.dirname))
           end
         end
 
-        def compile_manifest(path)
+        def compile_manifest(name, path)
           # Inefficient, if there are many cookbooks with uncompiled metadata.
-          pid = fork do
-            require 'chef/cookbook/metadata'
-            md = ::Chef::Cookbook::Metadata.new
-            md.name(path.basename.to_s)
-            md.from_file(path.join('metadata.rb'))
-            json_file = path.join('metadata.json')
-            json_file.open('wb') { |f| f.write(::Chef::JSONCompat.to_json_pretty(md)) }
-          end
-          Process.wait(pid)
+          require 'chef/cookbook/metadata'
+          md = ::Chef::Cookbook::Metadata.new
+          md.name(name)
+          md.from_file(path.join('metadata.rb'))
+          json_file = path.join('metadata.json')
+          json_file.open('wb') { |f| f.write(::Chef::JSONCompat.to_json_pretty(md)) }
         end
 
       end

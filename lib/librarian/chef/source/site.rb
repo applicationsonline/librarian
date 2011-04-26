@@ -79,7 +79,7 @@ module Librarian
           def fetch_version_manifest!
             source.cache_version_package!(self, version_uri, version_metadata['file'])
             manifest_path = manifest_path(package_cache_path)
-            read_manifest(manifest_path)
+            read_manifest(name, manifest_path)
           end
 
           def install!
