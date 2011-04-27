@@ -19,7 +19,7 @@ module Librarian
           case manifest_path.extname
           when ".json" then JSON.parse(manifest_path.read)
           when ".yml", ".yaml" then YAML.load(manifest_path.read)
-          when ".rb" then compile_manifest(name, manifest_path.dirname) ; read_manifest(name, manifest_path(manifest_path.dirname))
+          when ".rb" then compile_manifest(name, manifest_path.dirname)
           end
         end
 
@@ -29,8 +29,7 @@ module Librarian
           md = ::Chef::Cookbook::Metadata.new
           md.name(name)
           md.from_file(path.join('metadata.rb'))
-          json_file = path.join('metadata.json')
-          json_file.open('wb') { |f| f.write(::Chef::JSONCompat.to_json_pretty(md)) }
+          JSON.parse(::Chef::JSONCompat.to_json_pretty(md))
         end
 
       end
