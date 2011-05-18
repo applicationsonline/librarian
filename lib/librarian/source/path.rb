@@ -14,7 +14,7 @@ module Librarian
           LOCK_NAME
         end
         def from_lock_options(options)
-          new(options[:remote], options.reject{|k| k == :remote})
+          new(options[:remote], options.reject{|k, v| k == :remote})
         end
       end
 
