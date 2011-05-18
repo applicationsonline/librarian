@@ -27,7 +27,7 @@ module Librarian
                 else
                   Spec.new(@source[name]).version(version, &block)
                 end
-                @source[name].sort_by! {|a| Manifest::Version.new(a[:version])}.reverse!
+                @source[name] = @source[name].sort_by{|a| Manifest::Version.new(a[:version])}.reverse
               end
             end
 
