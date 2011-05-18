@@ -66,7 +66,6 @@ module Librarian
                       debug { "Checking #{manifest}" }
                       scope do
                         if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
-                          d = dependencies.dup
                           m = manifests.merge(dependency.name => manifest)
                           a = manifest.dependencies.map { |d|
                             d.source ? d :
@@ -78,7 +77,7 @@ module Librarian
                             debug { "Scheduling #{d}" }
                           end
                           q = queue + a
-                          resolution = recursive_resolve(d, m, q)
+                          resolution = recursive_resolve(dependencies.dup, m, q)
                         end
                         if resolution
                           debug { "Resolved #{dependency} at #{manifest}" }
