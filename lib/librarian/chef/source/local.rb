@@ -13,12 +13,7 @@ module Librarian
           class << self
 
             def create(source, dependency, path)
-              manifest_search_paths = source.manifest_search_paths(dependency)
-              if manifest_search_paths.any? { |p| manifest?(dependency, p) }
-                new(source, dependency.name, path)
-              else
-                nil
-              end
+              new(source, dependency.name, path)
             end
 
             def manifest?(dependency, path)

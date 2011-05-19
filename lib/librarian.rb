@@ -95,6 +95,9 @@ module Librarian
     end
     manifests = lockfile.load(lockfile_path.read)
     manifests.each do |manifest|
+      manifest.source.cache!([manifest])
+    end
+    manifests.each do |manifest|
       manifest.install!
     end
   end
