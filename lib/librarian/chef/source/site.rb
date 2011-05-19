@@ -84,6 +84,7 @@ module Librarian
 
           def install!
             debug { "Installing #{self}" }
+            version_manifest # make sure it's cached
             if install_path.exist?
               debug { "Deleting #{relative_path_to(install_path)}" }
               install_path.rmtree
