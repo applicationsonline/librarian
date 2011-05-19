@@ -32,7 +32,7 @@ module Librarian
         options = source.to_lock_options
         remote = options.delete(:remote)
         yield "  remote: #{remote}"
-        options.to_a.sort{|a, b| a[0] <=> b[0]}.each do |o|
+        options.to_a.sort_by{|a| a[0].to_s}.each do |o|
           yield "  #{o[0]}: #{o[1]}"
         end
         yield "  specs:"
