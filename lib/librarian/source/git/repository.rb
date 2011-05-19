@@ -65,7 +65,7 @@ module Librarian
           text = "git #{text} --quiet"
           debug { "Running `#{text}` in #{relative_path_to(Dir.pwd)}" }
           out = Open3.popen3(text) do |i, o, e, t|
-            raise Exception, e.read unless t.value.success?
+            raise StandardError, e.read unless (t ? t.value : $?).success?
             o.read
           end
           debug { "    ->  #{out}" } if out.size > 0
