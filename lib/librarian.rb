@@ -78,7 +78,7 @@ module Librarian
       cache_path.rmtree
     end
     if install_path.exist?
-      install_path.each_child do |c|
+      install_path.children.each do |c|
         debug { "Deleting #{project_relative_path_to(c)}" }
         c.rmtree unless c.file?
       end
@@ -110,7 +110,10 @@ module Librarian
     else
       lockfile_text = lockfile.save(manifests)
       debug { "Bouncing #{lockfile_name}" }
-      unless lockfile.save(lockfile.load(lockfile_text)) == lockfile_text
+      bounced_lockfile_text = lockfile.save(lockfile.load(lockfile_text))
+      unless bounced_lockfile_text == lockfile_text
+        debug { "lockfile_text: \n#{lockfile_text}"}
+        debug { "bounced_lockfile_text: \n#{bounced_lockfile_text}"}
         raise Exception, "Cannot bounce #{lockfile_name}!"
       end
       lockfile_path.open('wb') { |f| f.write(lockfile_text) }
