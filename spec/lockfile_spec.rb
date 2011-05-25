@@ -16,7 +16,7 @@ module Librarian
       end
       resolution = Mock.resolver.resolve(spec)
       resolution.should be_correct
-      lockfile = Lockfile.new(Mock, nil)
+      lockfile = Mock.ephemeral_lockfile
       lockfile_text = lockfile.save(resolution)
       lockfile_text.should_not be_nil
     end
@@ -33,7 +33,7 @@ module Librarian
       end
       resolution = Mock.resolver.resolve(spec)
       resolution.should be_correct
-      lockfile = Lockfile.new(Mock, nil)
+      lockfile = Mock.ephemeral_lockfile
       lockfile_text = lockfile.save(resolution)
       bounced_resolution = lockfile.load(lockfile_text)
       bounced_lockfile_text = lockfile.save(bounced_resolution)

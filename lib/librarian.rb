@@ -54,6 +54,10 @@ module Librarian
     Lockfile.new(self, lockfile_path)
   end
 
+  def ephemeral_lockfile
+    Lockfile.new(self, nil)
+  end
+
   def resolver
     Resolver.new(self)
   end
