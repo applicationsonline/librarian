@@ -3,6 +3,7 @@ require 'tsort'
 require 'librarian/helpers/debug'
 
 require 'librarian/dependency'
+require 'librarian/resolution'
 
 module Librarian
   class Resolver
@@ -145,20 +146,7 @@ module Librarian
     end
 
     def resolved?(dependencies, manifests)
-      manifests && begin
-        manifests_hash = Hash[manifests.map{|m| [m.name, m]}]
-        deps_match = dependencies.all? do |dependency|
-          manifest = manifests_hash[dependency.name]
-          dependency.satisfied_by?(manifest)
-        end
-        mans_match = manifests.all? do |manifest|
-          manifest.dependencies.all? do |dependency|
-            manifest = manifests_hash[dependency.name]
-            dependency.satisfied_by?(manifest)
-          end
-        end
-        deps_match && mans_match
-      end
+      Resolution.new(dependencies, manifests).correct?
     end
 
   end
