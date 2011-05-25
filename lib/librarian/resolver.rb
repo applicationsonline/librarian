@@ -28,8 +28,8 @@ module Librarian
         @level = 0
       end
 
-      def resolve(dependencies)
-        resolution = recursive_resolve([], {}, dependencies.dup)
+      def resolve(dependencies, manifests = {})
+        resolution = recursive_resolve([], manifests, dependencies.dup)
         resolution ? resolution[1] : nil
       end
 
@@ -132,9 +132,10 @@ module Librarian
       @root_module = root_module
     end
 
-    def resolve(spec, manifests = {})
+    def resolve(spec, partial_manifests = [])
       implementation = Implementation.new(self, spec)
-      manifests = implementation.resolve(spec.dependencies)
+      partial_manifests_index = Hash[partial_manifests.map{|m| [m.name, m]}]
+      manifests = implementation.resolve(spec.dependencies, partial_manifests_index)
       manifests = sort(manifests) if manifests
       Resolution.new(spec.dependencies, manifests)
     end
