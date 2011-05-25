@@ -19,7 +19,7 @@ module Librarian
           sources = type_manifests.map{|m| m.source}.uniq.sort_by{|s| s.to_s}
           sources.each do |source|
             source_manifests = type_manifests.select{|m| source == m.source}
-            save_source(source, source_manifests) { |s| out.puts s }
+            save_source(out, source, source_manifests)
           end
         end
         out.rewind
@@ -28,22 +28,22 @@ module Librarian
 
     private
 
-      def save_source(source, manifests)
-        yield "#{source.class.lock_name}"
+      def save_source(out, source, manifests)
+        out.puts "#{source.class.lock_name}"
         options = source.to_lock_options
         remote = options.delete(:remote)
-        yield "  remote: #{remote}"
+        out.puts "  remote: #{remote}"
         options.to_a.sort_by{|a| a[0].to_s}.each do |o|
-          yield "  #{o[0]}: #{o[1]}"
+          out.puts "  #{o[0]}: #{o[1]}"
         end
-        yield "  specs:"
+        out.puts "  specs:"
         manifests.sort{|a, b| a.name <=> b.name}.each do |manifest|
-          yield "    #{manifest.name} (#{manifest.version})"
+          out.puts "    #{manifest.name} (#{manifest.version})"
           manifest.dependencies.sort{|a, b| a.name <=> b.name}.each do |dependency|
-            yield "      #{dependency.name} (#{dependency.requirement})"
+            out.puts "      #{dependency.name} (#{dependency.requirement})"
           end
         end
-        yield ""
+        out.puts ""
       end
 
       def dsl_class
