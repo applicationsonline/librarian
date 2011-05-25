@@ -16,7 +16,7 @@ module Librarian
           src 'source-1'
           dep 'butter'
         end
-        resolver = Resolver.new(Mock)
+        resolver = Mock.resolver
         manifests = resolver.resolve(spec)
         resolver.resolved?(spec.dependencies, manifests).should be_true
       end
@@ -42,7 +42,7 @@ module Librarian
             dep 'jam'
           end
         end
-        resolver = Resolver.new(Mock)
+        resolver = Mock.resolver
         manifests = resolver.resolve(spec)
         resolver.resolved?(spec.dependencies, manifests).should be_true
       end
@@ -63,7 +63,7 @@ module Librarian
           src 'source-1'
           dep 'jam'
         end
-        resolver = Resolver.new(Mock)
+        resolver = Mock.resolver
         manifests = resolver.resolve(spec)
         resolver.resolved?(spec.dependencies, manifests).should be_false
       end
@@ -87,7 +87,7 @@ module Librarian
           dep 'butter', '1.0'
           dep 'jam'
         end
-        resolver = Resolver.new(Mock)
+        resolver = Mock.resolver
         manifests = resolver.resolve(spec)
         resolver.resolved?(spec.dependencies, manifests).should be_false
       end

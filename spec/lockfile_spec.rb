@@ -14,8 +14,7 @@ module Librarian
         src 'source-1'
         dep 'alpha', '1.1'
       end
-      resolver = Resolver.new(Mock)
-      manifests = resolver.resolve(spec)
+      manifests = Mock.resolver.resolve(spec)
       manifests.should_not be_nil
       lockfile = Lockfile.new(Mock, nil)
       lockfile_text = lockfile.save(Resolution.new(spec.dependencies, manifests))
@@ -32,8 +31,7 @@ module Librarian
         src 'source-1'
         dep 'alpha', '1.1'
       end
-      resolver = Resolver.new(Mock)
-      manifests = resolver.resolve(spec)
+      manifests = Mock.resolver.resolve(spec)
       manifests.should_not be_nil
       lockfile = Lockfile.new(Mock, nil)
       lockfile_text = lockfile.save(Resolution.new(spec.dependencies, manifests))
