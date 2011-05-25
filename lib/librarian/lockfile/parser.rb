@@ -7,17 +7,10 @@ module Librarian
   class Lockfile
     class Parser
 
-      class Manifest < Manifest
+      class ManifestPlaceholder
+        attr_reader :source, :name, :version, :dependencies
         def initialize(source, name, version, dependencies)
-          super(source, name)
-          @_version = version
-          @_dependencies = dependencies
-        end
-        def fetch_version!
-          @_version
-        end
-        def fetch_dependencies!
-          @_dependencies
+          @source, @name, @version, @dependencies = source, name, version, dependencies
         end
       end
 
@@ -79,7 +72,7 @@ module Librarian
           source_type = source_ast[:type]
           source = source_type.from_lock_options(source_ast[:options])
           source_ast[:manifests].each do |manifest_name, manifest_ast|
-            manifests[manifest_name] = Manifest.new(
+            manifests[manifest_name] = ManifestPlaceholder.new(
               source,
               manifest_name,
               manifest_ast[:version],
