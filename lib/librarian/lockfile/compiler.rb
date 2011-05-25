@@ -12,8 +12,17 @@ module Librarian
         @root_module = root_module
       end
 
-      def compile(manifests)
+      def compile(resolution)
         out = StringIO.new
+        save_manifests(out, resolution.manifests)
+        save_dependencies(out, resolution.dependencies)
+        out.rewind
+        out.read
+      end
+
+    private
+
+      def save_manifests(out, manifests)
         dsl_class.source_types.map{|t| t[1]}.each do |type|
           type_manifests = manifests.select{|m| type === m.source}
           sources = type_manifests.map{|m| m.source}.uniq.sort_by{|s| s.to_s}
@@ -22,11 +31,7 @@ module Librarian
             save_source(out, source, source_manifests)
           end
         end
-        out.rewind
-        out.read
       end
-
-    private
 
       def save_source(out, source, manifests)
         out.puts "#{source.class.lock_name}"
@@ -44,6 +49,15 @@ module Librarian
           end
         end
         out.puts ""
+      end
+
+      def save_dependencies(out, dependencies)
+        out.puts "DEPENDENCIES"
+        dependencies.sort_by{|a| a.name}.each do |d|
+          res = "#{d.name}"
+          res << " (#{d.requirement})" if d.requirement
+          out.puts "  #{res}"
+        end
       end
 
       def dsl_class

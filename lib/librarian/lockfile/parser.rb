@@ -59,7 +59,16 @@ module Librarian
           source[:manifests] = manifests
           sources << source
         end
-        compile(sources)
+        manifests = compile(sources)
+        manifests_index = Hash[manifests.map{|m| [m.name, m]}]
+        raise StandardError, "Expected DEPENDENCIES topic!" unless lines.shift == "DEPENDENCIES"
+        dependencies = []
+        while lines.first =~ /^ {2}([\w-]+)(?: \((.*)\))?$/
+          lines.shift
+          name, requirement = $1, $2
+          dependencies << Dependency.new(name, requirement, manifests_index[name].source)
+        end
+        Resolution.new(dependencies, manifests)
       end
 
     private

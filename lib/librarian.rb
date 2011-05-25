@@ -93,7 +93,7 @@ module Librarian
     unless lockfile_path.exist?
       resolve!
     end
-    manifests = lockfile.load(lockfile_path.read)
+    manifests = lockfile.load(lockfile_path.read).manifests
     manifests.each do |manifest|
       manifest.source.cache!([manifest])
     end
@@ -108,7 +108,7 @@ module Librarian
     unless manifests
       ui.info { "Could not resolve the dependencies." }
     else
-      lockfile_text = lockfile.save(manifests)
+      lockfile_text = lockfile.save(Resolution.new(spec.dependencies, manifests))
       debug { "Bouncing #{lockfile_name}" }
       bounced_lockfile_text = lockfile.save(lockfile.load(lockfile_text))
       unless bounced_lockfile_text == lockfile_text

@@ -15,8 +15,8 @@ module Librarian
       @path = path
     end
 
-    def save(manifests)
-      Compiler.new(root_module).compile(manifests)
+    def save(resolution)
+      Compiler.new(root_module).compile(resolution)
     end
 
     def load(string)

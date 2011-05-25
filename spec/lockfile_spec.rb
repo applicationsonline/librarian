@@ -18,7 +18,7 @@ module Librarian
       manifests = resolver.resolve(spec)
       manifests.should_not be_nil
       lockfile = Lockfile.new(Mock, nil)
-      lockfile_text = lockfile.save(manifests)
+      lockfile_text = lockfile.save(Resolution.new(spec.dependencies, manifests))
       lockfile_text.should_not be_nil
     end
 
@@ -36,9 +36,9 @@ module Librarian
       manifests = resolver.resolve(spec)
       manifests.should_not be_nil
       lockfile = Lockfile.new(Mock, nil)
-      lockfile_text = lockfile.save(manifests)
-      bounced_manifests = lockfile.load(lockfile_text)
-      bounced_lockfile_text = lockfile.save(bounced_manifests)
+      lockfile_text = lockfile.save(Resolution.new(spec.dependencies, manifests))
+      bounced_resolution = lockfile.load(lockfile_text)
+      bounced_lockfile_text = lockfile.save(bounced_resolution)
       bounced_lockfile_text.should == lockfile_text
     end
 
