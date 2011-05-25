@@ -13,16 +13,17 @@ module Librarian
       end
 
       def compile(manifests)
-        out = []
+        out = StringIO.new
         dsl_class.source_types.map{|t| t[1]}.each do |type|
           type_manifests = manifests.select{|m| type === m.source}
           sources = type_manifests.map{|m| m.source}.uniq.sort_by{|s| s.to_s}
           sources.each do |source|
             source_manifests = type_manifests.select{|m| source == m.source}
-            save_source(source, source_manifests) { |s| out << "#{s}\n" }
+            save_source(source, source_manifests) { |s| out.puts s }
           end
         end
-        out.join
+        out.rewind
+        out.read
       end
 
     private
