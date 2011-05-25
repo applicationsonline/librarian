@@ -114,7 +114,7 @@ module Librarian
       unless bounced_lockfile_text == lockfile_text
         debug { "lockfile_text: \n#{lockfile_text}"}
         debug { "bounced_lockfile_text: \n#{bounced_lockfile_text}"}
-        raise Exception, "Cannot bounce #{lockfile_name}!"
+        raise Error, "Cannot bounce #{lockfile_name}!"
       end
       lockfile_path.open('wb') { |f| f.write(lockfile_text) }
     end
