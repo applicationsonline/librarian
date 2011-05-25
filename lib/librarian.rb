@@ -104,11 +104,11 @@ module Librarian
 
   def resolve!
     spec = specfile.read
-    manifests = resolver.resolve(spec)
-    unless manifests
+    resolution = resolver.resolve(spec)
+    unless resolution.correct?
       ui.info { "Could not resolve the dependencies." }
     else
-      lockfile_text = lockfile.save(Resolution.new(spec.dependencies, manifests))
+      lockfile_text = lockfile.save(resolution)
       debug { "Bouncing #{lockfile_name}" }
       bounced_lockfile_text = lockfile.save(lockfile.load(lockfile_text))
       unless bounced_lockfile_text == lockfile_text

@@ -134,8 +134,9 @@ module Librarian
 
     def resolve(spec, manifests = {})
       implementation = Implementation.new(self, spec)
-      resolution = implementation.resolve(spec.dependencies)
-      resolution ? sort(resolution) : nil
+      manifests = implementation.resolve(spec.dependencies)
+      manifests = sort(manifests) if manifests
+      Resolution.new(spec.dependencies, manifests)
     end
 
     def sort(manifests)
@@ -143,10 +144,6 @@ module Librarian
       manifest_pairs = GraphHash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
       manifest_names = manifest_pairs.tsort
       manifest_names.map{|n| manifests[n]}
-    end
-
-    def resolved?(dependencies, manifests)
-      Resolution.new(dependencies, manifests).correct?
     end
 
   end

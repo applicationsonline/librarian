@@ -14,10 +14,10 @@ module Librarian
         src 'source-1'
         dep 'alpha', '1.1'
       end
-      manifests = Mock.resolver.resolve(spec)
-      manifests.should_not be_nil
+      resolution = Mock.resolver.resolve(spec)
+      resolution.should be_correct
       lockfile = Lockfile.new(Mock, nil)
-      lockfile_text = lockfile.save(Resolution.new(spec.dependencies, manifests))
+      lockfile_text = lockfile.save(resolution)
       lockfile_text.should_not be_nil
     end
 
@@ -31,10 +31,10 @@ module Librarian
         src 'source-1'
         dep 'alpha', '1.1'
       end
-      manifests = Mock.resolver.resolve(spec)
-      manifests.should_not be_nil
+      resolution = Mock.resolver.resolve(spec)
+      resolution.should be_correct
       lockfile = Lockfile.new(Mock, nil)
-      lockfile_text = lockfile.save(Resolution.new(spec.dependencies, manifests))
+      lockfile_text = lockfile.save(resolution)
       bounced_resolution = lockfile.load(lockfile_text)
       bounced_lockfile_text = lockfile.save(bounced_resolution)
       bounced_lockfile_text.should == lockfile_text
