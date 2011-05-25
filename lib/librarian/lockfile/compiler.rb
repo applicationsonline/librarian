@@ -37,9 +37,9 @@ module Librarian
           out.puts "  #{o[0]}: #{o[1]}"
         end
         out.puts "  specs:"
-        manifests.sort{|a, b| a.name <=> b.name}.each do |manifest|
+        manifests.sort_by{|a| a.name}.each do |manifest|
           out.puts "    #{manifest.name} (#{manifest.version})"
-          manifest.dependencies.sort{|a, b| a.name <=> b.name}.each do |dependency|
+          manifest.dependencies.sort_by{|a| a.name}.each do |dependency|
             out.puts "      #{dependency.name} (#{dependency.requirement})"
           end
         end
