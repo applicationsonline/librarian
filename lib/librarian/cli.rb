@@ -40,7 +40,7 @@ module Librarian
       root_module.clean!
     end
 
-    desc "install", "Installs all of the cookbooks you specify."
+    desc "install", "Installs all of the dependencies you specify."
     method_option "verbose"
     method_option "line-numbers"
     method_option "clean"
@@ -50,7 +50,7 @@ module Librarian
       root_module.install!
     end
 
-    desc "resolve", "Resolves the cookbooks you specify."
+    desc "resolve", "Resolves the dependencies you specify."
     method_option "verbose"
     method_option "line-numbers"
     method_option "clean"
@@ -58,6 +58,14 @@ module Librarian
       root_module.ensure!
       root_module.clean! if options["clean"]
       root_module.resolve!
+    end
+
+    desc "update", "Updates the dependencies you specify."
+    method_option "verbose"
+    method_option "line-numbers"
+    def update(name)
+      root_module.ensure!
+      root_module.update!([name])
     end
 
   end

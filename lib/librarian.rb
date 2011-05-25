@@ -5,6 +5,7 @@ require 'librarian/support/abstract_method'
 
 require 'librarian/version'
 require 'librarian/dependency'
+require 'librarian/manifest_set'
 require 'librarian/particularity'
 require 'librarian/resolver'
 require 'librarian/source'
@@ -103,6 +104,29 @@ module Librarian
     end
     manifests.each do |manifest|
       manifest.install!
+    end
+  end
+
+  def update!(dependency_names)
+    unless lockfile_path.exist?
+      raise Error, "Lockfile missing!"
+    end
+    previous_resolution = lockfile.load(lockfile_path.read)
+    partial_manifests = ManifestSet.deep_strip(previous_resolution.manifests, dependency_names)
+    spec = specfile.read
+    resolution = resolver.resolve(spec, partial_manifests)
+    unless resolution.correct?
+      ui.info { "Could not resolve the dependencies." }
+    else
+      lockfile_text = lockfile.save(resolution)
+      debug { "Bouncing #{lockfile_name}" }
+      bounced_lockfile_text = lockfile.save(lockfile.load(lockfile_text))
+      unless bounced_lockfile_text == lockfile_text
+        debug { "lockfile_text: \n#{lockfile_text}"}
+        debug { "bounced_lockfile_text: \n#{bounced_lockfile_text}"}
+        raise Error, "Cannot bounce #{lockfile_name}!"
+      end
+      lockfile_path.open('wb') { |f| f.write(lockfile_text) }
     end
   end
 

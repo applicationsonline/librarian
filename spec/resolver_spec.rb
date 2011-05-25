@@ -94,5 +94,43 @@ module Librarian
 
     end
 
+    context "updating" do
+
+      it "should not work" do
+        Mock.registry :clear => true do
+          source 'source-1' do
+            spec 'butter', '1.0'
+            spec 'butter', '1.1'
+            spec 'jam', '1.2' do
+              dependency 'butter'
+            end
+          end
+        end
+        first_spec = Mock.dsl do
+          src 'source-1'
+          dep 'butter', '1.1'
+          dep 'jam'
+        end
+        first_resolution = Mock.resolver.resolve(first_spec)
+        first_resolution.should be_correct
+        first_manifests = first_resolution.manifests
+        first_manifests_index = Hash[first_manifests.map{|m| [m.name, m]}]
+        first_manifests_index['butter'].version.to_s.should == '1.1'
+
+        second_spec = Mock.dsl do
+          src 'source-1'
+          dep 'butter', '1.0'
+          dep 'jam'
+        end
+        locked_manifests = ManifestSet.deep_strip(first_manifests, ['butter'])
+        second_resolution = Mock.resolver.resolve(second_spec, locked_manifests)
+        second_resolution.should be_correct
+        second_manifests = second_resolution.manifests
+        second_manifests_index = Hash[second_manifests.map{|m| [m.name, m]}]
+        second_manifests_index['butter'].version.to_s.should == '1.0'
+      end
+
+    end
+
   end
 end
