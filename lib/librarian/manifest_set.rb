@@ -20,19 +20,19 @@ module Librarian
     end
 
     def initialize(manifests)
-      @index = Hash === manifests ? manifests.dup : Hash[manifests.map{|m| [m.name, m]}]
+      self.index = Hash === manifests ? manifests.dup : Hash[manifests.map{|m| [m.name, m]}]
     end
 
     def to_a
-      @index.values
+      index.values
     end
 
     def to_hash
-      @index.dup
+      index.dup
     end
 
     def dup
-      self.class.new(@index)
+      self.class.new(index)
     end
 
     def shallow_strip(names)
@@ -42,7 +42,7 @@ module Librarian
     def shallow_strip!(names)
       names = [names] unless Array === names
       names.each do |name|
-        @index.delete(name)
+        index.delete(name)
       end
       self
     end
@@ -56,7 +56,7 @@ module Librarian
       names = names.dup
       until names.empty?
         name = names.shift
-        manifest = @index.delete(name)
+        manifest = index.delete(name)
         manifest.dependencies.each do |dependency|
           names << dependency.name
         end
@@ -65,13 +65,17 @@ module Librarian
     end
 
     def consistent?
-      @index.values.all? do |manifest|
+      index.values.all? do |manifest|
         manifest.dependencies.all? do |dependency|
           match = @index[dependency.name]
           match && match.satisfies?(dependency)
         end
       end
     end
+
+  private
+
+    attr_accessor :index
 
   end
 end
