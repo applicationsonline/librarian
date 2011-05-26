@@ -98,7 +98,7 @@ module Librarian
     unless lockfile_path.exist?
       resolve!
     end
-    manifests = lockfile.load(lockfile_path.read).manifests
+    manifests = ManifestSet.sort(lockfile.load(lockfile_path.read).manifests)
     manifests.each do |manifest|
       manifest.source.cache!([manifest])
     end
