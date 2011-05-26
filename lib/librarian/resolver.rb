@@ -1,20 +1,11 @@
-require 'tsort'
-
 require 'librarian/helpers/debug'
 
 require 'librarian/dependency'
+require 'librarian/manifest_set'
 require 'librarian/resolution'
 
 module Librarian
   class Resolver
-
-    class GraphHash < Hash
-      include TSort
-      alias tsort_each_node each_key
-      def tsort_each_child(node, &block)
-        self[node].each(&block)
-      end
-    end
 
     class Implementation
       include Helpers::Debug
@@ -141,10 +132,7 @@ module Librarian
     end
 
     def sort(manifests)
-      manifests = Hash[manifests.map{|m| [m.name, m]}] if Array === manifests
-      manifest_pairs = GraphHash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
-      manifest_names = manifest_pairs.tsort
-      manifest_names.map{|n| manifests[n]}
+      ManifestSet.sort(manifests)
     end
 
   end

@@ -1,5 +1,15 @@
+require 'tsort'
+
 module Librarian
   class ManifestSet
+
+    class GraphHash < Hash
+      include TSort
+      alias tsort_each_node each_key
+      def tsort_each_child(node, &block)
+        self[node].each(&block)
+      end
+    end
 
     class << self
       def shallow_strip(manifests, names)
@@ -7,6 +17,12 @@ module Librarian
       end
       def deep_strip(manifests, names)
         new(manifests).deep_strip!(names).send(method_for(manifests))
+      end
+      def sort(manifests)
+        manifests = Hash[manifests.map{|m| [m.name, m]}] if Array === manifests
+        manifest_pairs = GraphHash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
+        manifest_names = manifest_pairs.tsort
+        manifest_names.map{|n| manifests[n]}
       end
     private
       def method_for(manifests)
