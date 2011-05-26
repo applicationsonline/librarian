@@ -64,5 +64,14 @@ module Librarian
       self
     end
 
+    def consistent?
+      @index.values.all? do |manifest|
+        manifest.dependencies.all? do |dependency|
+          match = @index[dependency.name]
+          match && match.satisfies?(dependency)
+        end
+      end
+    end
+
   end
 end
