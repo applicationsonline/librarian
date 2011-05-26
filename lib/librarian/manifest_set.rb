@@ -3,27 +3,52 @@ module Librarian
 
     class << self
       def shallow_strip(manifests, names)
-        new(manifests).shallow_strip!(names).manifests
+        new(manifests).shallow_strip!(names).send(method_for(manifests))
       end
       def deep_strip(manifests, names)
-        new(manifests).deep_strip!(names).manifests
+        new(manifests).deep_strip!(names).send(method_for(manifests))
+      end
+    private
+      def method_for(manifests)
+        case manifests
+        when Hash
+          :to_hash
+        when Array
+          :to_a
+        end
       end
     end
 
-    attr_reader :manifests, :manifests_index
-
     def initialize(manifests)
-      @manifests = manifests.dup
-      @manifests_index = Hash[manifests.map{|m| [m.name, m]}]
+      @index = Hash === manifests ? manifests.dup : Hash[manifests.map{|m| [m.name, m]}]
+    end
+
+    def to_a
+      @index.values
+    end
+
+    def to_hash
+      @index.dup
+    end
+
+    def dup
+      self.class.new(@index)
+    end
+
+    def shallow_strip(names)
+      dup.shallow_strip!(names)
     end
 
     def shallow_strip!(names)
       names = [names] unless Array === names
       names.each do |name|
-        manifests_index.delete(name)
+        @index.delete(name)
       end
-      @manifests = manifests_index.values
       self
+    end
+
+    def deep_strip(names)
+      dup.deep_strip!(names)
     end
 
     def deep_strip!(names)
@@ -31,12 +56,11 @@ module Librarian
       names = names.dup
       until names.empty?
         name = names.shift
-        manifest = manifests_index.delete(name)
+        manifest = @index.delete(name)
         manifest.dependencies.each do |dependency|
           names << dependency.name
         end
       end
-      @manifests = manifests_index.values
       self
     end
 
