@@ -58,6 +58,7 @@ module Librarian
           res << " (#{d.requirement})" if d.requirement
           out.puts "  #{res}"
         end
+        out.puts ""
       end
 
       def dsl_class
