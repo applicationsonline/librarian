@@ -137,7 +137,17 @@ module Librarian
 
   def resolve!
     spec = specfile.read
-    resolution = resolver.resolve(spec)
+
+    if lockfile_path.exist?
+      lock = lockfile.read
+      changes = spec_change_set(spec, lock)
+      return if changes.same?
+      manifests = changes.analyze
+    else
+      manifests = []
+    end
+
+    resolution = resolver.resolve(spec, manifests)
     unless resolution.correct?
       ui.info { "Could not resolve the dependencies." }
     else
