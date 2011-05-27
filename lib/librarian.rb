@@ -117,6 +117,8 @@ module Librarian
     previous_resolution = lockfile.load(lockfile_path.read)
     partial_manifests = ManifestSet.deep_strip(previous_resolution.manifests, dependency_names)
     spec = specfile.read
+    spec_changes = spec_change_set(spec, previous_resolution)
+    raise Error, "Cannot update when the specfile has been changed." unless spec_changes.same?
     resolution = resolver.resolve(spec, partial_manifests)
     unless resolution.correct?
       ui.info { "Could not resolve the dependencies." }
@@ -133,16 +135,16 @@ module Librarian
     end
   end
 
-  def resolve!
+  def resolve!(options = {})
     spec = specfile.read
 
-    if lockfile_path.exist?
+    if options[:force] || !lockfile_path.exist?
+      manifests = []
+    else
       lock = lockfile.read
       changes = spec_change_set(spec, lock)
       return if changes.same?
       manifests = changes.analyze
-    else
-      manifests = []
     end
 
     resolution = resolver.resolve(spec, manifests)

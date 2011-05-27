@@ -63,9 +63,13 @@ module Librarian
     desc "update", "Updates the dependencies you specify."
     method_option "verbose"
     method_option "line-numbers"
-    def update(name)
+    def update(*names)
       root_module.ensure!
-      root_module.update!([name])
+      if names.empty?
+        root_module.resolve!(:force => true)
+      else
+        root_module.update!(names)
+      end
     end
 
   end
