@@ -23,5 +23,9 @@ module Librarian
       Parser.new(root_module).parse(string)
     end
 
+    def read
+      load(path.read)
+    end
+
   end
 end
