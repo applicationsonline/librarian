@@ -1,3 +1,4 @@
+require 'set'
 require 'tsort'
 
 module Librarian
@@ -17,6 +18,12 @@ module Librarian
       end
       def deep_strip(manifests, names)
         new(manifests).deep_strip!(names).send(method_for(manifests))
+      end
+      def shallow_keep(manifests, names)
+        new(manifests).shallow_keep!(names).send(method_for(manifests))
+      end
+      def deep_keep(manifests, names)
+        new(manifests).deep_keep!(names).send(method_for(manifests))
       end
       def sort(manifests)
         manifests = Hash[manifests.map{|m| [m.name, m]}] if Array === manifests
@@ -76,6 +83,35 @@ module Librarian
         end
       end
       self
+    end
+
+    def shallow_keep(names)
+      dup.shallow_keep!(names)
+    end
+
+    def shallow_keep!(names)
+      names = Set.new(names) unless Set === names
+      index.reject! { |k, v| !names.include?(k) }
+      self
+    end
+
+    def deep_keep(names)
+      dup.conservative_strip!(names)
+    end
+
+    def deep_keep!(names)
+      names = Array === names ? names.dup : names.to_a
+      marks = Set.new
+      until names.empty?
+        keep = names.shift
+        unless marks.include?(keep)
+          marks << keep
+          index[keep].dependencies.each do |d|
+            names << d.name
+          end
+        end
+      end
+      shallow_keep!(marks)
     end
 
     def consistent?
