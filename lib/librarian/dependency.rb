@@ -32,5 +32,13 @@ module Librarian
       "#{name} (#{requirement}) <#{source}>"
     end
 
+    def ==(other)
+      !other.nil? &&
+      self.class        == other.class        &&
+      self.name         == other.name         &&
+      self.requirement  == other.requirement  &&
+      self.source       == other.source
+    end
+
   end
 end

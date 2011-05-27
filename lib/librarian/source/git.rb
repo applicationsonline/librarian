@@ -41,6 +41,14 @@ module Librarian
         "#{uri}##{ref}"
       end
 
+      def ==(other)
+        other &&
+        self.class  == other.class  &&
+        self.uri    == other.uri    &&
+        self.ref    == other.ref    &&
+        (self.sha.nil? || other.sha.nil? || self.sha == other.sha)
+      end
+
       def to_lock_options
         {:remote => uri, :ref => ref, :sha => sha}
       end

@@ -45,6 +45,12 @@ module Librarian
           name
         end
 
+        def ==(other)
+          other &&
+          self.class  == other.class &&
+          self.name   == other.name
+        end
+
         def to_lock_options
           {:remote => name}
         end

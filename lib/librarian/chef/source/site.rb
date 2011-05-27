@@ -120,6 +120,12 @@ module Librarian
           uri
         end
 
+        def ==(other)
+          other &&
+          self.class  == other.class &&
+          self.uri    == other.uri
+        end
+
         def to_lock_options
           {:remote => uri}
         end
