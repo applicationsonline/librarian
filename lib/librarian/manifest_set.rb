@@ -56,7 +56,6 @@ module Librarian
     end
 
     def shallow_strip!(names)
-      names = [names] unless Array === names
       names.each do |name|
         index.delete(name)
       end
@@ -68,8 +67,7 @@ module Librarian
     end
 
     def deep_strip!(names)
-      names = [names] unless Array === names
-      names = names.dup
+      names = Array === names ? names.dup : names.to_a
       until names.empty?
         name = names.shift
         manifest = index.delete(name)
@@ -83,7 +81,7 @@ module Librarian
     def consistent?
       index.values.all? do |manifest|
         manifest.dependencies.all? do |dependency|
-          match = @index[dependency.name]
+          match = index[dependency.name]
           match && match.satisfies?(dependency)
         end
       end
