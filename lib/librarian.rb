@@ -143,7 +143,10 @@ module Librarian
     else
       lock = lockfile.read
       changes = spec_change_set(spec, lock)
-      return if changes.same?
+      if changes.same?
+        debug { "The specfile is unchanged: nothing to do." }
+        return
+      end
       manifests = changes.analyze
     end
 
