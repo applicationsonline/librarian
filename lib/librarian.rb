@@ -9,6 +9,7 @@ require 'librarian/manifest_set'
 require 'librarian/particularity'
 require 'librarian/resolver'
 require 'librarian/source'
+require 'librarian/spec_change_set'
 require 'librarian/specfile'
 require 'librarian/lockfile'
 require 'librarian/ui'
@@ -69,6 +70,10 @@ module Librarian
 
   def project_relative_path_to(path)
     Pathname.new(path).relative_path_from(project_path)
+  end
+
+  def spec_change_set(spec, lock)
+    SpecChangeSet.new(self, spec, lock)
   end
 
   def ensure!
