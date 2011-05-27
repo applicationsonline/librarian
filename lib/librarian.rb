@@ -147,7 +147,7 @@ module Librarian
 
     resolution = resolver.resolve(spec, manifests)
     unless resolution.correct?
-      ui.info { "Could not resolve the dependencies." }
+      raise Error, "Could not resolve the dependencies."
     else
       lockfile_text = lockfile.save(resolution)
       debug { "Bouncing #{lockfile_name}" }
