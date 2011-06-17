@@ -14,15 +14,14 @@ module Librarian
 
       def compile(resolution)
         out = StringIO.new
-        save_manifests(out, resolution.manifests)
+        save_sources(out, resolution.manifests)
         save_dependencies(out, resolution.dependencies)
-        out.rewind
-        out.read
+        out.string
       end
 
     private
 
-      def save_manifests(out, manifests)
+      def save_sources(out, manifests)
         dsl_class.source_types.map{|t| t[1]}.each do |type|
           type_manifests = manifests.select{|m| type === m.source}
           sources = type_manifests.map{|m| m.source}.uniq.sort_by{|s| s.to_s}
