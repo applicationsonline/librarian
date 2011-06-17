@@ -133,5 +133,33 @@ module Librarian
 
     end
 
+    context "a simple root source change" do
+      it "should work" do
+        Mock.registry :clear => true do
+          source 'source-1' do
+            spec 'butter', '1.0'
+          end
+          source 'source-2' do
+            spec 'butter', '1.0'
+          end
+        end
+        spec = Mock.dsl do
+          src 'source-1'
+          dep 'butter'
+        end
+        lock = Mock.resolver.resolve(spec)
+        lock.should be_correct
+
+        spec = Mock.dsl do
+          src 'source-1'
+          dep 'butter', :src => 'source-2'
+        end
+        changes = Mock.spec_change_set(spec, lock)
+        changes.should_not be_same
+        manifests = ManifestSet.new(changes.analyze).to_hash
+        manifests.should_not have_key('butter')
+      end
+    end
+
   end
 end
