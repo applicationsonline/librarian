@@ -11,6 +11,10 @@ module Librarian
       manifests && manifests_consistent_with_dependencies? && manifests_internally_consistent?
     end
 
+    def sources
+      manifests.map{|m| m.source}.uniq
+    end
+
   private
 
     def build_manifests_index(manifests)

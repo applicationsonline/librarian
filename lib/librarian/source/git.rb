@@ -49,6 +49,10 @@ module Librarian
         (self.sha.nil? || other.sha.nil? || self.sha == other.sha)
       end
 
+      def to_spec_args
+        [uri, {:ref => ref}]
+      end
+
       def to_lock_options
         {:remote => uri, :ref => ref, :sha => sha}
       end

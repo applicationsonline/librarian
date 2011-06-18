@@ -126,6 +126,10 @@ module Librarian
           self.uri    == other.uri
         end
 
+        def to_spec_args
+          [uri, {}]
+        end
+
         def to_lock_options
           {:remote => uri}
         end

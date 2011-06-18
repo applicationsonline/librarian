@@ -8,8 +8,8 @@ module Librarian
       @path = path
     end
 
-    def read
-      root_module.dsl_class.run(self)
+    def read(precache_sources = [])
+      root_module.dsl_class.run(self, precache_sources)
     end
 
   end

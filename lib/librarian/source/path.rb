@@ -34,6 +34,10 @@ module Librarian
         self.path   == other.path
       end
 
+      def to_spec_args
+        [path.to_s, {}]
+      end
+
       def to_lock_options
         absolute_path = path.absolute? ? path : path.expand_path(root_module.project_path)
         relative_path = path.relative? ? path : path.relative_path_from(root_module.project_path)

@@ -51,6 +51,10 @@ module Librarian
           self.name   == other.name
         end
 
+        def to_spec_args
+          [name, {}]
+        end
+
         def to_lock_options
           {:remote => name}
         end

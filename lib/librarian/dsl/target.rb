@@ -25,7 +25,7 @@ module Librarian
       SCOPABLES = [:sources]
 
       attr_reader :dependency_name, :dependency_type
-      attr_reader :source_types, :source_types_map, :source_type_names, :source_shortcuts
+      attr_reader :source_types, :source_types_map, :source_types_reverse_map, :source_type_names, :source_shortcuts
       attr_reader :dependencies, :source_cache, *SCOPABLES
 
       def initialize(dsl)
@@ -33,6 +33,7 @@ module Librarian
         @dependency_type = dsl.dependency_type
         @source_types = dsl.source_types
         @source_types_map = Hash[source_types]
+        @source_types_reverse_map = Hash[source_types.map{|pair| a, b = pair ; [b, a]}]
         @source_type_names = source_types.map{|t| t[0]}
         @source_cache = {}
         @source_shortcuts = {}
@@ -73,6 +74,13 @@ module Librarian
           scope_or_directive(block) do
             @sources = @sources.dup << source
           end
+        end
+      end
+
+      def precache_sources(sources)
+        sources.each do |source|
+          key = [source_types_reverse_map[source.class], *source.to_spec_args]
+          source_cache[key] = source
         end
       end
 
