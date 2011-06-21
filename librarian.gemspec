@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec"
   s.add_development_dependency "cucumber"
   s.add_development_dependency "aruba"
+  s.add_development_dependency "webmock"
 
   s.add_development_dependency "chef", ">= 0.10"
 end
