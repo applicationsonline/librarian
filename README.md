@@ -17,19 +17,44 @@ An adapter for Librarian applying to Chef cookbooks in a Chef Repository.
 Usage:
 
     $ cd ~/path/to/chef-repo
-    # put dependencies and their sources into ./Cheffile
 
-    # resolve dependencies:
-    $ librarian-chef resolve [--clean] [--verbose]
+    # put dependencies and their sources into Cheffile
+    $ cat Cheffile
+    site 'http://community.opscode.com/api/v1'
+    cookbook 'ntp'
+    cookbook 'timezone'
+    cookbook 'rvm',
+      :git => 'https://github.com/fnichol/chef-rvm',
+      :ref => 'v0.7.1'
 
     # install dependencies into ./cookbooks
     $ librarian-chef install [--clean] [--verbose]
 
+    # check into version control your ./Cheffile.lock
+    $ git add Cheffile.lock
+    $ git commit -m "I want these particular versions of these particular cookbooks from these particular."
+
     # update your cheffile with new/changed/removed constraints/sources/dependencies
+    $ cat Cheffile
+    site 'http://community.opscode.com/api/v1'
+    cookbook 'ntp'
+    cookbook 'timezone'
+    cookbook 'rvm',
+      :git => 'https://github.com/fnichol/chef-rvm',
+      :ref => 'v0.7.1'
+    cookbook 'monit' # new!
+    $ git diff Cheffile
     $ librarian-chef install [--verbose]
+    $ git diff Cheffile.lock
+    $ git add Cheffile
+    $ git add Cheffile.lock
+    $ git commit -m "I also want these additional cookbooks."
 
     # update the version of a dependency
-    $ librarian-chef update dependency-1 dependency-2 dependency-3 [--verbose]
+    $ librarian-chef update ntp timezone monit [--verbose]
+    $ git diff Cheffile.lock
+    $ git add Cheffile.lock
+    $ git commit -m "I want updated versions of these cookbooks."
 
 You should `.gitignore` your `./cookbooks` directory.
 If you are manually tracking/vendoring outside cookbooks within the repository,
