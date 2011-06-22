@@ -16,16 +16,24 @@ An adapter for Librarian applying to Chef cookbooks in a Chef Repository.
 
 Usage:
 
+    # install librarian onto your system
+    $ gem install librarian
+
     $ cd ~/path/to/chef-repo
+
+    # make sure your cookbooks directory exists but is gitignored
+    $ git rm -r cookbooks # if the directory is present
+    $ mkdir cookbooks
+    $ echo cookbooks >> .gitignore
 
     # put dependencies and their sources into Cheffile
     $ cat Cheffile
-    site 'http://community.opscode.com/api/v1'
-    cookbook 'ntp'
-    cookbook 'timezone'
-    cookbook 'rvm',
-      :git => 'https://github.com/fnichol/chef-rvm',
-      :ref => 'v0.7.1'
+        site 'http://community.opscode.com/api/v1'
+        cookbook 'ntp'
+        cookbook 'timezone'
+        cookbook 'rvm',
+          :git => 'https://github.com/fnichol/chef-rvm',
+          :ref => 'v0.7.1'
 
     # install dependencies into ./cookbooks
     $ librarian-chef install [--clean] [--verbose]
@@ -36,13 +44,13 @@ Usage:
 
     # update your cheffile with new/changed/removed constraints/sources/dependencies
     $ cat Cheffile
-    site 'http://community.opscode.com/api/v1'
-    cookbook 'ntp'
-    cookbook 'timezone'
-    cookbook 'rvm',
-      :git => 'https://github.com/fnichol/chef-rvm',
-      :ref => 'v0.7.1'
-    cookbook 'monit' # new!
+        site 'http://community.opscode.com/api/v1'
+        cookbook 'ntp'
+        cookbook 'timezone'
+        cookbook 'rvm',
+          :git => 'https://github.com/fnichol/chef-rvm',
+          :ref => 'v0.7.1'
+        cookbook 'monit' # new!
     $ git diff Cheffile
     $ librarian-chef install [--verbose]
     $ git diff Cheffile.lock
@@ -55,6 +63,12 @@ Usage:
     $ git diff Cheffile.lock
     $ git add Cheffile.lock
     $ git commit -m "I want updated versions of these cookbooks."
+
+    # push your changes to the git repository
+    $ git push origin master
+
+    # upload the cookbooks to your chef-server
+    $ knife cookbook upload --all
 
 You should `.gitignore` your `./cookbooks` directory.
 If you are manually tracking/vendoring outside cookbooks within the repository,
