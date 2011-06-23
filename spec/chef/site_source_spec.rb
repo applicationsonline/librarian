@@ -39,8 +39,6 @@ module Librarian
           Dir.chdir(sample_path.dirname) do
             system "tar --create --gzip --file sample.tar.gz #{sample_path.basename}"
           end
-
-          WebMock.allow_net_connect!(:net_http_connect_on_start => true)
         end
 
         before do
