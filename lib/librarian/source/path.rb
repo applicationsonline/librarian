@@ -39,9 +39,7 @@ module Librarian
       end
 
       def to_lock_options
-        absolute_path = path.absolute? ? path : path.expand_path(root_module.project_path)
-        relative_path = path.relative? ? path : path.relative_path_from(root_module.project_path)
-        {:remote => relative_path.to_s[0, 3] == '../' ? absolute_path : relative_path}
+        {:remote => path}
       end
 
       def cache!(dependencies)
