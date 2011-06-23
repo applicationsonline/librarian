@@ -27,12 +27,13 @@ module Librarian
         :ref => 'master'
       }
 
-      attr_reader :uri, :ref, :sha
+      attr_reader :uri, :ref, :sha, :path
 
       def initialize(uri, options = {})
         @uri = uri
         @ref = options[:ref] || DEFAULTS[:ref]
         @sha = options[:sha]
+        @path = options[:path]
         @repository = nil
         @repository_cache_path = nil
       end
@@ -46,15 +47,20 @@ module Librarian
         self.class  == other.class  &&
         self.uri    == other.uri    &&
         self.ref    == other.ref    &&
+        self.path   == other.path   &&
         (self.sha.nil? || other.sha.nil? || self.sha == other.sha)
       end
 
       def to_spec_args
-        [uri, {:ref => ref}]
+        options = {:ref => ref}
+        options.merge!(:path => path) if path
+        [uri, options]
       end
 
       def to_lock_options
-        {:remote => uri, :ref => ref, :sha => sha}
+        options = {:remote => uri, :ref => ref, :sha => sha}
+        options.merge!(:path => path) if path
+        options
       end
 
       def cache!(dependencies)
@@ -71,7 +77,8 @@ module Librarian
 
       def repository_cache_path
         @repository_cache_path ||= begin
-          dir = Digest::MD5.hexdigest(uri)
+          dir = path ? "#{uri}/#{path}" : uri
+          dir = Digest::MD5.hexdigest(dir)
           root_module.cache_path.join("source/git/#{dir}")
         end
       end
@@ -82,8 +89,18 @@ module Librarian
         end
       end
 
-      def path
-        @path ||= repository.path
+      def filesystem_path
+        @filesystem_path ||= repository.path
+      end
+
+      # Override Local#manifest_search_paths
+      def manifest_search_paths(dependency)
+        if path.nil?
+          paths = [filesystem_path, filesystem_path.join(dependency.name)]
+          paths.select{|s| s.exist?}
+        else
+          [filesystem_path.join(path)]
+        end
       end
 
     end

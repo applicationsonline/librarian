@@ -21,7 +21,7 @@ module Librarian
       attr_reader :path
 
       def initialize(path, options)
-        @path = Pathname.new(path).expand_path(root_module.project_path)
+        @path = path
       end
 
       def to_s
@@ -45,6 +45,10 @@ module Librarian
       end
 
       def cache!(dependencies)
+      end
+
+      def filesystem_path
+        @filesystem_path ||= Pathname.new(path).expand_path(root_module.project_path)
       end
 
     end

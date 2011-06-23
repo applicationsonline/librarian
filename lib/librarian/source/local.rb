@@ -12,19 +12,19 @@ module Librarian
       abstract_method :path
 
       def manifests(dependency)
-        manifest = manifest_class.create(self, dependency, path)
+        manifest = manifest_class.create(self, dependency, filesystem_path)
         [manifest].compact
       end
 
       def manifest(name, version, dependencies)
-        manifest = manifest_class.create(self, Dependency.new(name, nil, nil), path)
+        manifest = manifest_class.create(self, Dependency.new(name, nil, nil), filesystem_path)
         manifest.version = version
         manifest.dependencies = dependencies
         manifest
       end
 
       def manifest_search_paths(dependency)
-        paths = [path, path.join(dependency.name)]
+        paths = [filesystem_path, filesystem_path.join(dependency.name)]
         paths.select{|s| s.exist?}
       end
 
