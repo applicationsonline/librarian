@@ -1,10 +1,14 @@
 require 'rubygems'
 
+require 'librarian/helpers/debug'
+
 module Librarian
   class Dependency
 
     class Requirement < Gem::Requirement
     end
+
+    include Helpers::Debug
 
     attr_reader :name, :requirement, :source
 
@@ -38,6 +42,12 @@ module Librarian
       self.name         == other.name         &&
       self.requirement  == other.requirement  &&
       self.source       == other.source
+    end
+
+  private
+
+    def root_module
+      source.root_module
     end
 
   end
