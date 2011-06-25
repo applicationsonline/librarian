@@ -39,7 +39,7 @@ module Librarian
       end
 
       def to_s
-        "#{uri}##{ref}"
+        path ? "#{uri}##{ref}(#{path})" : "#{uri}##{ref}"
       end
 
       def ==(other)
@@ -90,17 +90,7 @@ module Librarian
       end
 
       def filesystem_path
-        @filesystem_path ||= repository.path
-      end
-
-      # Override Local#manifest_search_paths
-      def manifest_search_paths(dependency)
-        if path.nil?
-          paths = [filesystem_path, filesystem_path.join(dependency.name)]
-          paths.select{|s| s.exist?}
-        else
-          [filesystem_path.join(path)]
-        end
+        @filesystem_path ||= path ? repository.path.join(path) : repository.path
       end
 
     end
