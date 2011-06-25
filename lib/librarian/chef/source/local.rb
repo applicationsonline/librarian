@@ -18,8 +18,7 @@ module Librarian
 
             def manifest?(dependency, path)
               path = Pathname.new(path)
-              manifest_path = manifest_path(path)
-              manifest_path && check_manifest(dependency, manifest_path)
+              !!manifest_path(path)
             end
 
             def check_manifest(dependency, manifest_path)
