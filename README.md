@@ -75,6 +75,19 @@ If you are manually tracking/vendoring outside cookbooks within the repository,
   put them in another directory such as `./cookbooks-sources` and use the `:path` source.
   You should typically not need to do this.
 
+You can integrate your `knife.rb` with Librarian. Stick the following in your `knife.rb`:
+
+    require 'librarian/chef/integration/knife'
+    cookbook_path Librarian::Chef.install_path, "chef-repo/site-cookbooks"
+
+In the above, make sure *not* to include the path to your `chef-repo/cookbooks`. If you
+  have additional cookbooks directories in your chef-repo that you use for `:path`-sourced
+  cookbooks in your `Cheffile`, make sure *not* to include the paths to those additional
+  cookbooks directories either in your chef-repo. Since your `chef-repo/site-cookbooks`
+  directory is for overrides (monkey-patches) to external cookbooks, and since you should
+  not have any `:path`-sourced cookbooks in your `Cheffile` sourced from that directory,
+  you still need to include your `chef-repo/site-cookbooks` directory in the above list.
+
 License
 -------
 
