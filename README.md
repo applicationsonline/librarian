@@ -19,13 +19,13 @@ An adapter for Librarian applying to Chef cookbooks in a Chef Repository.
     $ gem install librarian
 
 
-## Make sure your cookbooks directory exists but is gitignored
+__Make sure your cookbooks directory exists but is gitignored__
     $ cd ~/path/to/chef-repo
     $ git rm -r cookbooks # if the directory is present
     $ mkdir cookbooks
     $ echo cookbooks >> .gitignore
 
-## Add dependencies and their sources to Cheffile
+__Add dependencies and their sources to Cheffile__
     $ cat Cheffile
         site 'http://community.opscode.com/api/v1'
         cookbook 'ntp'
@@ -34,14 +34,14 @@ An adapter for Librarian applying to Chef cookbooks in a Chef Repository.
           :git => 'https://github.com/fnichol/chef-rvm',
           :ref => 'v0.7.1'
 
-## install dependencies into ./cookbooks
+__install dependencies into ./cookbooks__
     $ librarian-chef install [--clean] [--verbose]
 
-## check into version control your ./Cheffile.lock
+__Check your Cheffile.lock into version control__
     $ git add Cheffile.lock
     $ git commit -m "I want these particular versions of these particular cookbooks from these particular."
 
-## update your cheffile with new/changed/removed constraints/sources/dependencies
+__Update your cheffile with new/changed/removed constraints/sources/dependencies__
     $ cat Cheffile
         site 'http://community.opscode.com/api/v1'
         cookbook 'ntp'
@@ -57,16 +57,16 @@ An adapter for Librarian applying to Chef cookbooks in a Chef Repository.
     $ git add Cheffile.lock
     $ git commit -m "I also want these additional cookbooks."
 
-## update the version of a dependency
+__Update the version of a dependency__
     $ librarian-chef update ntp timezone monit [--verbose]
     $ git diff Cheffile.lock
     $ git add Cheffile.lock
     $ git commit -m "I want updated versions of these cookbooks."
 
-## push your changes to the git repository
+__Push your changes to the git repository__
     $ git push origin master
 
-## upload the cookbooks to your chef-server
+__Upload the cookbooks to your chef-server__
     $ knife cookbook upload --all
 
 You should `.gitignore` your `./cookbooks` directory.
