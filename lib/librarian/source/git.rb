@@ -27,13 +27,14 @@ module Librarian
         :ref => 'master'
       }
 
-      attr_reader :uri, :ref, :sha, :path
+      attr_reader :uri, :ref, :sha, :path, :key
 
       def initialize(uri, options = {})
         @uri = uri
         @ref = options[:ref] || DEFAULTS[:ref]
         @sha = options[:sha]
         @path = options[:path]
+        @key = options[:key]
         @repository = nil
         @repository_cache_path = nil
       end
@@ -48,18 +49,21 @@ module Librarian
         self.uri    == other.uri    &&
         self.ref    == other.ref    &&
         self.path   == other.path   &&
+        self.key    == other.key    &&
         (self.sha.nil? || other.sha.nil? || self.sha == other.sha)
       end
 
       def to_spec_args
         options = {:ref => ref}
         options.merge!(:path => path) if path
+        options.merge!(:key => key) if key
         [uri, options]
       end
 
       def to_lock_options
         options = {:remote => uri, :ref => ref, :sha => sha}
         options.merge!(:path => path) if path
+        options.merge!(:key => key) if key
         options
       end
 
@@ -85,7 +89,8 @@ module Librarian
 
       def repository
         @repository ||= begin
-          Repository.new(root_module, repository_cache_path)
+          absolute_key = Pathname.new(key).expand_path(root_module.project_path).to_s if key
+          Repository.new(root_module, repository_cache_path, :key => absolute_key)
         end
       end
 
