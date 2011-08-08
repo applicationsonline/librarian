@@ -9,7 +9,9 @@ module Librarian
     module KnifeIntegration
       def install_path
         @install_path ||= begin
-          enclosing = Pathname.new("/tmp/librarian/chef/integration/knife/install")
+          has_home = ENV["HOME"] && File.directory?(ENV["HOME"])
+          tmp_dir = Pathname.new(has_home ? "~/.librarian/tmp" : "/tmp/librarian").expand_path
+          enclosing = tmp_dir.join("chef/integration/knife/install")
           enclosing.mkpath unless enclosing.exist?
           dir = enclosing.join(SecureRandom.hex(16))
           dir.mkpath
