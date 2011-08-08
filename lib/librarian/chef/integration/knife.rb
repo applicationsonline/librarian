@@ -35,6 +35,11 @@ module Librarian
       previous_resolution.manifests.each do |manifest|
         manifest.install!
       end
+    rescue Error => e
+      hl = HighLine.new
+      message = hl.color(e.message, HighLine::RED)
+      hl.say(message)
+      Process.exit!(1)
     end
 
     install_consistent_resolution!
