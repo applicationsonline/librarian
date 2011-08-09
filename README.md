@@ -95,6 +95,11 @@ In the above, make sure *not* to include the path to your `chef-repo/cookbooks`.
   not have any `:path`-sourced cookbooks in your `Cheffile` sourced from that directory,
   you still need to include your `chef-repo/site-cookbooks` directory in the above list.
 
+What this integration does is when you use `knife`, it will enforce that your `Cheffile`
+  and `Cheffile.lock` are in sync. When you `knife cookbook upload`, it will be sure to
+  upload the same cookbook as is in your `Cheffile.lock`, regardless of what you've done
+  to your `chef-repo/cookbooks` directory.
+
 License
 -------
 
