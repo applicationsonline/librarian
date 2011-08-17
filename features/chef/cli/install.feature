@@ -1,4 +1,4 @@
-Feature: cli/catalog
+Feature: cli/install
 
 
 
