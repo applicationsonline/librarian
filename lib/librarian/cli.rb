@@ -72,5 +72,10 @@ module Librarian
       end
     end
 
+    desc "init", "Initializes the current directory."
+    def init
+      puts "Nothing to do."
+    end
+
   end
 end

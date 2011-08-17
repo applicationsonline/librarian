@@ -26,6 +26,10 @@ __Make sure your cookbooks directory exists but is gitignored__
     $ mkdir cookbooks
     $ echo cookbooks >> .gitignore
 
+__Make a Cheffile__
+
+    $ librarian-chef init
+
 __Add dependencies and their sources to Cheffile__
 
     $ cat Cheffile
