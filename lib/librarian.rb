@@ -105,6 +105,7 @@ module Librarian
     manifests.each do |manifest|
       manifest.source.cache!([manifest])
     end
+    install_path.mkpath unless install_path.exist?
     manifests.each do |manifest|
       manifest.install!
     end
