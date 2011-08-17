@@ -19,12 +19,17 @@ An adapter for Librarian applying to Chef cookbooks in a Chef Repository.
     $ gem install librarian
 
 
-__Make sure your cookbooks directory exists but is gitignored__
+__Make sure your cookbooks directory is gitignored__
 
     $ cd ~/path/to/chef-repo
     $ git rm -r cookbooks # if the directory is present
-    $ mkdir cookbooks
     $ echo cookbooks >> .gitignore
+
+Note that librarian *takes over* your cookbooks directory
+  and manages it for you based on your Cheffile. Your
+  Cheffile becomes the authoritative source for what
+  cookbooks you have, rather than the directories in your
+  cookbooks directory.
 
 __Make a Cheffile__
 
