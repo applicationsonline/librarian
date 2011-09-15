@@ -78,8 +78,10 @@ module Librarian
       until names.empty?
         name = names.shift
         manifest = index.delete(name)
-        manifest.dependencies.each do |dependency|
-          names << dependency.name
+        if manifest
+          manifest.dependencies.each do |dependency|
+            names << dependency.name
+          end
         end
       end
       self
