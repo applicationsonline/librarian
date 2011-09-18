@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'highline'
 
 require 'librarian'
 require 'librarian/chef'
