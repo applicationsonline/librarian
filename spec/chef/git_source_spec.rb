@@ -168,6 +168,28 @@ module Librarian
 
         end
 
+        context "missing a metadata" do
+          git_path = tmp_path.join('big-git-repo')
+
+          it "should explain the problem" do
+            repo_path = tmp_path.join("repo/resolve")
+            repo_path.rmtree if repo_path.exist?
+            repo_path.mkpath
+            repo_path.join("cookbooks").mkpath
+            cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
+              cookbook "sample",
+                :git => #{git_path.to_s.inspect}
+            CHEFFILE
+            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
+            Chef.stub!(:project_path) { repo_path }
+
+            expect { Chef.resolve! }.
+              to raise_error(Librarian::Error, /no metadata file found/i)
+            repo_path.join("Cheffile.lock").should_not be_exist
+            repo_path.join("cookbooks/sample").should_not be_exist
+          end
+        end
+
       end
     end
   end

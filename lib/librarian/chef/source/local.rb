@@ -45,6 +45,8 @@ module Librarian
           end
 
           def fetch_manifest!
+            expect_manifest
+
             read_manifest(name, manifest_path(found_path))
           end
 
@@ -65,6 +67,13 @@ module Librarian
             end
             debug { "Copying #{relative_path_to(found_path)} to #{relative_path_to(install_path)}" }
             FileUtils.cp_r(found_path, install_path)
+          end
+
+        private
+
+          def expect_manifest
+            return if found_path && manifest_path(found_path)
+            raise Error, "No metadata file found for #{name} from #{source}! If this should be a cookbook, you might consider contributing a metadata file upstream or forking the cookbook to add your own metadata file."
           end
 
         end
