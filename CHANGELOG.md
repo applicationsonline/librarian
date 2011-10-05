@@ -4,6 +4,8 @@
 
 * A change log.
 
+* \#10 Fixes the problem with bouncing the lockfile when updating, when using a git source with the default ref.
+
 ## 0.0.7
 
 * \#8 Add highline temporarily as a runtime dependency of `librarian` (@fnichol).
