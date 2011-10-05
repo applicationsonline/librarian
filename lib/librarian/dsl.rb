@@ -1,9 +1,14 @@
 require 'librarian/dependency'
 require 'librarian/dsl/receiver'
 require 'librarian/dsl/target'
+require 'librarian/helpers/debug'
+require 'librarian/particularity'
 
 module Librarian
   class Dsl
+
+    include Particularity
+    include Helpers::Debug
 
     class Error < Exception
     end
@@ -63,13 +68,27 @@ module Librarian
     def run(specfile = nil, sources = [])
       Target.new(self).tap do |target|
         target.precache_sources(sources)
+        debug_named_source_cache("Pre-Cached Sources", target)
+
         receiver = Receiver.new(target)
         if block_given?
           receiver.run(&Proc.new)
         else
           receiver.run(specfile)
         end
+
+        debug_named_source_cache("Post-Cached Sources", target)
       end.to_spec
+    end
+
+    def debug_named_source_cache(name, target)
+      source_cache = target.source_cache
+      debug { "#{name}:" }
+      source_cache.each do |key, value|
+        type = key[0]
+        attributes = key[1...key.size]
+        debug { "  #{key.inspect}" }
+      end
     end
 
   end

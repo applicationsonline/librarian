@@ -1,9 +1,13 @@
 require 'librarian/dsl'
+require 'librarian/chef/particularity'
 require 'librarian/chef/source'
 
 module Librarian
   module Chef
     class Dsl < Librarian::Dsl
+
+      include Particularity
+
       dependency :cookbook
 
       source :site => Source::Site

@@ -121,10 +121,6 @@ module Librarian
     end
     previous_resolution = lockfile.load(lockfile_path.read)
     partial_manifests = ManifestSet.deep_strip(previous_resolution.manifests, dependency_names)
-    debug { "Precaching Sources:" }
-    previous_resolution.sources.each do |source|
-      debug { "  #{source}" }
-    end
     spec = specfile.read(previous_resolution.sources)
     spec_changes = spec_change_set(spec, previous_resolution)
     raise Error, "Cannot update when the specfile has been changed." unless spec_changes.same?
@@ -150,10 +146,6 @@ module Librarian
       manifests = []
     else
       lock = lockfile.read
-      debug { "Precaching Sources:" }
-      lock.sources.each do |source|
-        debug { "  #{source}" }
-      end
       spec = specfile.read(lock.sources)
       changes = spec_change_set(spec, lock)
       if changes.same?
