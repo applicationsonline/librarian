@@ -52,7 +52,8 @@ module Librarian
       end
 
       def to_spec_args
-        options = {:ref => ref}
+        options = {}
+        options.merge!(:ref => ref) if ref != DEFAULTS[:ref]
         options.merge!(:path => path) if path
         [uri, options]
       end
