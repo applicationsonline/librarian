@@ -14,11 +14,23 @@ module Librarian
         project_path = project_path.dirname until project_path.join("Rakefile").exist?
         tmp_path = project_path.join("tmp/spec/chef/git-source")
 
+        cookbooks_path = tmp_path.join('cookbooks')
+
         context "a single dependency with a git source" do
 
           sample_path = tmp_path.join('sample')
           sample_metadata = Helpers.strip_heredoc(<<-METADATA)
             version '0.6.5'
+          METADATA
+
+          first_sample_path = cookbooks_path.join('first-sample')
+          first_sample_metadata = Helpers.strip_heredoc(<<-METADATA)
+            version '3.2.1'
+          METADATA
+
+          second_sample_path = cookbooks_path.join('second-sample')
+          second_sample_metadata = Helpers.strip_heredoc(<<-METADATA)
+            version '4.3.2'
           METADATA
 
           before :all do
@@ -28,6 +40,18 @@ module Librarian
             Dir.chdir(sample_path) do
               `git init`
               `git add metadata.rb`
+              `git commit -m "Initial commit."`
+            end
+
+            cookbooks_path.rmtree if cookbooks_path.exist?
+            cookbooks_path.mkpath
+            first_sample_path.mkpath
+            first_sample_path.join('metadata.rb').open('wb') { |f| f.write(first_sample_metadata) }
+            second_sample_path.mkpath
+            second_sample_path.join('metadata.rb').open('wb') { |f| f.write(second_sample_metadata) }
+            Dir.chdir(cookbooks_path) do
+              `git init`
+              `git add .`
               `git commit -m "Initial commit."`
             end
           end
@@ -84,6 +108,30 @@ module Librarian
             Chef.install!
             repo_path.join('cookbooks/sample').should be_exist
             repo_path.join('cookbooks/sample/metadata.rb').should be_exist
+          end
+
+          it "should resolve, change, and resolve" do
+            repo_path = tmp_path.join('repo/resolve-update')
+            repo_path.rmtree if repo_path.exist?
+            repo_path.mkpath
+            repo_path.join('cookbooks').mkpath
+            cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
+              git #{cookbooks_path.to_s.inspect}
+              cookbook "first-sample"
+            CHEFFILE
+            repo_path.join('Cheffile').open('wb') { |f| f.write(cheffile) }
+            Chef.stub!(:project_path) { repo_path }
+            Chef.resolve!
+            repo_path.join('Cheffile.lock').should exist
+
+            cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
+              git #{cookbooks_path.to_s.inspect}
+              cookbook "first-sample"
+              cookbook "second-sample"
+            CHEFFILE
+            repo_path.join('Cheffile').open('wb') { |f| f.write(cheffile) }
+            Chef.stub!(:project_path) { repo_path }
+            Chef.resolve!
           end
 
         end
