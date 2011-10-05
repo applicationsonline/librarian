@@ -32,6 +32,11 @@ module Librarian
       root_module.ui.debug_line_numbers! if options["verbose"] && options["line-numbers"]
     end
 
+    desc "version", "Displays the version."
+    def version
+      say "librarian-#{root_module.version}"
+    end
+
     desc "clean", "Cleans out the cache and install paths."
     method_option "verbose"
     method_option "line-numbers"

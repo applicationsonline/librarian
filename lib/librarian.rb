@@ -76,6 +76,10 @@ module Librarian
     SpecChangeSet.new(self, spec, lock)
   end
 
+  def version
+    VERSION
+  end
+
   def ensure!
     unless project_path
       raise Error, "Cannot find #{specfile_name}!"
