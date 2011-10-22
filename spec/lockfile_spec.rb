@@ -4,40 +4,46 @@ require 'librarian/mock'
 module Librarian
   describe Lockfile do
 
-    it "should save" do
+    before do
       Mock.registry :clear => true do
         source 'source-1' do
           spec 'alpha', '1.1'
         end
       end
-      spec = Mock.dsl do
-        src 'source-1'
-        dep 'alpha', '1.1'
-      end
-      resolution = Mock.resolver.resolve(spec)
-      resolution.should be_correct
-      lockfile = Mock.ephemeral_lockfile
-      lockfile_text = lockfile.save(resolution)
-      lockfile_text.should_not be_nil
     end
 
-    it "should bounce" do
-      Mock.registry :clear => true do
-        source 'source-1' do
-          spec 'alpha', '1.1'
-        end
-      end
-      spec = Mock.dsl do
+    let(:spec) do
+      Mock.dsl do
         src 'source-1'
         dep 'alpha', '1.1'
       end
-      resolution = Mock.resolver.resolve(spec)
-      resolution.should be_correct
-      lockfile = Mock.ephemeral_lockfile
-      lockfile_text = lockfile.save(resolution)
-      bounced_resolution = lockfile.load(lockfile_text)
-      bounced_lockfile_text = lockfile.save(bounced_resolution)
-      bounced_lockfile_text.should == lockfile_text
+    end
+
+    let(:resolver) { Mock.resolver }
+    let(:resolution) { resolver.resolve(spec) }
+
+    context "sanity" do
+      subject { resolution }
+      it { should be_correct }
+    end
+
+    describe "#save" do
+      let(:lockfile) { Mock.ephemeral_lockfile }
+      let(:lockfile_text) { lockfile.save(resolution) }
+
+      context "just saving" do
+        subject { lockfile_text }
+        it { should_not be_nil }
+      end
+
+      context "bouncing" do
+        let(:bounced_resolution) { lockfile.load(lockfile_text) }
+        let(:bounced_lockfile_text) { lockfile.save(bounced_resolution) }
+
+        subject { bounced_lockfile_text }
+
+        it { should == lockfile_text }
+      end
     end
 
   end
