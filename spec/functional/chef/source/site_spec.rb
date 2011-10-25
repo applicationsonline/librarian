@@ -123,6 +123,33 @@ module Librarian
 
         end
 
+        context "when the repo path has a space" do
+
+          let(:repo_path) { tmp_path.join("repo/with extra spaces/resolve") }
+
+          before do
+            repo_path.rmtree if repo_path.exist?
+            repo_path.mkpath
+            repo_path.join("cookbooks").mkpath
+
+            cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
+              #!/usr/bin/env ruby
+              cookbook "sample", :site => #{api_url.inspect}
+            CHEFFILE
+            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
+            Chef.stub!(:project_path) { repo_path }
+          end
+
+          after do
+            repo_path.rmtree
+          end
+
+          it "should resolve" do
+            expect { Chef.resolve! }.to_not raise_error
+          end
+
+        end
+
       end
     end
   end
