@@ -257,9 +257,14 @@ module Librarian
           version_package_cache_path = version_package_cache_path(dependency, version_uri)
           unless version_package_cache_path.exist?
             dependency_cache_path = dependency_cache_path(dependency)
-            Dir.chdir(dependency_cache_path) do
-              `tar -xzf #{version_archive_cache_path}`
-            end
+            Process.waitpid2(fork do
+              $stdin.reopen("/dev/null")
+              $stdout.reopen("/dev/null")
+              $stderr.reopen("/dev/null")
+              Dir.chdir(dependency_cache_path)
+              exec("tar", "-xzf", version_archive_cache_path.to_s)
+            end)
+            raise StandardError, "Caching #{version_uri} failed with #{$?.inspect}!" unless $?.success?
             version_unpacked_temp_path = dependency_cache_path.join(dependency.name)
             FileUtils.move(version_unpacked_temp_path, version_package_cache_path)
           end
