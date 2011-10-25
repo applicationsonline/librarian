@@ -17,10 +17,10 @@ module Librarian
           project_path
         end
         let(:tmp_path) { project_path.join("tmp/spec/chef/site-source") }
-        let(:sample_path) { tmp_path.join('sample') }
+        let(:sample_path) { tmp_path.join("sample") }
         let(:sample_metadata) do
           Helpers.strip_heredoc(<<-METADATA)
-            version '0.6.5'
+            version "0.6.5"
           METADATA
         end
 
@@ -68,57 +68,57 @@ module Librarian
         context "a single dependency with a site source" do
 
           it "should resolve" do
-            repo_path = tmp_path.join('repo/resolve')
+            repo_path = tmp_path.join("repo/resolve")
             repo_path.rmtree if repo_path.exist?
             repo_path.mkpath
-            repo_path.join('cookbooks').mkpath
+            repo_path.join("cookbooks").mkpath
             cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
               #!/usr/bin/env ruby
               cookbook "sample", :site => "#{api_url}"
             CHEFFILE
-            repo_path.join('Cheffile').open('wb') { |f| f.write(cheffile) }
+            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
             Chef.stub!(:project_path) { repo_path }
 
             Chef.resolve!
-            repo_path.join('Cheffile.lock').should be_exist
-            repo_path.join('cookbooks/sample').should_not be_exist
+            repo_path.join("Cheffile.lock").should be_exist
+            repo_path.join("cookbooks/sample").should_not be_exist
           end
 
           it "should install" do
-            repo_path = tmp_path.join('repo/install')
+            repo_path = tmp_path.join("repo/install")
             repo_path.rmtree if repo_path.exist?
             repo_path.mkpath
-            repo_path.join('cookbooks').mkpath
+            repo_path.join("cookbooks").mkpath
             cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
               #!/usr/bin/env ruby
               cookbook "sample", :site => "#{api_url}"
             CHEFFILE
-            repo_path.join('Cheffile').open('wb') { |f| f.write(cheffile) }
+            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
             Chef.stub!(:project_path) { repo_path }
 
             Chef.install!
-            repo_path.join('Cheffile.lock').should be_exist
-            repo_path.join('cookbooks/sample').should be_exist
-            repo_path.join('cookbooks/sample/metadata.rb').should be_exist
+            repo_path.join("Cheffile.lock").should be_exist
+            repo_path.join("cookbooks/sample").should be_exist
+            repo_path.join("cookbooks/sample/metadata.rb").should be_exist
           end
 
           it "should resolve and separately install" do
-            repo_path = tmp_path.join('repo/resolve-install')
+            repo_path = tmp_path.join("repo/resolve-install")
             repo_path.rmtree if repo_path.exist?
             repo_path.mkpath
-            repo_path.join('cookbooks').mkpath
+            repo_path.join("cookbooks").mkpath
             cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
               #!/usr/bin/env ruby
               cookbook "sample", :site => "#{api_url}"
             CHEFFILE
-            repo_path.join('Cheffile').open('wb') { |f| f.write(cheffile) }
+            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
             Chef.stub!(:project_path) { repo_path }
 
             Chef.resolve!
-            repo_path.join('tmp').rmtree if repo_path.join('tmp').exist?
+            repo_path.join("tmp").rmtree if repo_path.join("tmp").exist?
             Chef.install!
-            repo_path.join('cookbooks/sample').should be_exist
-            repo_path.join('cookbooks/sample/metadata.rb').should be_exist
+            repo_path.join("cookbooks/sample").should be_exist
+            repo_path.join("cookbooks/sample/metadata.rb").should be_exist
           end
 
         end
