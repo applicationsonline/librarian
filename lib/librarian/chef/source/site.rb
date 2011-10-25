@@ -258,7 +258,7 @@ module Librarian
           unless version_package_cache_path.exist?
             dependency_cache_path = dependency_cache_path(dependency)
             Dir.chdir(dependency_cache_path) do
-              `tar -xzf #{version_archive_cache_path}`
+              `tar -xzf "#{version_archive_cache_path}"`
             end
             version_unpacked_temp_path = dependency_cache_path.join(dependency.name)
             FileUtils.move(version_unpacked_temp_path, version_package_cache_path)
