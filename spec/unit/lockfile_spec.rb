@@ -23,8 +23,11 @@ module Librarian
     let(:resolution) { resolver.resolve(spec) }
 
     context "sanity" do
-      subject { resolution }
-      it { should be_correct }
+      context "the resolution" do
+        subject { resolution }
+
+        it { should be_correct }
+      end
     end
 
     describe "#save" do
@@ -32,17 +35,18 @@ module Librarian
       let(:lockfile_text) { lockfile.save(resolution) }
 
       context "just saving" do
-        subject { lockfile_text }
-        it { should_not be_nil }
+        it "should return the lockfile text" do
+          lockfile_text.should_not be_nil
+        end
       end
 
       context "bouncing" do
         let(:bounced_resolution) { lockfile.load(lockfile_text) }
         let(:bounced_lockfile_text) { lockfile.save(bounced_resolution) }
 
-        subject { bounced_lockfile_text }
-
-        it { should == lockfile_text }
+        it "should return the same lockfile text after bouncing as before bouncing" do
+          bounced_lockfile_text.should == lockfile_text
+        end
       end
     end
 
