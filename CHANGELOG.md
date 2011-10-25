@@ -1,3 +1,8 @@
+## 0.0.9
+
+* \#11 Fixes a problem where, if the repo is in a path where a component has a space, attempting to resolve a
+    site-sourced dependency fails.
+
 ## 0.0.8
 
 * A `version` task.
