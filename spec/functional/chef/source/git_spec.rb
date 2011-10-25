@@ -10,28 +10,37 @@ module Librarian
     module Source
       describe Git do
 
-        project_path = Pathname.new(__FILE__).expand_path
-        project_path = project_path.dirname until project_path.join("Rakefile").exist?
-        tmp_path = project_path.join("tmp/spec/chef/git-source")
+        let(:project_path) do
+          project_path = Pathname.new(__FILE__).expand_path
+          project_path = project_path.dirname until project_path.join("Rakefile").exist?
+          project_path
+        end
+        let(:tmp_path) { project_path.join("tmp/spec/chef/git-source") }
 
-        cookbooks_path = tmp_path.join('cookbooks')
+        let(:cookbooks_path) { tmp_path.join('cookbooks') }
 
         context "a single dependency with a git source" do
 
-          sample_path = tmp_path.join('sample')
-          sample_metadata = Helpers.strip_heredoc(<<-METADATA)
-            version '0.6.5'
-          METADATA
+          let(:sample_path) { tmp_path.join('sample') }
+          let(:sample_metadata) do
+            Helpers.strip_heredoc(<<-METADATA)
+              version '0.6.5'
+            METADATA
+          end
 
-          first_sample_path = cookbooks_path.join('first-sample')
-          first_sample_metadata = Helpers.strip_heredoc(<<-METADATA)
-            version '3.2.1'
-          METADATA
+          let(:first_sample_path) { cookbooks_path.join('first-sample') }
+          let(:first_sample_metadata) do
+            Helpers.strip_heredoc(<<-METADATA)
+              version '3.2.1'
+            METADATA
+          end
 
-          second_sample_path = cookbooks_path.join('second-sample')
-          second_sample_metadata = Helpers.strip_heredoc(<<-METADATA)
-            version '4.3.2'
-          METADATA
+          let(:second_sample_path) { cookbooks_path.join('second-sample') }
+          let(:second_sample_metadata) do
+            Helpers.strip_heredoc(<<-METADATA)
+              version '4.3.2'
+            METADATA
+          end
 
           before :all do
             sample_path.rmtree if sample_path.exist?
@@ -138,11 +147,13 @@ module Librarian
 
         context "with a path" do
 
-          git_path = tmp_path.join('big-git-repo')
-          sample_path = git_path.join('buttercup')
-          sample_metadata = Helpers.strip_heredoc(<<-METADATA)
-            version '0.6.5'
-          METADATA
+          let(:git_path) { tmp_path.join('big-git-repo') }
+          let(:sample_path) { git_path.join('buttercup') }
+          let(:sample_metadata) do
+            Helpers.strip_heredoc(<<-METADATA)
+              version '0.6.5'
+            METADATA
+          end
 
           before :all do
             git_path.rmtree if git_path.exist?
@@ -217,7 +228,7 @@ module Librarian
         end
 
         context "missing a metadata" do
-          git_path = tmp_path.join('big-git-repo')
+          let(:git_path) { tmp_path.join('big-git-repo') }
 
           it "should explain the problem" do
             repo_path = tmp_path.join("repo/resolve")
