@@ -11,26 +11,35 @@ module Librarian
 
         include WebMock::API
 
-        project_path = Pathname.new(__FILE__).expand_path
-        project_path = project_path.dirname until project_path.join("Rakefile").exist?
-        tmp_path = project_path.join("tmp/spec/chef/site-source")
-        sample_path = tmp_path.join('sample')
-        sample_metadata = Helpers.strip_heredoc(<<-METADATA)
-          version '0.6.5'
-        METADATA
+        let(:project_path) do
+          project_path = Pathname.new(__FILE__).expand_path
+          project_path = project_path.dirname until project_path.join("Rakefile").exist?
+          project_path
+        end
+        let(:tmp_path) { project_path.join("tmp/spec/chef/site-source") }
+        let(:sample_path) { tmp_path.join('sample') }
+        let(:sample_metadata) do
+          Helpers.strip_heredoc(<<-METADATA)
+            version '0.6.5'
+          METADATA
+        end
 
-        api_url = "http://site.cookbooks.com"
+        let(:api_url) { "http://site.cookbooks.com" }
 
-        sample_index_data = {
-          "name" => "sample",
-          "versions" => [
-            "#{api_url}/cookbooks/sample/versions/0_6_5"
-          ]
-        }
-        sample_0_6_5_data = {
-          "version" => "0.6.5",
-          "file" => "#{api_url}/cookbooks/sample/versions/0_6_5/file.tar.gz"
-        }
+        let(:sample_index_data) do
+          {
+            "name" => "sample",
+            "versions" => [
+              "#{api_url}/cookbooks/sample/versions/0_6_5"
+            ]
+          }
+        end
+        let(:sample_0_6_5_data) do
+          {
+            "version" => "0.6.5",
+            "file" => "#{api_url}/cookbooks/sample/versions/0_6_5/file.tar.gz"
+          }
+        end
 
         before :all do
           sample_path.rmtree if sample_path.exist?
