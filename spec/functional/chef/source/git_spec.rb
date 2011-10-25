@@ -78,8 +78,8 @@ module Librarian
             Chef.stub!(:project_path) { repo_path }
 
             Chef.resolve!
-            repo_path.join("Cheffile.lock").should be_exist
-            repo_path.join("cookbooks/sample").should_not be_exist
+            repo_path.join("Cheffile.lock").should exist
+            repo_path.join("cookbooks/sample").should_not exist
           end
 
           it "should install" do
@@ -95,9 +95,9 @@ module Librarian
             Chef.stub!(:project_path) { repo_path }
 
             Chef.install!
-            repo_path.join("Cheffile.lock").should be_exist
-            repo_path.join("cookbooks/sample").should be_exist
-            repo_path.join("cookbooks/sample/metadata.rb").should be_exist
+            repo_path.join("Cheffile.lock").should exist
+            repo_path.join("cookbooks/sample").should exist
+            repo_path.join("cookbooks/sample/metadata.rb").should exist
           end
 
           it "should resolve and separately install" do
@@ -115,8 +115,8 @@ module Librarian
             Chef.resolve!
             repo_path.join("tmp").rmtree if repo_path.join("tmp").exist?
             Chef.install!
-            repo_path.join("cookbooks/sample").should be_exist
-            repo_path.join("cookbooks/sample/metadata.rb").should be_exist
+            repo_path.join("cookbooks/sample").should exist
+            repo_path.join("cookbooks/sample/metadata.rb").should exist
           end
 
           it "should resolve, change, and resolve" do
@@ -220,8 +220,8 @@ module Librarian
               Chef.stub!(:project_path) { repo_path }
 
               Chef.resolve!
-              repo_path.join("Cheffile.lock").should be_exist
-              repo_path.join("cookbooks/sample").should_not be_exist
+              repo_path.join("Cheffile.lock").should exist
+              repo_path.join("cookbooks/sample").should_not exist
             end
           end
 
@@ -244,8 +244,8 @@ module Librarian
 
             expect { Chef.resolve! }.
               to raise_error(Librarian::Error, /no metadata file found/i)
-            repo_path.join("Cheffile.lock").should_not be_exist
-            repo_path.join("cookbooks/sample").should_not be_exist
+            repo_path.join("Cheffile.lock").should_not exist
+            repo_path.join("cookbooks/sample").should_not exist
           end
         end
 
