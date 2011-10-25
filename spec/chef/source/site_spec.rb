@@ -74,7 +74,7 @@ module Librarian
             repo_path.join("cookbooks").mkpath
             cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
               #!/usr/bin/env ruby
-              cookbook "sample", :site => "#{api_url}"
+              cookbook "sample", :site => #{api_url.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
             Chef.stub!(:project_path) { repo_path }
@@ -91,7 +91,7 @@ module Librarian
             repo_path.join("cookbooks").mkpath
             cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
               #!/usr/bin/env ruby
-              cookbook "sample", :site => "#{api_url}"
+              cookbook "sample", :site => #{api_url.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
             Chef.stub!(:project_path) { repo_path }
@@ -109,7 +109,7 @@ module Librarian
             repo_path.join("cookbooks").mkpath
             cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
               #!/usr/bin/env ruby
-              cookbook "sample", :site => "#{api_url}"
+              cookbook "sample", :site => #{api_url.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
             Chef.stub!(:project_path) { repo_path }
