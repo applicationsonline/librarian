@@ -2,6 +2,7 @@ require 'librarian/helpers/debug'
 
 require 'librarian/manifest'
 require 'librarian/dependency'
+require 'librarian/manifest_set'
 
 module Librarian
   class Lockfile
@@ -90,7 +91,7 @@ module Librarian
             dependencies
           )
         end
-        Resolver.new(root_module).sort(manifests)
+        ManifestSet.sort(manifests)
       end
 
       def dsl_class
