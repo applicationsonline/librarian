@@ -27,6 +27,7 @@ module Librarian
         subject { resolution }
 
         it { should be_correct }
+        it { should have(1).manifests }
       end
     end
 
@@ -37,6 +38,14 @@ module Librarian
       context "just saving" do
         it "should return the lockfile text" do
           lockfile_text.should_not be_nil
+        end
+      end
+
+      context "saving and reloading" do
+        let(:reloaded_resolution) { lockfile.load(lockfile_text) }
+
+        it "should have the expected manifests" do
+          reloaded_resolution.manifests.count.should == resolution.manifests.count
         end
       end
 
