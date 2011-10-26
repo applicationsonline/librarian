@@ -1,5 +1,4 @@
-require 'librarian/specfile'
-require 'librarian/mock/dsl'
+require 'librarian/mock/environment'
 
 module Librarian
   module Mock
@@ -7,19 +6,8 @@ module Librarian
     extend Librarian
 
     module Overrides
-      def specfile_name
-        'Mockfile'
-      end
-
-      def install_path
-        nil
-      end
-
       def registry(options = nil, &block)
-        registry = Source::Mock::Registry
-        registry.clear! if options && options[:clear]
-        registry.merge!(&block) if block
-        registry
+        environment.registry(options, &block)
       end
     end
 

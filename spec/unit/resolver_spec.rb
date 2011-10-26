@@ -1,4 +1,4 @@
-require 'librarian'
+require 'librarian/resolver'
 require 'librarian/mock'
 
 module Librarian

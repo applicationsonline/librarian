@@ -1,24 +1,9 @@
-require 'librarian/specfile'
-require 'librarian/source'
-require 'librarian/chef/dsl'
-require 'librarian/chef/source'
+require 'librarian/chef/environment'
 
 module Librarian
   module Chef
     extend self
     extend Librarian
-
-    module Overrides
-      def specfile_name
-        'Cheffile'
-      end
-
-      def install_path
-        project_path.join('cookbooks')
-      end
-    end
-
-    extend Overrides
 
   end
 end

@@ -1,6 +1,8 @@
 require 'thor'
 require 'thor/actions'
+
 require 'librarian'
+require "librarian/ui"
 
 module Librarian
   class Cli < Thor

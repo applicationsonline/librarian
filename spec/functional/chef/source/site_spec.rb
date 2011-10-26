@@ -77,7 +77,7 @@ module Librarian
               cookbook "sample", :site => #{api_url.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.stub!(:project_path) { repo_path }
+            Chef.environment.stub!(:project_path) { repo_path }
 
             Chef.resolve!
             repo_path.join("Cheffile.lock").should exist
@@ -94,7 +94,7 @@ module Librarian
               cookbook "sample", :site => #{api_url.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.stub!(:project_path) { repo_path }
+            Chef.environment.stub!(:project_path) { repo_path }
 
             Chef.install!
             repo_path.join("Cheffile.lock").should exist
@@ -112,7 +112,7 @@ module Librarian
               cookbook "sample", :site => #{api_url.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.stub!(:project_path) { repo_path }
+            Chef.environment.stub!(:project_path) { repo_path }
 
             Chef.resolve!
             repo_path.join("tmp").rmtree if repo_path.join("tmp").exist?
@@ -137,7 +137,7 @@ module Librarian
               cookbook "sample", :site => #{api_url.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.stub!(:project_path) { repo_path }
+            Chef.environment.stub!(:project_path) { repo_path }
           end
 
           after do

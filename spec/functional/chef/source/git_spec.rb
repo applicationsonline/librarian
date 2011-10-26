@@ -75,7 +75,7 @@ module Librarian
               cookbook "sample", :git => #{sample_path.to_s.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.stub!(:project_path) { repo_path }
+            Chef.environment.stub!(:project_path) { repo_path }
 
             Chef.resolve!
             repo_path.join("Cheffile.lock").should exist
@@ -92,7 +92,7 @@ module Librarian
               cookbook "sample", :git => #{sample_path.to_s.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.stub!(:project_path) { repo_path }
+            Chef.environment.stub!(:project_path) { repo_path }
 
             Chef.install!
             repo_path.join("Cheffile.lock").should exist
@@ -110,7 +110,7 @@ module Librarian
               cookbook "sample", :git => #{sample_path.to_s.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.stub!(:project_path) { repo_path }
+            Chef.environment.stub!(:project_path) { repo_path }
 
             Chef.resolve!
             repo_path.join("tmp").rmtree if repo_path.join("tmp").exist?
@@ -129,7 +129,7 @@ module Librarian
               cookbook "first-sample"
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.stub!(:project_path) { repo_path }
+            Chef.environment.stub!(:project_path) { repo_path }
             Chef.resolve!
             repo_path.join("Cheffile.lock").should exist
 
@@ -139,7 +139,7 @@ module Librarian
               cookbook "second-sample"
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.stub!(:project_path) { repo_path }
+            Chef.environment.stub!(:project_path) { repo_path }
             Chef.resolve!
           end
 
@@ -179,7 +179,7 @@ module Librarian
                   :git => #{git_path.to_s.inspect}
               CHEFFILE
               repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-              Chef.stub!(:project_path) { repo_path }
+              Chef.environment.stub!(:project_path) { repo_path }
 
               expect{ Chef.resolve! }.to raise_error
             end
@@ -198,7 +198,7 @@ module Librarian
                   :path => "jelly"
               CHEFFILE
               repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-              Chef.stub!(:project_path) { repo_path }
+              Chef.environment.stub!(:project_path) { repo_path }
 
               expect{ Chef.resolve! }.to raise_error
             end
@@ -217,7 +217,7 @@ module Librarian
                   :path => "buttercup"
               CHEFFILE
               repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-              Chef.stub!(:project_path) { repo_path }
+              Chef.environment.stub!(:project_path) { repo_path }
 
               Chef.resolve!
               repo_path.join("Cheffile.lock").should exist
@@ -240,7 +240,7 @@ module Librarian
                 :git => #{git_path.to_s.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.stub!(:project_path) { repo_path }
+            Chef.environment.stub!(:project_path) { repo_path }
 
             expect { Chef.resolve! }.
               to raise_error(Librarian::Error, /no metadata file found/i)
