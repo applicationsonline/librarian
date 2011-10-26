@@ -1,11 +1,9 @@
-require 'librarian/particularity'
 require 'librarian/source/local'
 
 module Librarian
   module Source
     class Path
 
-      include Particularity
       include Local
 
       class << self
@@ -13,14 +11,17 @@ module Librarian
         def lock_name
           LOCK_NAME
         end
-        def from_lock_options(options)
-          new(options[:remote], options.reject{|k, v| k == :remote})
+        def from_lock_options(environment, options)
+          new(environment, options[:remote], options.reject{|k, v| k == :remote})
         end
       end
 
+      attr_accessor :environment
+      private :environment=
       attr_reader :path
 
-      def initialize(path, options)
+      def initialize(environment, path, options)
+        self.environment = environment
         @path = path
       end
 
@@ -46,7 +47,7 @@ module Librarian
       end
 
       def filesystem_path
-        @filesystem_path ||= Pathname.new(path).expand_path(root_module.project_path)
+        @filesystem_path ||= Pathname.new(path).expand_path(environment.project_path)
       end
 
     end

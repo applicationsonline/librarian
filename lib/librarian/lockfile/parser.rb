@@ -17,10 +17,10 @@ module Librarian
 
       include Helpers::Debug
 
-      attr_reader :root_module
+      attr_reader :environment
 
-      def initialize(root_module)
-        @root_module = root_module
+      def initialize(environment)
+        @environment = environment
       end
 
       def parse(string)
@@ -71,7 +71,7 @@ module Librarian
         manifests = {}
         sources_ast.each do |source_ast|
           source_type = source_ast[:type]
-          source = source_type.from_lock_options(source_ast[:options])
+          source = source_type.from_lock_options(environment, source_ast[:options])
           source_ast[:manifests].each do |manifest_name, manifest_ast|
             manifests[manifest_name] = ManifestPlaceholder.new(
               source,
@@ -95,7 +95,7 @@ module Librarian
       end
 
       def dsl_class
-        root_module.dsl_class
+        environment.dsl_class
       end
 
     end

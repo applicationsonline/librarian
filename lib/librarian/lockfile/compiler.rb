@@ -6,10 +6,10 @@ module Librarian
 
       include Helpers::Debug
 
-      attr_reader :root_module
+      attr_reader :environment
 
-      def initialize(root_module)
-        @root_module = root_module
+      def initialize(environment)
+        @environment = environment
       end
 
       def compile(resolution)
@@ -61,7 +61,7 @@ module Librarian
       end
 
       def dsl_class
-        root_module.dsl_class
+        environment.dsl_class
       end
 
     end

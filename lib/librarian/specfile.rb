@@ -1,15 +1,21 @@
+require 'librarian/helpers/debug'
+
 module Librarian
   class Specfile
 
-    attr_reader :root_module, :path, :dependencies, :source
+    include Helpers::Debug
 
-    def initialize(root_module, path)
-      @root_module = root_module
+    attr_accessor :environment
+    private :environment=
+    attr_reader :path, :dependencies, :source
+
+    def initialize(environment, path)
+      self.environment = environment
       @path = path
     end
 
     def read(precache_sources = [])
-      root_module.dsl_class.run(self, precache_sources)
+      environment.dsl_class.run(environment, path.read, precache_sources)
     end
 
   end

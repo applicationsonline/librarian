@@ -9,7 +9,6 @@ require 'librarian/helpers/debug'
 
 require 'librarian/manifest'
 require 'librarian/chef/manifest'
-require 'librarian/chef/particularity'
 
 module Librarian
   module Chef
@@ -28,7 +27,7 @@ module Librarian
             @cache_path = nil
             @metadata_cache_path = nil
             @package_cache_path = nil
-            @install_path = root_module.install_path.join(name)
+            @install_path = environment.install_path.join(name)
 
             @version_metadata = nil
             @version_manifest = nil
@@ -97,21 +96,23 @@ module Librarian
         end
 
         include Helpers::Debug
-        include Particularity
 
         class << self
           LOCK_NAME = 'SITE'
           def lock_name
             LOCK_NAME
           end
-          def from_lock_options(options)
-            new(options[:remote], options.reject{|k, v| k == :remote})
+          def from_lock_options(environment, options)
+            new(environment, options[:remote], options.reject{|k, v| k == :remote})
           end
         end
 
+        attr_accessor :environment
+        private :environment=
         attr_reader :uri
 
-        def initialize(uri, options = {})
+        def initialize(environment, uri, options = {})
+          self.environment = environment
           @uri = uri
           @cache_path = nil
         end
@@ -156,13 +157,13 @@ module Librarian
         end
 
         def install_path(dependency)
-          root_module.install_path.join(dependency.name)
+          environment.install_path.join(dependency.name)
         end
 
         def cache_path
           @cache_path ||= begin
             dir = Digest::MD5.hexdigest(uri)
-            root_module.cache_path.join("source/chef/site/#{dir}")
+            environment.cache_path.join("source/chef/site/#{dir}")
           end
         end
 

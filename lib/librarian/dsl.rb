@@ -2,21 +2,22 @@ require 'librarian/dependency'
 require 'librarian/dsl/receiver'
 require 'librarian/dsl/target'
 require 'librarian/helpers/debug'
-require 'librarian/particularity'
 
 module Librarian
   class Dsl
 
-    include Particularity
     include Helpers::Debug
 
     class Error < Exception
     end
 
+    attr_accessor :environment
+    private :environment=
+
     class << self
 
-      def run(specfile = nil, precache_sources = [], &block)
-        new.run(specfile, precache_sources, &block)
+      def run(environment, specfile = nil, precache_sources = [], &block)
+        new(environment).run(specfile, precache_sources, &block)
       end
 
     private
@@ -65,6 +66,10 @@ module Librarian
 
     delegate_to_class :dependency_name, :dependency_type, :source_types, :source_shortcuts
 
+    def initialize(environment)
+      self.environment = environment
+    end
+
     def run(specfile = nil, sources = [])
       Target.new(self).tap do |target|
         target.precache_sources(sources)
@@ -74,7 +79,12 @@ module Librarian
         if block_given?
           receiver.run(&Proc.new)
         else
-          receiver.run(specfile)
+          case specfile
+          when Specfile, String, Proc
+            receiver.run(specfile)
+          else
+            raise ArgumentError, "specfile must be a #{Specfile}, #{String}, or #{Proc} if no block is given (it was #{specfile.inspect})"
+          end
         end
 
         debug_named_source_cache("Post-Cached Sources", target)

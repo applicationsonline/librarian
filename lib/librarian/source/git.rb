@@ -2,7 +2,6 @@ require 'fileutils'
 require 'pathname'
 require 'digest'
 
-require 'librarian/particularity'
 require 'librarian/source/git/repository'
 require 'librarian/source/local'
 
@@ -10,7 +9,6 @@ module Librarian
   module Source
     class Git
 
-      include Particularity
       include Local
 
       class << self
@@ -18,8 +16,8 @@ module Librarian
         def lock_name
           LOCK_NAME
         end
-        def from_lock_options(options)
-          new(options[:remote], options.reject{|k, v| k == :remote})
+        def from_lock_options(environment, options)
+          new(environment, options[:remote], options.reject{|k, v| k == :remote})
         end
       end
 
@@ -27,9 +25,12 @@ module Librarian
         :ref => 'master'
       }
 
+      attr_accessor :environment
+      private :environment=
       attr_reader :uri, :ref, :sha, :path
 
-      def initialize(uri, options = {})
+      def initialize(environment, uri, options = {})
+        self.environment = environment
         @uri = uri
         @ref = options[:ref] || DEFAULTS[:ref]
         @sha = options[:sha]
@@ -80,13 +81,13 @@ module Librarian
         @repository_cache_path ||= begin
           dir = path ? "#{uri}/#{path}" : uri
           dir = Digest::MD5.hexdigest(dir)
-          root_module.cache_path.join("source/git/#{dir}")
+          environment.cache_path.join("source/git/#{dir}")
         end
       end
 
       def repository
         @repository ||= begin
-          Repository.new(root_module, repository_cache_path)
+          Repository.new(environment, repository_cache_path)
         end
       end
 

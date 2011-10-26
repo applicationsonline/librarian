@@ -6,11 +6,13 @@ module Librarian
 
     describe Dsl do
 
+      let(:env) { Environment.new }
+
       context "a single dependency but no applicable source" do
 
         it "should not run without any sources" do
           expect do
-            Dsl.run do
+            env.dsl do
               dep 'dependency-1'
             end
           end.to raise_error(Dsl::Error)
@@ -18,7 +20,7 @@ module Librarian
 
         it "should not run when a block source is defined but the dependency is outside the block" do
           expect do
-            Dsl.run do
+            env.dsl do
               src 'source-1' do end
               dep 'dependency-1'
             end
@@ -30,7 +32,7 @@ module Librarian
       context "a simple specfile - a single source, a single dependency, no transitive dependencies" do
 
         it "should run with a hash source" do
-          spec = Dsl.run do
+          spec = env.dsl do
             dep 'dependency-1',
               :src => 'source-1'
           end
@@ -41,7 +43,7 @@ module Librarian
         end
 
         it "should run with a shortcut source" do
-          spec = Dsl.run do
+          spec = env.dsl do
             dep 'dependency-1',
               :source => :a
           end
@@ -52,7 +54,7 @@ module Librarian
         end
 
         it "should run with a block hash source" do
-          spec = Dsl.run do
+          spec = env.dsl do
             source :src => 'source-1' do
               dep 'dependency-1'
             end
@@ -64,7 +66,7 @@ module Librarian
         end
 
         it "should run with a block named source" do
-          spec = Dsl.run do
+          spec = env.dsl do
             src 'source-1' do
               dep 'dependency-1'
             end
@@ -76,7 +78,7 @@ module Librarian
         end
 
         it "should run with a default hash source" do
-          spec = Dsl.run do
+          spec = env.dsl do
             source :src => 'source-1'
             dep 'dependency-1'
           end
@@ -88,7 +90,7 @@ module Librarian
         end
 
         it "should run with a default named source" do
-          spec = Dsl.run do
+          spec = env.dsl do
             src 'source-1'
             dep 'dependency-1'
           end
@@ -100,7 +102,7 @@ module Librarian
         end
 
         it "should run with a default shortcut source" do
-          spec = Dsl.run do
+          spec = env.dsl do
             source :a
             dep 'dependency-1'
           end
@@ -112,7 +114,7 @@ module Librarian
         end
 
         it "should run with a shortcut source hash definition" do
-          spec = Dsl.run do
+          spec = env.dsl do
             source :b, :src => 'source-b'
             dep 'dependency-1', :source => :b
           end
@@ -123,7 +125,7 @@ module Librarian
         end
 
         it "should run with a shortcut source block definition" do
-          spec = Dsl.run do
+          spec = env.dsl do
             source :b, proc { src 'source-b' }
             dep 'dependency-1', :source => :b
           end
@@ -134,7 +136,7 @@ module Librarian
         end
 
         it "should run with a default shortcut source hash definition" do
-          spec = Dsl.run do
+          spec = env.dsl do
             source :b, :src => 'source-b'
             source :b
             dep 'dependency-1'
@@ -147,7 +149,7 @@ module Librarian
         end
 
         it "should run with a default shortcut source block definition" do
-          spec = Dsl.run do
+          spec = env.dsl do
             source :b, proc { src 'source-b' }
             source :b
             dep 'dependency-1'

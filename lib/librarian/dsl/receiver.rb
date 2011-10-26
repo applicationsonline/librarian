@@ -33,6 +33,8 @@ module Librarian
             eval(specfile, instance_binding)
           when Proc
             instance_eval(&specfile)
+          else
+            raise ArgumentError, "specfile must be a #{Specfile}, #{String}, or #{Proc} if no block is given (it was #{specfile.inspect})"
           end
         end
       end

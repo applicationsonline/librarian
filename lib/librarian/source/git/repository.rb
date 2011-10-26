@@ -8,10 +8,10 @@ module Librarian
       class Repository
 
         class << self
-          def clone!(root_module, path, repository_url)
+          def clone!(environment, path, repository_url)
             path = Pathname.new(path)
             path.mkpath
-            git = new(root_module, path)
+            git = new(environment, path)
             git.clone!(repository_url)
             git
           end
@@ -19,11 +19,13 @@ module Librarian
 
         include Helpers::Debug
 
-        attr_reader :root_module, :path
+        attr_accessor :environment
+        private :environment=
+        attr_reader :path
 
-        def initialize(root_module, path)
+        def initialize(environment, path)
+          self.environment = environment
           path = Pathname.new(path)
-          @root_module = root_module
           @path = path
         end
 

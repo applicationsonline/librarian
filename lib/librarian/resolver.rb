@@ -110,17 +110,18 @@ module Librarian
         super { '  ' * @level + yield }
       end
 
-      def root_module
-        resolver.root_module
+      def environment
+        resolver.environment
       end
     end
 
     include Helpers::Debug
 
-    attr_reader :root_module
+    attr_accessor :environment
+    private :environment=
 
-    def initialize(root_module)
-      @root_module = root_module
+    def initialize(environment)
+      self.environment = environment
     end
 
     def resolve(spec, partial_manifests = [])

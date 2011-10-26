@@ -8,19 +8,19 @@ module Librarian
 
     include Helpers::Debug
 
-    attr_reader :root_module, :path
+    attr_reader :environment, :path
 
-    def initialize(root_module, path)
-      @root_module = root_module
+    def initialize(environment, path)
+      @environment = environment
       @path = path
     end
 
     def save(resolution)
-      Compiler.new(root_module).compile(resolution)
+      Compiler.new(environment).compile(resolution)
     end
 
     def load(string)
-      Parser.new(root_module).parse(string)
+      Parser.new(environment).parse(string)
     end
 
     def read

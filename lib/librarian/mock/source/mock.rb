@@ -1,5 +1,4 @@
 require 'librarian/manifest'
-require 'librarian/mock/particularity'
 require 'librarian/mock/source/mock/registry'
 
 module Librarian
@@ -23,21 +22,22 @@ module Librarian
           end
         end
 
-        include Particularity
-
         class << self
           LOCK_NAME = 'MOCK'
           def lock_name
             LOCK_NAME
           end
-          def from_lock_options(options)
-            new(options[:remote], options.reject{|k, v| k == :remote})
+          def from_lock_options(environment, options)
+            new(environment, options[:remote], options.reject{|k, v| k == :remote})
           end
         end
 
+        attr_accessor :environment
+        private :environment=
         attr_reader :name
 
-        def initialize(name, options)
+        def initialize(evironment, name, options)
+          self.environment = environment
           @name = name
         end
 

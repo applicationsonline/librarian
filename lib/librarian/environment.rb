@@ -165,7 +165,7 @@ module Librarian
     end
 
     def dsl(&block)
-      dsl_class.run(&block)
+      dsl_class.run(self, &block)
     end
 
     def dsl_class
@@ -174,7 +174,7 @@ module Librarian
 
   private
 
-    def root_module
+    def environment
       self
     end
 

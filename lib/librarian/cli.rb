@@ -8,19 +8,27 @@ module Librarian
   class Cli < Thor
 
     include Thor::Actions
+
+    module Particularity
+      def root_module
+        nil
+      end
+    end
+
     include Particularity
     extend Particularity
 
     class << self
       def bin!
         begin
+          environment = root_module.environment
           start
         rescue Librarian::Error => e
-          root_module.ui.error e.message
-          root_module.ui.debug e.backtrace.join("\n")
+          environment.ui.error e.message
+          environment.ui.debug e.backtrace.join("\n")
           exit (e.respond_to?(:status_code) ? e.status_code : 1)
         rescue Interrupt => e
-          root_module.ui.error "\nQuitting..."
+          environment.ui.error "\nQuitting..."
           exit 1
         end
       end
@@ -29,9 +37,9 @@ module Librarian
     def initialize(*)
       super
       the_shell = (options["no-color"] ? Thor::Shell::Basic.new : shell)
-      root_module.ui = UI::Shell.new(the_shell)
-      root_module.ui.debug! if options["verbose"]
-      root_module.ui.debug_line_numbers! if options["verbose"] && options["line-numbers"]
+      environment.ui = UI::Shell.new(the_shell)
+      environment.ui.debug! if options["verbose"]
+      environment.ui.debug_line_numbers! if options["verbose"] && options["line-numbers"]
     end
 
     desc "version", "Displays the version."
@@ -43,8 +51,8 @@ module Librarian
     method_option "verbose"
     method_option "line-numbers"
     def clean
-      root_module.ensure!
-      root_module.clean!
+      environment.ensure!
+      environment.clean!
     end
 
     desc "install", "Installs all of the dependencies you specify."
@@ -52,9 +60,9 @@ module Librarian
     method_option "line-numbers"
     method_option "clean"
     def install
-      root_module.ensure!
-      root_module.clean! if options["clean"]
-      root_module.install!
+      environment.ensure!
+      environment.clean! if options["clean"]
+      environment.install!
     end
 
     desc "resolve", "Resolves the dependencies you specify."
@@ -62,26 +70,32 @@ module Librarian
     method_option "line-numbers"
     method_option "clean"
     def resolve
-      root_module.ensure!
-      root_module.clean! if options["clean"]
-      root_module.resolve!
+      environment.ensure!
+      environment.clean! if options["clean"]
+      environment.resolve!
     end
 
     desc "update", "Updates the dependencies you specify."
     method_option "verbose"
     method_option "line-numbers"
     def update(*names)
-      root_module.ensure!
+      environment.ensure!
       if names.empty?
-        root_module.resolve!(:force => true)
+        environment.resolve!(:force => true)
       else
-        root_module.update!(names)
+        environment.update!(names)
       end
     end
 
     desc "init", "Initializes the current directory."
     def init
       puts "Nothing to do."
+    end
+
+  private
+
+    def environment
+      root_module.environment
     end
 
   end

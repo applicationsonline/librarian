@@ -46,8 +46,8 @@ module Librarian
 
   private
 
-    def root_module
-      source.root_module
+    def environment
+      source.environment
     end
 
   end

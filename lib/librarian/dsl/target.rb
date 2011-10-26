@@ -1,8 +1,12 @@
+require 'librarian/helpers/debug'
+
 require 'librarian/spec'
 
 module Librarian
   class Dsl
     class Target
+
+      include Helpers::Debug
 
       class SourceShortcutDefinitionReceiver
         def initialize(target)
@@ -24,11 +28,15 @@ module Librarian
 
       SCOPABLES = [:sources]
 
+      attr_accessor :dsl
+      private :dsl=
+
       attr_reader :dependency_name, :dependency_type
       attr_reader :source_types, :source_types_map, :source_types_reverse_map, :source_type_names, :source_shortcuts
       attr_reader :dependencies, :source_cache, *SCOPABLES
 
       def initialize(dsl)
+        self.dsl = dsl
         @dependency_name = dsl.dependency_name
         @dependency_type = dsl.dependency_type
         @source_types = dsl.source_types
@@ -138,7 +146,7 @@ module Librarian
       def source_from_params(name, param, options)
         source_cache[[name, param, options]] ||= begin
           type = source_types_map[name]
-          type.new(param, options)
+          type.new(environment, param, options)
         end
       end
 
@@ -157,6 +165,10 @@ module Librarian
       def define_source_shortcut(name, definition)
         source = source_from_source_shortcut_definition(definition)
         source_shortcuts[name] = source
+      end
+
+      def environment
+        dsl.environment
       end
 
     end

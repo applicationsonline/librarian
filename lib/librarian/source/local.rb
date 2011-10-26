@@ -4,7 +4,7 @@ module Librarian
   module Source
     # Requires that the including source class have methods:
     #   #path
-    #   #root_module
+    #   #environment
     module Local
 
       include Support::AbstractMethod
