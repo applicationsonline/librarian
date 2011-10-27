@@ -40,8 +40,6 @@ module Librarian
   end
 
   methods = %w(
-    ui
-    ui=
     specfile_name
     dsl_class
     install_path
