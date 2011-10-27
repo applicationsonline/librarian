@@ -263,11 +263,11 @@ module Librarian
           end
 
           context "if the path option is right" do
-            let(:repo_path) { tmp_path.join('repo/resolve') }
+            let(:repo_path) { tmp_path.join("repo/resolve") }
             before do
               repo_path.rmtree if repo_path.exist?
               repo_path.mkpath
-              repo_path.join('cookbooks').mkpath
+              repo_path.join("cookbooks").mkpath
               cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
                 #!/usr/bin/env ruby
                 cookbook "sample",
