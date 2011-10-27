@@ -21,7 +21,8 @@ module Librarian
 
     abstract_method :specfile_name, :dsl_class, :install_path
 
-    def initialize
+    def initialize(options = { })
+      @project_path = options[:project_path]
     end
 
     def project_path
