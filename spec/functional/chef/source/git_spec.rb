@@ -19,6 +19,9 @@ module Librarian
 
         let(:cookbooks_path) { tmp_path.join("cookbooks") }
 
+        # depends on repo_path being defined in each context
+        let(:env) { Environment.new(:project_path => repo_path) }
+
         context "a single dependency with a git source" do
 
           let(:sample_path) { tmp_path.join("sample") }
@@ -65,82 +68,135 @@ module Librarian
             end
           end
 
-          it "should resolve" do
-            repo_path = tmp_path.join("repo/resolve")
-            repo_path.rmtree if repo_path.exist?
-            repo_path.mkpath
-            repo_path.join("cookbooks").mkpath
-            cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
-              #!/usr/bin/env ruby
-              cookbook "sample", :git => #{sample_path.to_s.inspect}
-            CHEFFILE
-            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.environment.stub!(:project_path) { repo_path }
+          context "resolving" do
+            let(:repo_path) { tmp_path.join("repo/resolve") }
+            before do
+              repo_path.rmtree if repo_path.exist?
+              repo_path.mkpath
+              repo_path.join("cookbooks").mkpath
+              cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
+                #!/usr/bin/env ruby
+                cookbook "sample", :git => #{sample_path.to_s.inspect}
+              CHEFFILE
+              repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
+            end
 
-            Chef.resolve!
-            repo_path.join("Cheffile.lock").should exist
-            repo_path.join("cookbooks/sample").should_not exist
+            context "the resolve" do
+              it "should not raise an exception" do
+                expect { env.resolve! }.to_not raise_error
+              end
+            end
+
+            context "the results" do
+              before { env.resolve! }
+
+              it "should create the lockfile" do
+                repo_path.join("Cheffile.lock").should exist
+              end
+
+              it "should not attempt to install the sample cookbok" do
+                repo_path.join("cookbooks/sample").should_not exist
+              end
+            end
           end
 
-          it "should install" do
-            repo_path = tmp_path.join("repo/install")
-            repo_path.rmtree if repo_path.exist?
-            repo_path.mkpath
-            repo_path.join("cookbooks").mkpath
-            cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
-              #!/usr/bin/env ruby
-              cookbook "sample", :git => #{sample_path.to_s.inspect}
-            CHEFFILE
-            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.environment.stub!(:project_path) { repo_path }
+          context "installing" do
+            let(:repo_path) { tmp_path.join("repo/install") }
+            before do
+              repo_path.rmtree if repo_path.exist?
+              repo_path.mkpath
+              repo_path.join("cookbooks").mkpath
+              cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
+                #!/usr/bin/env ruby
+                cookbook "sample", :git => #{sample_path.to_s.inspect}
+              CHEFFILE
+              repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
+            end
 
-            Chef.install!
-            repo_path.join("Cheffile.lock").should exist
-            repo_path.join("cookbooks/sample").should exist
-            repo_path.join("cookbooks/sample/metadata.rb").should exist
+            context "the install" do
+              it "should not raise an exception" do
+                expect { env.install! }.to_not raise_error
+              end
+            end
+
+            context "the results" do
+              before { env.install! }
+
+              it "should create the lockfile" do
+                repo_path.join("Cheffile.lock").should exist
+              end
+
+              it "should create the directory for the cookbook" do
+                repo_path.join("cookbooks/sample").should exist
+              end
+
+              it "should copy the cookbook files into the cookbook directory" do
+                repo_path.join("cookbooks/sample/metadata.rb").should exist
+              end
+            end
           end
 
-          it "should resolve and separately install" do
-            repo_path = tmp_path.join("repo/resolve-install")
-            repo_path.rmtree if repo_path.exist?
-            repo_path.mkpath
-            repo_path.join("cookbooks").mkpath
-            cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
-              #!/usr/bin/env ruby
-              cookbook "sample", :git => #{sample_path.to_s.inspect}
-            CHEFFILE
-            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.environment.stub!(:project_path) { repo_path }
+          context "resolving and and separately installing" do
+            let(:repo_path) { tmp_path.join("repo/resolve-install") }
+            before do
+              repo_path.rmtree if repo_path.exist?
+              repo_path.mkpath
+              repo_path.join("cookbooks").mkpath
+              cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
+                #!/usr/bin/env ruby
+                cookbook "sample", :git => #{sample_path.to_s.inspect}
+              CHEFFILE
+              repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
 
-            Chef.resolve!
-            repo_path.join("tmp").rmtree if repo_path.join("tmp").exist?
-            Chef.install!
-            repo_path.join("cookbooks/sample").should exist
-            repo_path.join("cookbooks/sample/metadata.rb").should exist
+              env.resolve!
+              repo_path.join("tmp").rmtree if repo_path.join("tmp").exist?
+            end
+
+            context "the install" do
+              it "should not raise an exception" do
+                expect { env.install! }.to_not raise_error
+              end
+            end
+
+            context "the results" do
+              before { env.install! }
+
+              it "should create the directory for the cookbook" do
+                repo_path.join("cookbooks/sample").should exist
+              end
+
+              it "should copy the cookbook files into the cookbook directory" do
+                repo_path.join("cookbooks/sample/metadata.rb").should exist
+              end
+            end
           end
 
-          it "should resolve, change, and resolve" do
-            repo_path = tmp_path.join("repo/resolve-update")
-            repo_path.rmtree if repo_path.exist?
-            repo_path.mkpath
-            repo_path.join("cookbooks").mkpath
-            cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
-              git #{cookbooks_path.to_s.inspect}
-              cookbook "first-sample"
-            CHEFFILE
-            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.environment.stub!(:project_path) { repo_path }
-            Chef.resolve!
-            repo_path.join("Cheffile.lock").should exist
+          context "resolving, changing, and resolving" do
+            let(:repo_path) { tmp_path.join("repo/resolve-update") }
+            before do
+              repo_path.rmtree if repo_path.exist?
+              repo_path.mkpath
+              repo_path.join("cookbooks").mkpath
+              cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
+                git #{cookbooks_path.to_s.inspect}
+                cookbook "first-sample"
+              CHEFFILE
+              repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
+              env.resolve!
 
-            cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
-              git #{cookbooks_path.to_s.inspect}
-              cookbook "first-sample"
-              cookbook "second-sample"
-            CHEFFILE
-            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.environment.stub!(:project_path) { repo_path }
-            Chef.resolve!
+              cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
+                git #{cookbooks_path.to_s.inspect}
+                cookbook "first-sample"
+                cookbook "second-sample"
+              CHEFFILE
+              repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
+            end
+
+            context "the second resolve" do
+              it "should not raise an exception" do
+                expect { env.resolve! }.to_not raise_error
+              end
+            end
           end
 
         end
@@ -168,8 +224,8 @@ module Librarian
           end
 
           context "if no path option is given" do
-            it "should not resolve" do
-              repo_path = tmp_path.join("repo/resolve")
+            let(:repo_path) { tmp_path.join("repo/resolve") }
+            before do
               repo_path.rmtree if repo_path.exist?
               repo_path.mkpath
               repo_path.join("cookbooks").mkpath
@@ -179,15 +235,16 @@ module Librarian
                   :git => #{git_path.to_s.inspect}
               CHEFFILE
               repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-              Chef.environment.stub!(:project_path) { repo_path }
+            end
 
-              expect{ Chef.resolve! }.to raise_error
+            it "should not resolve" do
+              expect{ env.resolve! }.to raise_error
             end
           end
 
           context "if the path option is wrong" do
-            it "should not resolve" do
-              repo_path = tmp_path.join("repo/resolve")
+            let(:repo_path) { tmp_path.join("repo/resolve") }
+            before do
               repo_path.rmtree if repo_path.exist?
               repo_path.mkpath
               repo_path.join("cookbooks").mkpath
@@ -198,15 +255,16 @@ module Librarian
                   :path => "jelly"
               CHEFFILE
               repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-              Chef.environment.stub!(:project_path) { repo_path }
+            end
 
-              expect{ Chef.resolve! }.to raise_error
+            it "should not resolve" do
+              expect{ env.resolve! }.to raise_error
             end
           end
 
           context "if the path option is right" do
-            it "should not resolve" do
-              repo_path = tmp_path.join('repo/resolve')
+            let(:repo_path) { tmp_path.join('repo/resolve') }
+            before do
               repo_path.rmtree if repo_path.exist?
               repo_path.mkpath
               repo_path.join('cookbooks').mkpath
@@ -217,11 +275,20 @@ module Librarian
                   :path => "buttercup"
               CHEFFILE
               repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-              Chef.environment.stub!(:project_path) { repo_path }
+            end
 
-              Chef.resolve!
-              repo_path.join("Cheffile.lock").should exist
-              repo_path.join("cookbooks/sample").should_not exist
+            context "the resolve" do
+              it "should not raise an exception" do
+                expect { env.resolve! }.to_not raise_error
+              end
+            end
+
+            context "the results" do
+              before { env.resolve! }
+
+              it "should create the lockfile" do
+                repo_path.join("Cheffile.lock").should exist
+              end
             end
           end
 
@@ -229,9 +296,8 @@ module Librarian
 
         context "missing a metadata" do
           let(:git_path) { tmp_path.join("big-git-repo") }
-
-          it "should explain the problem" do
-            repo_path = tmp_path.join("repo/resolve")
+          let(:repo_path) { tmp_path.join("repo/resolve") }
+          before do
             repo_path.rmtree if repo_path.exist?
             repo_path.mkpath
             repo_path.join("cookbooks").mkpath
@@ -240,12 +306,29 @@ module Librarian
                 :git => #{git_path.to_s.inspect}
             CHEFFILE
             repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-            Chef.environment.stub!(:project_path) { repo_path }
+          end
 
-            expect { Chef.resolve! }.
-              to raise_error(Librarian::Error, /no metadata file found/i)
-            repo_path.join("Cheffile.lock").should_not exist
-            repo_path.join("cookbooks/sample").should_not exist
+          context "the resolve" do
+            it "should raise an exception" do
+              expect { env.resolve! }.to raise_error
+            end
+
+            it "should explain the problem" do
+              expect { env.resolve! }.
+                to raise_error(Librarian::Error, /no metadata file found/i)
+            end
+          end
+
+          context "the results" do
+            before { env.resolve! rescue nil }
+
+            it "should not create the lockfile" do
+              repo_path.join("Cheffile.lock").should_not exist
+            end
+
+            it "should not create the directory for the cookbook" do
+              repo_path.join("cookbooks/sample").should_not exist
+            end
           end
         end
 
