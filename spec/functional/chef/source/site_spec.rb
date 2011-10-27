@@ -109,8 +109,8 @@ module Librarian
               repo_path.mkpath
               repo_path.join("cookbooks").mkpath
               cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
-              #!/usr/bin/env ruby
-              cookbook "sample", :site => #{api_url.inspect}
+                #!/usr/bin/env ruby
+                cookbook "sample", :site => #{api_url.inspect}
               CHEFFILE
               repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
             end
