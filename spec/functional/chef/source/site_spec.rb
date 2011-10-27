@@ -47,7 +47,7 @@ module Librarian
         before :all do
           sample_path.rmtree if sample_path.exist?
           sample_path.mkpath
-          sample_path.join('metadata.rb').open('wb') { |f| f.write(sample_metadata) }
+          sample_path.join("metadata.rb").open("wb") { |f| f.write(sample_metadata) }
           Dir.chdir(sample_path.dirname) do
             system "tar --create --gzip --file sample.tar.gz #{sample_path.basename}"
           end
