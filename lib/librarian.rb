@@ -14,19 +14,11 @@ module Librarian
       options = names.pop
       to = options.delete(:to)
       names.each do |name|
-        if name =~ /=$/
-          module_eval <<-CODE, __FILE__, __LINE__ + 1
-            def #{name}(arg)
-              #{to}.#{name.gsub(/=$/, "")} = arg
-            end
-          CODE
-        else
-          module_eval <<-CODE, __FILE__, __LINE__ + 1
-            def #{name}(*args, &block)
-              #{to}.#{name}(*args, &block)
-            end
-          CODE
-        end
+        module_eval <<-CODE, __FILE__, __LINE__ + 1
+          def #{name}(*args, &block)
+            #{to}.#{name}(*args, &block)
+          end
+        CODE
       end
     end
   end
