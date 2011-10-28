@@ -63,7 +63,7 @@ module Librarian
     end
 
     def cache_path
-      project_path.join('tmp/librarian/cache')
+      project_path.join("tmp/librarian/cache")
     end
 
     def project_relative_path_to(path)
