@@ -10,7 +10,7 @@ module Librarian
     context "a simple specfile" do
 
       it "should work" do
-        Mock.registry :clear => true do
+        env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.1'
           end
@@ -28,7 +28,7 @@ module Librarian
     context "a specfile with a dep from one src depending on a dep from another src" do
 
       it "should work" do
-        Mock.registry :clear => true do
+        env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.1'
           end
@@ -53,7 +53,7 @@ module Librarian
     context "a specfile with a dep depending on a nonexistent dep" do
 
       it "should not work" do
-        Mock.registry :clear => true do
+        env.registry :clear => true do
           source 'source-1' do
             spec 'jam', '1.2' do
               dependency 'butter', '>= 1.0'
@@ -73,7 +73,7 @@ module Librarian
     context "a specfile with conflicting constraints" do
 
       it "should not work" do
-        Mock.registry :clear => true do
+        env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.0'
             spec 'butter', '1.1'
@@ -96,7 +96,7 @@ module Librarian
     context "updating" do
 
       it "should not work" do
-        Mock.registry :clear => true do
+        env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.0'
             spec 'butter', '1.1'
@@ -134,7 +134,7 @@ module Librarian
     context "a change to the spec" do
 
       it "should work" do
-        Mock.registry :clear => true do
+        env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.0'
           end

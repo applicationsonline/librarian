@@ -14,10 +14,9 @@ module Librarian
       end
 
       def registry(options = nil, &block)
-        registry = Source::Mock::Registry
-        registry.clear! if options && options[:clear]
-        registry.merge!(&block) if block
-        registry
+        @registry ||= Source::Mock::Registry.new
+        @registry.merge!(options, &block)
+        @registry
       end
     end
 

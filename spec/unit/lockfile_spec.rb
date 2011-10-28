@@ -4,15 +4,15 @@ require 'librarian/mock'
 module Librarian
   describe Lockfile do
 
+    let(:env) { Mock::Environment.new }
+
     before do
-      Mock.registry :clear => true do
+      env.registry :clear => true do
         source 'source-1' do
           spec 'alpha', '1.1'
         end
       end
     end
-
-    let(:env) { Mock::Environment.new }
 
     let(:spec) do
       env.dsl do

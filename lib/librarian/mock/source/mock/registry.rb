@@ -58,19 +58,23 @@ module Librarian
 
           end
 
-          class << self
-            def clear!
-              @sources = nil
-            end
-            def merge!(&block)
-              @sources ||= {}
-              Dsl.run!(@sources, &block) if block
-            end
-            def [](name)
-              @sources ||= {}
-              @sources[name] ||= {}
-            end
+          def initialize
+            clear!
           end
+          def clear!
+            self.sources = { }
+          end
+          def merge!(options = nil, &block)
+            clear! if options && options[:clear]
+            Dsl.run!(sources, &block) if block
+          end
+          def [](name)
+            sources[name] ||= {}
+          end
+
+        private
+
+          attr_accessor :sources
 
         end
       end

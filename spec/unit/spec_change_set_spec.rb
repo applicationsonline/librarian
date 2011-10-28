@@ -10,7 +10,7 @@ module Librarian
     context "a simple root removal" do
 
       it "should work" do
-        Mock.registry :clear => true do
+        env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.0'
             spec 'jam', '1.0'
@@ -41,7 +41,7 @@ module Librarian
     context "a simple root add" do
 
       it "should work" do
-        Mock.registry :clear => true do
+        env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.0'
             spec 'jam', '1.0'
@@ -73,7 +73,7 @@ module Librarian
       context "when the change is consistent" do
 
         it "should work" do
-          Mock.registry :clear => true do
+          env.registry :clear => true do
             source 'source-1' do
               spec 'butter', '1.0'
               spec 'jam', '1.0'
@@ -105,7 +105,7 @@ module Librarian
       context "when the change is inconsistent" do
 
         it "should work" do
-          Mock.registry :clear => true do
+          env.registry :clear => true do
             source 'source-1' do
               spec 'butter', '1.0'
               spec 'jam', '1.0'
@@ -138,7 +138,7 @@ module Librarian
 
     context "a simple root source change" do
       it "should work" do
-        Mock.registry :clear => true do
+        env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.0'
           end

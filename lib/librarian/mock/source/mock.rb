@@ -60,7 +60,7 @@ module Librarian
         end
 
         def registry
-          Registry[name]
+          environment.registry[name]
         end
 
         def manifest(name, version, dependencies)

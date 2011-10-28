@@ -5,12 +5,5 @@ module Librarian
     extend self
     extend Librarian
 
-    module Overrides
-      def registry(options = nil, &block)
-        environment.registry(options, &block)
-      end
-    end
-
-    extend Overrides
   end
 end
