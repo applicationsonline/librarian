@@ -4,6 +4,9 @@ require 'librarian/mock'
 module Librarian
   describe SpecChangeSet do
 
+    let(:env) { Mock::Environment.new }
+    let(:resolver) { env.resolver }
+
     context "a simple root removal" do
 
       it "should work" do
@@ -13,19 +16,19 @@ module Librarian
             spec 'jam', '1.0'
           end
         end
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'butter'
           dep 'jam'
         end
-        lock = Mock.resolver.resolve(spec)
+        lock = resolver.resolve(spec)
         lock.should be_correct
 
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'jam'
         end
-        changes = Mock.spec_change_set(spec, lock)
+        changes = env.spec_change_set(spec, lock)
         changes.should_not be_same
 
         manifests = ManifestSet.new(changes.analyze).to_hash
@@ -44,19 +47,19 @@ module Librarian
             spec 'jam', '1.0'
           end
         end
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'jam'
         end
-        lock = Mock.resolver.resolve(spec)
+        lock = resolver.resolve(spec)
         lock.should be_correct
 
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'butter'
           dep 'jam'
         end
-        changes = Mock.spec_change_set(spec, lock)
+        changes = env.spec_change_set(spec, lock)
         changes.should_not be_same
         manifests = ManifestSet.new(changes.analyze).to_hash
         manifests.should have_key('jam')
@@ -77,20 +80,20 @@ module Librarian
               spec 'jam', '1.1'
             end
           end
-          spec = Mock.dsl do
+          spec = env.dsl do
             src 'source-1'
             dep 'butter'
             dep 'jam', '= 1.1'
           end
-          lock = Mock.resolver.resolve(spec)
+          lock = resolver.resolve(spec)
           lock.should be_correct
 
-          spec = Mock.dsl do
+          spec = env.dsl do
             src 'source-1'
             dep 'butter'
             dep 'jam', '>= 1.0'
           end
-          changes = Mock.spec_change_set(spec, lock)
+          changes = env.spec_change_set(spec, lock)
           changes.should_not be_same
           manifests = ManifestSet.new(changes.analyze).to_hash
           manifests.should have_key('butter')
@@ -109,20 +112,20 @@ module Librarian
               spec 'jam', '1.1'
             end
           end
-          spec = Mock.dsl do
+          spec = env.dsl do
             src 'source-1'
             dep 'butter'
             dep 'jam', '= 1.0'
           end
-          lock = Mock.resolver.resolve(spec)
+          lock = resolver.resolve(spec)
           lock.should be_correct
 
-          spec = Mock.dsl do
+          spec = env.dsl do
             src 'source-1'
             dep 'butter'
             dep 'jam', '>= 1.1'
           end
-          changes = Mock.spec_change_set(spec, lock)
+          changes = env.spec_change_set(spec, lock)
           changes.should_not be_same
           manifests = ManifestSet.new(changes.analyze).to_hash
           manifests.should have_key('butter')
@@ -143,18 +146,18 @@ module Librarian
             spec 'butter', '1.0'
           end
         end
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'butter'
         end
-        lock = Mock.resolver.resolve(spec)
+        lock = resolver.resolve(spec)
         lock.should be_correct
 
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'butter', :src => 'source-2'
         end
-        changes = Mock.spec_change_set(spec, lock)
+        changes = env.spec_change_set(spec, lock)
         changes.should_not be_same
         manifests = ManifestSet.new(changes.analyze).to_hash
         manifests.should_not have_key('butter')

@@ -12,14 +12,16 @@ module Librarian
       end
     end
 
+    let(:env) { Mock::Environment.new }
+
     let(:spec) do
-      Mock.dsl do
+      env.dsl do
         src 'source-1'
         dep 'alpha', '1.1'
       end
     end
 
-    let(:resolver) { Mock.resolver }
+    let(:resolver) { env.resolver }
     let(:resolution) { resolver.resolve(spec) }
 
     context "sanity" do
@@ -32,7 +34,7 @@ module Librarian
     end
 
     describe "#save" do
-      let(:lockfile) { Mock.ephemeral_lockfile }
+      let(:lockfile) { env.ephemeral_lockfile }
       let(:lockfile_text) { lockfile.save(resolution) }
 
       context "just saving" do

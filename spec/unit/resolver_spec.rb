@@ -4,6 +4,9 @@ require 'librarian/mock'
 module Librarian
   describe Resolver do
 
+    let(:env) { Mock::Environment.new }
+    let(:resolver) { env.resolver }
+
     context "a simple specfile" do
 
       it "should work" do
@@ -12,11 +15,10 @@ module Librarian
             spec 'butter', '1.1'
           end
         end
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'butter'
         end
-        resolver = Mock.resolver
         resolution = resolver.resolve(spec)
         resolution.should be_correct
       end
@@ -36,13 +38,12 @@ module Librarian
             end
           end
         end
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           src 'source-2' do
             dep 'jam'
           end
         end
-        resolver = Mock.resolver
         resolution = resolver.resolve(spec)
         resolution.should be_correct
       end
@@ -59,11 +60,10 @@ module Librarian
             end
           end
         end
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'jam'
         end
-        resolver = Mock.resolver
         resolution = resolver.resolve(spec)
         resolution.should_not be_correct
       end
@@ -82,12 +82,11 @@ module Librarian
             end
           end
         end
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'butter', '1.0'
           dep 'jam'
         end
-        resolver = Mock.resolver
         resolution = resolver.resolve(spec)
         resolution.should_not be_correct
       end
@@ -106,24 +105,24 @@ module Librarian
             end
           end
         end
-        first_spec = Mock.dsl do
+        first_spec = env.dsl do
           src 'source-1'
           dep 'butter', '1.1'
           dep 'jam'
         end
-        first_resolution = Mock.resolver.resolve(first_spec)
+        first_resolution = resolver.resolve(first_spec)
         first_resolution.should be_correct
         first_manifests = first_resolution.manifests
         first_manifests_index = Hash[first_manifests.map{|m| [m.name, m]}]
         first_manifests_index['butter'].version.to_s.should == '1.1'
 
-        second_spec = Mock.dsl do
+        second_spec = env.dsl do
           src 'source-1'
           dep 'butter', '1.0'
           dep 'jam'
         end
         locked_manifests = ManifestSet.deep_strip(first_manifests, ['butter'])
-        second_resolution = Mock.resolver.resolve(second_spec, locked_manifests)
+        second_resolution =resolver.resolve(second_spec, locked_manifests)
         second_resolution.should be_correct
         second_manifests = second_resolution.manifests
         second_manifests_index = Hash[second_manifests.map{|m| [m.name, m]}]
@@ -143,22 +142,22 @@ module Librarian
             spec 'butter', '1.0'
           end
         end
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'butter'
         end
-        lock = Mock.resolver.resolve(spec)
+        lock = resolver.resolve(spec)
         lock.should be_correct
 
-        spec = Mock.dsl do
+        spec = env.dsl do
           src 'source-1'
           dep 'butter', :src => 'source-2'
         end
-        changes = Mock.spec_change_set(spec, lock)
+        changes = env.spec_change_set(spec, lock)
         changes.should_not be_same
         manifests = ManifestSet.new(changes.analyze).to_hash
         manifests.should_not have_key('butter')
-        lock = Mock.resolver.resolve(spec, changes.analyze)
+        lock = resolver.resolve(spec, changes.analyze)
         lock.should be_correct
         lock.manifests.map{|m| m.name}.should include('butter')
         manifest = lock.manifests.find{|m| m.name == 'butter'}

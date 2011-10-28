@@ -49,16 +49,12 @@ module Librarian
     lockfile_path
     lockfile
     ephemeral_lockfile
-    resolver
     cache_path
-    spec_change_set
     ensure!
     clean!
     install!
     update!
     resolve!
-    dsl
-    dsl_class
   )
 
   delegate *methods, :to => :environment
