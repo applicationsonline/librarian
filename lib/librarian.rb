@@ -42,11 +42,6 @@ module Librarian
     lockfile
     ephemeral_lockfile
     cache_path
-    ensure!
-    clean!
-    install!
-    update!
-    resolve!
   )
 
   delegate *methods, :to => :environment
