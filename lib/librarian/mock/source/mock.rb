@@ -36,7 +36,7 @@ module Librarian
         private :environment=
         attr_reader :name
 
-        def initialize(evironment, name, options)
+        def initialize(environment, name, options)
           self.environment = environment
           @name = name
         end
