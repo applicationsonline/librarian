@@ -41,7 +41,6 @@ module Librarian
 
   methods = %w(
     specfile_name
-    dsl_class
     install_path
     project_path
     specfile_path
@@ -52,7 +51,6 @@ module Librarian
     ephemeral_lockfile
     resolver
     cache_path
-    project_relative_path_to
     spec_change_set
     ensure!
     clean!
@@ -61,7 +59,6 @@ module Librarian
     resolve!
     dsl
     dsl_class
-    debug
   )
 
   delegate *methods, :to => :environment
