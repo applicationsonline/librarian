@@ -10,11 +10,12 @@ module Librarian
 
     include Helpers::Debug
 
-    attr_reader :environment
+    attr_accessor :environment
+    private :environment=
     attr_reader :spec, :lock
 
     def initialize(environment, spec, lock)
-      @environment = environment
+      self.environment = environment
       raise TypeError, "can't convert #{spec.class} into Spec" unless Spec === spec
       raise TypeError, "can't convert #{lock.class} into Resolution" unless Resolution === lock
       @spec, @lock = spec, lock

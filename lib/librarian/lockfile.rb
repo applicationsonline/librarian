@@ -8,10 +8,12 @@ module Librarian
 
     include Helpers::Debug
 
-    attr_reader :environment, :path
+    attr_accessor :environment
+    private :environment=
+    attr_reader :path
 
     def initialize(environment, path)
-      @environment = environment
+      self.environment = environment
       @path = path
     end
 

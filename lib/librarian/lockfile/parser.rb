@@ -17,10 +17,11 @@ module Librarian
 
       include Helpers::Debug
 
-      attr_reader :environment
+      attr_accessor :environment
+      private :environment=
 
       def initialize(environment)
-        @environment = environment
+        self.environment = environment
       end
 
       def parse(string)
