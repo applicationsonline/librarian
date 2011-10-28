@@ -1,8 +1,3 @@
-require 'pathname'
-
-require 'librarian/helpers/debug'
-require 'librarian/support/abstract_method'
-
 require 'librarian/version'
 require 'librarian/environment'
 
