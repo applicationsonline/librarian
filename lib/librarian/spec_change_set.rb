@@ -16,8 +16,8 @@ module Librarian
 
     def initialize(environment, spec, lock)
       self.environment = environment
-      raise TypeError, "can't convert #{spec.class} into Spec" unless Spec === spec
-      raise TypeError, "can't convert #{lock.class} into Resolution" unless Resolution === lock
+      raise TypeError, "can't convert #{spec.class} into #{Spec}" unless Spec === spec
+      raise TypeError, "can't convert #{lock.class} into #{Resolution}" unless Resolution === lock
       @spec, @lock = spec, lock
     end
 
