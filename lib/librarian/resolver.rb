@@ -1,13 +1,9 @@
-require 'librarian/helpers/debug'
-
 require 'librarian/resolver/implementation'
 require 'librarian/manifest_set'
 require 'librarian/resolution'
 
 module Librarian
   class Resolver
-
-    include Helpers::Debug
 
     attr_accessor :environment
     private :environment=
