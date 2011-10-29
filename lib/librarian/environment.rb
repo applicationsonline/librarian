@@ -11,6 +11,8 @@ require "librarian/manifest_set"
 require "librarian/resolver"
 require "librarian/dsl"
 
+require "librarian/action"
+
 module Librarian
   class Environment
 
