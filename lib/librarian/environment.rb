@@ -74,6 +74,18 @@ module Librarian
       SpecChangeSet.new(self, spec, lock)
     end
 
+    def spec
+      specfile.read
+    end
+
+    def lock
+      lockfile.read
+    end
+
+    def spec_consistent_with_lock?
+      spec_change_set(spec, lock).same?
+    end
+
     def ensure!
       unless project_path
         raise Error, "Cannot find #{specfile_name}!"
@@ -162,6 +174,17 @@ module Librarian
           raise Error, "Cannot bounce #{lockfile_name}!"
         end
         lockfile_path.open('wb') { |f| f.write(lockfile_text) }
+      end
+    end
+
+    def install_consistent_resolution!
+      raise Error, "#{specfile_name} missing!" unless specfile_path.exist?
+      raise Error, "#{lockfile_name} missing!" unless lockfile_path.exist?
+
+      raise Error, "#{specfile_name} and #{lockfile_name} are out of sync!" unless spec_consistent_with_lock?
+
+      lock.manifests.each do |manifest|
+        manifest.install!
       end
     end
 
