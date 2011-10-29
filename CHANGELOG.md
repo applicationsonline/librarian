@@ -1,3 +1,7 @@
+## 0.0.10
+
+This release focuses on refactoring some of the internals. There are no functional changes.
+
 ## 0.0.9
 
 * \#11 Fixes a problem where, if the repo is in a path where a component has a space, attempting to resolve a
