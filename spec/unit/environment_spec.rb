@@ -5,6 +5,19 @@ module Librarian
 
     let(:env) { described_class.new }
 
+    describe "#clean!" do
+
+      it "should delegate to Action::Clean" do
+        action = mock
+        Action::Clean.stub(:new) { action }
+
+        action.should_receive(:run)
+
+        env.clean!
+      end
+
+    end
+
     describe "#install_consistent_resolution!" do
 
       before do

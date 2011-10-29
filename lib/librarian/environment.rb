@@ -12,6 +12,7 @@ require "librarian/resolver"
 require "librarian/dsl"
 
 require "librarian/action"
+require "librarian/action/clean"
 
 module Librarian
   class Environment
@@ -95,20 +96,7 @@ module Librarian
     end
 
     def clean!
-      if cache_path.exist?
-        debug { "Deleting #{project_relative_path_to(cache_path)}" }
-        cache_path.rmtree
-      end
-      if install_path.exist?
-        install_path.children.each do |c|
-          debug { "Deleting #{project_relative_path_to(c)}" }
-          c.rmtree unless c.file?
-        end
-      end
-      if lockfile_path.exist?
-        debug { "Deleting #{project_relative_path_to(lockfile_path)}" }
-        lockfile_path.rmtree
-      end
+      Action::Clean.new(self).run
     end
 
     def install!
