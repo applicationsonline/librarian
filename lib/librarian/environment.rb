@@ -14,6 +14,7 @@ require "librarian/dsl"
 require "librarian/action"
 require "librarian/action/ensure"
 require "librarian/action/clean"
+require "librarian/action/install"
 
 module Librarian
   class Environment
@@ -100,14 +101,7 @@ module Librarian
 
     def install!
       resolve!
-      manifests = ManifestSet.sort(lockfile.load(lockfile_path.read).manifests)
-      manifests.each do |manifest|
-        manifest.source.cache!([manifest])
-      end
-      install_path.mkpath unless install_path.exist?
-      manifests.each do |manifest|
-        manifest.install!
-      end
+      Action::Install.new(self).run
     end
 
     def update!(dependency_names)
@@ -167,14 +161,7 @@ module Librarian
     end
 
     def install_consistent_resolution!
-      raise Error, "#{specfile_name} missing!" unless specfile_path.exist?
-      raise Error, "#{lockfile_name} missing!" unless lockfile_path.exist?
-
-      raise Error, "#{specfile_name} and #{lockfile_name} are out of sync!" unless spec_consistent_with_lock?
-
-      lock.manifests.each do |manifest|
-        manifest.install!
-      end
+      Action::Install.new(self).run
     end
 
     def dsl(&block)
