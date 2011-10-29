@@ -12,6 +12,7 @@ require "librarian/resolver"
 require "librarian/dsl"
 
 require "librarian/action"
+require "librarian/action/ensure"
 require "librarian/action/clean"
 
 module Librarian
@@ -90,9 +91,7 @@ module Librarian
     end
 
     def ensure!
-      unless project_path
-        raise Error, "Cannot find #{specfile_name}!"
-      end
+      Action::Ensure.new(self).run
     end
 
     def clean!
