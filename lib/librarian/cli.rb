@@ -51,8 +51,8 @@ module Librarian
     method_option "verbose"
     method_option "line-numbers"
     def clean
-      environment.ensure!
-      environment.clean!
+      ensure!
+      clean!
     end
 
     desc "install", "Installs all of the dependencies you specify."
@@ -60,9 +60,9 @@ module Librarian
     method_option "line-numbers"
     method_option "clean"
     def install
-      environment.ensure!
-      environment.clean! if options["clean"]
-      environment.install!
+      ensure!
+      clean! if options["clean"]
+      install!
     end
 
     desc "resolve", "Resolves the dependencies you specify."
@@ -70,20 +70,20 @@ module Librarian
     method_option "line-numbers"
     method_option "clean"
     def resolve
-      environment.ensure!
-      environment.clean! if options["clean"]
-      environment.resolve!
+      ensure!
+      clean! if options["clean"]
+      resolve!
     end
 
     desc "update", "Updates the dependencies you specify."
     method_option "verbose"
     method_option "line-numbers"
     def update(*names)
-      environment.ensure!
+      ensure!
       if names.empty?
-        environment.resolve!(:force => true)
+        resolve!(:force => true)
       else
-        environment.update!(:names => names)
+        update!(:names => names)
       end
     end
 
@@ -96,6 +96,26 @@ module Librarian
 
     def environment
       root_module.environment
+    end
+
+    def ensure!(options = { })
+      Action::Ensure.new(environment, options).run
+    end
+
+    def clean!(options = { })
+      Action::Clean.new(environment, options).run
+    end
+
+    def install!(options = { })
+      Action::Install.new(environment, options).run
+    end
+
+    def resolve!(options = { })
+      Action::Resolve.new(environment, options).run
+    end
+
+    def update!(options = { })
+      Action::Update.new(environment, options).run
     end
 
   end
