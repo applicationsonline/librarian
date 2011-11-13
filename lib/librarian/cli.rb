@@ -2,6 +2,7 @@ require 'thor'
 require 'thor/actions'
 
 require 'librarian'
+require 'librarian/error'
 require 'librarian/action'
 require "librarian/ui"
 
