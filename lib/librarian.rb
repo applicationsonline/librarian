@@ -12,4 +12,8 @@ module Librarian
     @environment ||= environment_class.new
   end
 
+  def version
+    VERSION
+  end
+
 end
