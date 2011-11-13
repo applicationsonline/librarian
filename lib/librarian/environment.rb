@@ -6,7 +6,6 @@ require "librarian/support/abstract_method"
 require "librarian/error"
 require "librarian/lockfile"
 require "librarian/specfile"
-require "librarian/spec_change_set"
 require "librarian/manifest_set"
 require "librarian/resolver"
 require "librarian/dsl"
@@ -72,20 +71,12 @@ module Librarian
       Pathname.new(path).relative_path_from(project_path)
     end
 
-    def spec_change_set(spec, lock)
-      SpecChangeSet.new(self, spec, lock)
-    end
-
     def spec
       specfile.read
     end
 
     def lock
       lockfile.read
-    end
-
-    def spec_consistent_with_lock?
-      spec_change_set(spec, lock).same?
     end
 
     def ensure!

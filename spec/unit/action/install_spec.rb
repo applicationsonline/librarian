@@ -38,7 +38,7 @@ module Librarian
             before do
               env.stub_chain(:specfile_path, :exist?) { true }
               env.stub_chain(:lockfile_path, :exist?) { true }
-              env.stub(:spec_consistent_with_lock?) { false }
+              action.stub(:spec_consistent_with_lock?) { false }
             end
 
             it "should raise an error explaining the inconsistenty" do
@@ -50,7 +50,7 @@ module Librarian
             before do
               env.stub_chain(:specfile_path, :exist?) { true }
               env.stub_chain(:lockfile_path, :exist?) { true }
-              env.stub(:spec_consistent_with_lock?) { true }
+              action.stub(:spec_consistent_with_lock?) { true }
               action.stub(:perform_installation)
             end
 

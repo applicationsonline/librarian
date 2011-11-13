@@ -1,4 +1,5 @@
 require "librarian/manifest_set"
+require "librarian/spec_change_set"
 require "librarian/action/base"
 
 module Librarian
@@ -83,8 +84,12 @@ module Librarian
         environment.lock
       end
 
+      def spec_change_set(spec, lock)
+        SpecChangeSet.new(environment, spec, lock)
+      end
+
       def spec_consistent_with_lock?
-        environment.spec_consistent_with_lock?
+        spec_change_set(spec, lock).same?
       end
 
       def install_path

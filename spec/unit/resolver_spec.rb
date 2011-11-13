@@ -1,4 +1,5 @@
 require 'librarian/resolver'
+require 'librarian/spec_change_set'
 require 'librarian/mock'
 
 module Librarian
@@ -153,7 +154,7 @@ module Librarian
           src 'source-1'
           dep 'butter', :src => 'source-2'
         end
-        changes = env.spec_change_set(spec, lock)
+        changes = SpecChangeSet.new(env, spec, lock)
         changes.should_not be_same
         manifests = ManifestSet.new(changes.analyze).to_hash
         manifests.should_not have_key('butter')

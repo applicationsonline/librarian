@@ -1,4 +1,5 @@
 require 'librarian'
+require 'librarian/spec_change_set'
 require 'librarian/mock'
 
 module Librarian
@@ -28,7 +29,7 @@ module Librarian
           src 'source-1'
           dep 'jam'
         end
-        changes = env.spec_change_set(spec, lock)
+        changes = described_class.new(env, spec, lock)
         changes.should_not be_same
 
         manifests = ManifestSet.new(changes.analyze).to_hash
@@ -59,7 +60,7 @@ module Librarian
           dep 'butter'
           dep 'jam'
         end
-        changes = env.spec_change_set(spec, lock)
+        changes = described_class.new(env, spec, lock)
         changes.should_not be_same
         manifests = ManifestSet.new(changes.analyze).to_hash
         manifests.should have_key('jam')
@@ -93,7 +94,7 @@ module Librarian
             dep 'butter'
             dep 'jam', '>= 1.0'
           end
-          changes = env.spec_change_set(spec, lock)
+          changes = described_class.new(env, spec, lock)
           changes.should_not be_same
           manifests = ManifestSet.new(changes.analyze).to_hash
           manifests.should have_key('butter')
@@ -125,7 +126,7 @@ module Librarian
             dep 'butter'
             dep 'jam', '>= 1.1'
           end
-          changes = env.spec_change_set(spec, lock)
+          changes = described_class.new(env, spec, lock)
           changes.should_not be_same
           manifests = ManifestSet.new(changes.analyze).to_hash
           manifests.should have_key('butter')
@@ -157,7 +158,7 @@ module Librarian
           src 'source-1'
           dep 'butter', :src => 'source-2'
         end
-        changes = env.spec_change_set(spec, lock)
+        changes = described_class.new(env, spec, lock)
         changes.should_not be_same
         manifests = ManifestSet.new(changes.analyze).to_hash
         manifests.should_not have_key('butter')
