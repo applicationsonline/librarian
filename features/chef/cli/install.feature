@@ -2,11 +2,6 @@ Feature: cli/install
 
 
 
-  Background:
-    Given a directory named "cookbooks"
-
-
-
   Scenario: A simple Cheffile with one cookbook
     Given a file named "cookbook-sources/apt/metadata.yaml" with:
       """
