@@ -101,60 +101,12 @@ module Librarian
       Action::Install.new(self).run
     end
 
-    def update!(dependency_names)
-      unless lockfile_path.exist?
-        raise Error, "Lockfile missing!"
-      end
-      previous_resolution = lockfile.load(lockfile_path.read)
-      partial_manifests = ManifestSet.deep_strip(previous_resolution.manifests, dependency_names)
-      spec = specfile.read(previous_resolution.sources)
-      spec_changes = spec_change_set(spec, previous_resolution)
-      raise Error, "Cannot update when the specfile has been changed." unless spec_changes.same?
-      resolution = resolver.resolve(spec, partial_manifests)
-      unless resolution.correct?
-        ui.info { "Could not resolve the dependencies." }
-      else
-        lockfile_text = lockfile.save(resolution)
-        debug { "Bouncing #{lockfile_name}" }
-        bounced_lockfile_text = lockfile.save(lockfile.load(lockfile_text))
-        unless bounced_lockfile_text == lockfile_text
-          debug { "lockfile_text: \n#{lockfile_text}"}
-          debug { "bounced_lockfile_text: \n#{bounced_lockfile_text}"}
-          raise Error, "Cannot bounce #{lockfile_name}!"
-        end
-        lockfile_path.open('wb') { |f| f.write(lockfile_text) }
-      end
+    def update!(options)
+      Action::Update.new(self, :names => options[:names]).run
     end
 
     def resolve!(options = {})
-      if options[:force] || !lockfile_path.exist?
-        spec = specfile.read
-        manifests = []
-      else
-        lock = lockfile.read
-        spec = specfile.read(lock.sources)
-        changes = spec_change_set(spec, lock)
-        if changes.same?
-          debug { "The specfile is unchanged: nothing to do." }
-          return
-        end
-        manifests = changes.analyze
-      end
-
-      resolution = resolver.resolve(spec, manifests)
-      unless resolution.correct?
-        raise Error, "Could not resolve the dependencies."
-      else
-        lockfile_text = lockfile.save(resolution)
-        debug { "Bouncing #{lockfile_name}" }
-        bounced_lockfile_text = lockfile.save(lockfile.load(lockfile_text))
-        unless bounced_lockfile_text == lockfile_text
-          debug { "lockfile_text: \n#{lockfile_text}"}
-          debug { "bounced_lockfile_text: \n#{bounced_lockfile_text}"}
-          raise Error, "Cannot bounce #{lockfile_name}!"
-        end
-        lockfile_path.open('wb') { |f| f.write(lockfile_text) }
-      end
+      Action::Resolve.new(self, :force => options[:force]).run
     end
 
     def install_consistent_resolution!

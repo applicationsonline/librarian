@@ -83,7 +83,7 @@ module Librarian
       if names.empty?
         environment.resolve!(:force => true)
       else
-        environment.update!(names)
+        environment.update!(:names => names)
       end
     end
 
