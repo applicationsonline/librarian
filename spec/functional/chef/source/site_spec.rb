@@ -1,3 +1,5 @@
+require 'pathname'
+require 'json'
 require 'webmock'
 
 require 'librarian'
