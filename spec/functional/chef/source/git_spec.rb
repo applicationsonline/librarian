@@ -3,6 +3,7 @@ require 'securerandom'
 
 require 'librarian'
 require 'librarian/helpers'
+require 'librarian/error'
 require 'librarian/action/resolve'
 require 'librarian/action/install'
 require 'librarian/chef'
@@ -319,7 +320,7 @@ module Librarian
 
             it "should explain the problem" do
               expect { Action::Resolve.new(env).run }.
-                to raise_error(Librarian::Error, /no metadata file found/i)
+                to raise_error(Error, /no metadata file found/i)
             end
           end
 
