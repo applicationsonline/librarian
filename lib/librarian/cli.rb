@@ -63,6 +63,7 @@ module Librarian
     def install
       ensure!
       clean! if options["clean"]
+      resolve!
       install!
     end
 
