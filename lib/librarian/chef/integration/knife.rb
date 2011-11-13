@@ -3,6 +3,7 @@ require 'securerandom'
 require 'highline'
 
 require 'librarian'
+require 'librarian/action/install'
 require 'librarian/chef'
 
 module Librarian
@@ -30,7 +31,7 @@ module Librarian
     hl = HighLine.new
 
     begin
-      environment.install_consistent_resolution!
+      Action::Install.new(environment).run
     rescue Error => e
       message = hl.color(e.message, HighLine::RED)
       hl.say(message)
