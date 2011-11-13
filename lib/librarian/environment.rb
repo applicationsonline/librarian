@@ -6,7 +6,6 @@ require "librarian/support/abstract_method"
 require "librarian/error"
 require "librarian/lockfile"
 require "librarian/specfile"
-require "librarian/manifest_set"
 require "librarian/resolver"
 require "librarian/dsl"
 
