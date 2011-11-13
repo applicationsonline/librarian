@@ -1,3 +1,7 @@
+## 0.0.11
+
+* Fix a regression where the cli command "version" failed.
+
 ## 0.0.10
 
 This release focuses on refactoring some of the internals. There are no functional changes.
