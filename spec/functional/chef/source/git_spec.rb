@@ -3,6 +3,8 @@ require 'securerandom'
 
 require 'librarian'
 require 'librarian/helpers'
+require 'librarian/action/resolve'
+require 'librarian/action/install'
 require 'librarian/chef'
 
 module Librarian
@@ -83,12 +85,12 @@ module Librarian
 
             context "the resolve" do
               it "should not raise an exception" do
-                expect { env.resolve! }.to_not raise_error
+                expect { Action::Resolve.new(env).run }.to_not raise_error
               end
             end
 
             context "the results" do
-              before { env.resolve! }
+              before { Action::Resolve.new(env).run }
 
               it "should create the lockfile" do
                 repo_path.join("Cheffile.lock").should exist
@@ -111,16 +113,18 @@ module Librarian
                 cookbook "sample", :git => #{sample_path.to_s.inspect}
               CHEFFILE
               repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
+
+              Action::Resolve.new(env).run
             end
 
             context "the install" do
               it "should not raise an exception" do
-                expect { env.install! }.to_not raise_error
+                expect { Action::Install.new(env).run }.to_not raise_error
               end
             end
 
             context "the results" do
-              before { env.install! }
+              before { Action::Install.new(env).run }
 
               it "should create the lockfile" do
                 repo_path.join("Cheffile.lock").should exist
@@ -148,18 +152,18 @@ module Librarian
               CHEFFILE
               repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
 
-              env.resolve!
+              Action::Resolve.new(env).run
               repo_path.join("tmp").rmtree if repo_path.join("tmp").exist?
             end
 
             context "the install" do
               it "should not raise an exception" do
-                expect { env.install! }.to_not raise_error
+                expect { Action::Install.new(env).run }.to_not raise_error
               end
             end
 
             context "the results" do
-              before { env.install! }
+              before { Action::Install.new(env).run }
 
               it "should create the directory for the cookbook" do
                 repo_path.join("cookbooks/sample").should exist
@@ -182,7 +186,7 @@ module Librarian
                 cookbook "first-sample"
               CHEFFILE
               repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
-              env.resolve!
+              Action::Resolve.new(env).run
 
               cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
                 git #{cookbooks_path.to_s.inspect}
@@ -194,7 +198,7 @@ module Librarian
 
             context "the second resolve" do
               it "should not raise an exception" do
-                expect { env.resolve! }.to_not raise_error
+                expect { Action::Resolve.new(env).run }.to_not raise_error
               end
             end
           end
@@ -238,7 +242,7 @@ module Librarian
             end
 
             it "should not resolve" do
-              expect{ env.resolve! }.to raise_error
+              expect{ Action::Resolve.new(env).run }.to raise_error
             end
           end
 
@@ -258,7 +262,7 @@ module Librarian
             end
 
             it "should not resolve" do
-              expect{ env.resolve! }.to raise_error
+              expect{ Action::Resolve.new(env).run }.to raise_error
             end
           end
 
@@ -279,12 +283,12 @@ module Librarian
 
             context "the resolve" do
               it "should not raise an exception" do
-                expect { env.resolve! }.to_not raise_error
+                expect { Action::Resolve.new(env).run }.to_not raise_error
               end
             end
 
             context "the results" do
-              before { env.resolve! }
+              before { Action::Resolve.new(env).run }
 
               it "should create the lockfile" do
                 repo_path.join("Cheffile.lock").should exist
@@ -310,17 +314,17 @@ module Librarian
 
           context "the resolve" do
             it "should raise an exception" do
-              expect { env.resolve! }.to raise_error
+              expect { Action::Resolve.new(env).run }.to raise_error
             end
 
             it "should explain the problem" do
-              expect { env.resolve! }.
+              expect { Action::Resolve.new(env).run }.
                 to raise_error(Librarian::Error, /no metadata file found/i)
             end
           end
 
           context "the results" do
-            before { env.resolve! rescue nil }
+            before { Action::Resolve.new(env).run rescue nil }
 
             it "should not create the lockfile" do
               repo_path.join("Cheffile.lock").should_not exist

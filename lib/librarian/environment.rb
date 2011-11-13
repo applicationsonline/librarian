@@ -9,8 +9,6 @@ require "librarian/specfile"
 require "librarian/resolver"
 require "librarian/dsl"
 
-require "librarian/action"
-
 module Librarian
   class Environment
 
@@ -76,27 +74,6 @@ module Librarian
 
     def lock
       lockfile.read
-    end
-
-    def ensure!
-      Action::Ensure.new(self).run
-    end
-
-    def clean!
-      Action::Clean.new(self).run
-    end
-
-    def install!
-      resolve!
-      Action::Install.new(self).run
-    end
-
-    def update!(options)
-      Action::Update.new(self, :names => options[:names]).run
-    end
-
-    def resolve!(options = {})
-      Action::Resolve.new(self, :force => options[:force]).run
     end
 
     def dsl(&block)
