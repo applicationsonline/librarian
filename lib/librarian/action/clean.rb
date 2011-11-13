@@ -1,8 +1,8 @@
-require "librarian/action"
+require "librarian/action/base"
 
 module Librarian
-  class Action
-    class Clean < Action
+  module Action
+    class Clean < Base
 
       def run
         clean_cache_path

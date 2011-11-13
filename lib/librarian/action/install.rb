@@ -1,9 +1,9 @@
 require "librarian/manifest_set"
-require "librarian/action"
+require "librarian/action/base"
 
 module Librarian
-  class Action
-    class Install < Action
+  module Action
+    class Install < Base
 
       def run
         check_preconditions

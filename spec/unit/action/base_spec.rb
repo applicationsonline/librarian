@@ -1,7 +1,7 @@
-require "librarian/action"
+require "librarian/action/base"
 
 module Librarian
-  describe Action do
+  describe Action::Base do
 
     let(:env) { mock }
     let(:action) { described_class.new(env) }

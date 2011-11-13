@@ -1,9 +1,9 @@
 require "librarian/error"
-require "librarian/action"
+require "librarian/action/base"
 
 module Librarian
-  class Action
-    class Ensure < Action
+  module Action
+    class Ensure < Base
 
       def run
         raise Error, "Cannot find #{specfile_name}!" unless project_path

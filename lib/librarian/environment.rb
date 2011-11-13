@@ -12,9 +12,6 @@ require "librarian/resolver"
 require "librarian/dsl"
 
 require "librarian/action"
-require "librarian/action/ensure"
-require "librarian/action/clean"
-require "librarian/action/install"
 
 module Librarian
   class Environment
