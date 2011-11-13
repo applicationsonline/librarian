@@ -99,10 +99,6 @@ module Librarian
       Action::Resolve.new(self, :force => options[:force]).run
     end
 
-    def install_consistent_resolution!
-      Action::Install.new(self).run
-    end
-
     def dsl(&block)
       dsl_class.run(self, &block)
     end

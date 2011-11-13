@@ -40,16 +40,5 @@ module Librarian
       end
     end
 
-    describe "#install_consistent_resolution!" do
-      it "should delegate to Action::Install" do
-        action = mock
-        Action::Install.stub(:new) { action }
-
-        action.should_receive(:run)
-
-        env.install_consistent_resolution!
-      end
-    end
-
   end
 end
