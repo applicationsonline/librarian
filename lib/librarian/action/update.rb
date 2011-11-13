@@ -19,7 +19,7 @@ module Librarian
         raise Error, "Cannot update when the specfile has been changed." unless spec_changes.same?
         resolution = resolver.resolve(spec, partial_manifests)
         unless resolution.correct?
-          ui.info { "Could not resolve the dependencies." }
+          raise Error, "Could not resolve the dependencies."
         else
           lockfile_text = lockfile.save(resolution)
           debug { "Bouncing #{lockfile_name}" }
