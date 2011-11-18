@@ -1,3 +1,7 @@
+## 0.0.12
+
+* Fixes an issue where, if a dependency has a git source with a ref, re-resolving may fail.
+
 ## 0.0.11
 
 * Fix a regression where the cli command "version" failed.
