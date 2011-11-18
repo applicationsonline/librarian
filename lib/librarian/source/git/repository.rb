@@ -47,6 +47,14 @@ module Librarian
           end
         end
 
+        def fetch!(options = { })
+          within do
+            command = "fetch"
+            command << " --tags" if options[:tags]
+            run!(command)
+          end
+        end
+
         def hash_from(reference)
           within do
             command = "rev-parse #{reference}"

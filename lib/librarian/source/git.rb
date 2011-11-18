@@ -72,6 +72,7 @@ module Librarian
           repository.clone!(uri)
         end
         unless sha == repository.current_commit_hash
+          repository.fetch!(:tags => true)
           repository.checkout!(sha || ref)
           @sha ||= repository.current_commit_hash
         end
