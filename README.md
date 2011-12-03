@@ -40,7 +40,7 @@ __Add dependencies and their sources to Cheffile__
     $ cat Cheffile
         site 'http://community.opscode.com/api/v1'
         cookbook 'ntp'
-        cookbook 'timezone'
+        cookbook 'timezone', '0.0.1'
         cookbook 'rvm',
           :git => 'https://github.com/fnichol/chef-rvm',
           :ref => 'v0.7.1'
@@ -59,7 +59,7 @@ __Update your cheffile with new/changed/removed constraints/sources/dependencies
     $ cat Cheffile
         site 'http://community.opscode.com/api/v1'
         cookbook 'ntp'
-        cookbook 'timezone'
+        cookbook 'timezone', '0.0.1'
         cookbook 'rvm',
           :git => 'https://github.com/fnichol/chef-rvm',
           :ref => 'v0.7.1'
