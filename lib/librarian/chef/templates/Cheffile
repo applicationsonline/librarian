@@ -5,6 +5,8 @@ site 'http://community.opscode.com/api/v1'
 
 # cookbook 'chef-client'
 
+# cookbook 'apache2', '>= 1.0.0'
+
 # cookbook 'rvm',
 #   :git => 'https://github.com/fnichol/chef-rvm'
 
