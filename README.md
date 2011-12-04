@@ -24,6 +24,7 @@ __Make sure your cookbooks directory is gitignored__
     $ cd ~/path/to/chef-repo
     $ git rm -r cookbooks # if the directory is present
     $ echo cookbooks >> .gitignore
+    $ echo tmp >> .gitignore
 
 Note that librarian *takes over* your cookbooks directory
   and manages it for you based on your Cheffile. Your
