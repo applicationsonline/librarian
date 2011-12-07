@@ -12,7 +12,7 @@ The mock source is in-process and in-memory and does not touch the filesystem or
 Librarian::Chef
 ---------------
 
-An adapter for Librarian applying to Chef cookbooks in a Chef Repository.
+An adapter for Librarian applying to Chef cookbooks in a Chef Repository. When used with Chef, Librarian is really for pulling in the 50 or so finished third-party cookbooks that you're using, not the 1 or 2 cookbooks you're actively working on.
 
 ## Install librarian:
 
