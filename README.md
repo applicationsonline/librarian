@@ -2,6 +2,7 @@ Librarian
 =========
 
 A tool to resolve recursively a set of specifications and fetch and install the fully resolved specifications.
+Librarian is really for pulling in the 50 or so finished third-party cookbooks that you're using, not the 1 or 2 cookbooks you're actively working on. 
 
 Librarian::Mock
 ---------------
