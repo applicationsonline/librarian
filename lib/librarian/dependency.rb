@@ -14,6 +14,8 @@ module Librarian
     private :name=, :requirement=, :source=
 
     def initialize(name, requirement, source)
+      assert_name_valid! name
+
       self.name = name
       self.requirement = Requirement.create(requirement)
       self.source = source
@@ -50,6 +52,10 @@ module Librarian
 
     def environment
       source.environment
+    end
+
+    def assert_name_valid!(name)
+      raise ArgumentError, "name (#{name.inspect}) must be sensible" unless name =~ /^\S.*\S$/
     end
 
   end
