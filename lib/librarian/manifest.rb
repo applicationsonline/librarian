@@ -12,14 +12,16 @@ module Librarian
     include Support::AbstractMethod
     include Helpers::Debug
 
-    attr_reader :source, :name
+    attr_accessor :source, :name
+    private :source=, :name=
 
     abstract_method :fetch_version!, :fetch_dependencies!
     abstract_method :install!
 
     def initialize(source, name)
-      @source = source
-      @name = name
+      self.source = source
+      self.name = name
+
       @fetched_version = nil
       @defined_version = nil
       @fetched_dependencies = nil
