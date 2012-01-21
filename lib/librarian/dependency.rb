@@ -10,12 +10,14 @@ module Librarian
 
     include Helpers::Debug
 
-    attr_reader :name, :requirement, :source
+    attr_accessor :name, :requirement, :source
+    private :name=, :requirement=, :source=
 
     def initialize(name, requirement, source)
-      @name = name
-      @requirement = Requirement.create(requirement)
-      @source = source
+      self.name = name
+      self.requirement = Requirement.create(requirement)
+      self.source = source
+
       @manifests = nil
     end
 
