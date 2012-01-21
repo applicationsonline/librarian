@@ -19,6 +19,8 @@ module Librarian
     abstract_method :install!
 
     def initialize(source, name)
+      assert_name_valid! name
+
       self.source = source
       self.name = name
 
@@ -84,6 +86,10 @@ module Librarian
         dependencies = dependencies.map{|k, v| Dependency.new(k, v, nil)}
       end
       dependencies.sort_by{|d| d.name}
+    end
+
+    def assert_name_valid!(name)
+      raise ArgumentError, "name (#{name.inspect}) must be sensible" unless name =~ /^\S.*\S$/
     end
 
   end
