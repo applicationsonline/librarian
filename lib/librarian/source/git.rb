@@ -72,8 +72,8 @@ module Librarian
           repository.clone!(uri)
         end
         unless sha == repository.current_commit_hash
+          repository.fetch!(:tags => true)
           repository.fetch!
-          repository.fetch!(:tags=>true)
           repository.checkout!(sha || ref)
           begin
             repository.merge!("origin/#{ref}") if ref
