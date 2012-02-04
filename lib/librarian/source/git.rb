@@ -73,7 +73,9 @@ module Librarian
         end
         unless sha == repository.current_commit_hash
           repository.fetch!(:tags => true)
-          repository.checkout!(sha || ref)
+          repository.fetch!
+          repository.merge_all_remote_branches!
+          repository.reset_hard! repository.hash_from(sha || ref)
           @sha ||= repository.current_commit_hash
         end
       end
