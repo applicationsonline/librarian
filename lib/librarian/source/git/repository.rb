@@ -47,10 +47,16 @@ module Librarian
           end
         end
 
-        def fetch!(options = { })
+        def fetch!
           within do
-            command = "fetch"
-            command << " --tags" if options[:tags]
+            command = "remote update"
+            run!(command)
+          end
+        end
+
+        def merge!(reference)
+          within do
+            command = "merge #{reference}"
             run!(command)
           end
         end
