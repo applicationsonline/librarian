@@ -73,6 +73,7 @@ module Librarian
         end
         unless sha == repository.current_commit_hash
           repository.fetch!
+          repository.fetch!(:tags=>true)
           repository.checkout!(sha || ref)
           begin
             repository.merge!("origin/#{ref}") if ref
