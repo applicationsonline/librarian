@@ -47,6 +47,13 @@ module Librarian
           end
         end
 
+        def reset_hard!(reference)
+          within do
+            command = "reset --hard #{reference}"
+            run!(command, false)
+          end
+        end
+
         def fetch!(options = { })
           within do
             command = "fetch"
@@ -76,10 +83,26 @@ module Librarian
           end
         end
 
+        def merge_all_remote_branches!
+          remote_branches.each do |branch|
+            checkout!(branch.slice(%r{[^/]+$}))
+            merge! branch
+          end
+        end
+
+        def remote_branches
+          within do
+            command ="branch -r --no-color"
+            run!(command, false).split("\n  ").reject do |r|
+              r.include? '->' #delete pointers like origin/HEAD -> origin/master
+            end.collect {|r|r.strip}
+          end
+        end
       private
 
-        def run!(text)
-          text = "git #{text} --quiet"
+        def run!(text, quiet = true)
+          text = "git #{text}"
+          text << " --quiet" if quiet
           debug { "Running `#{text}` in #{relative_path_to(Dir.pwd)}" }
           out = Open3.popen3(text) do |i, o, e, t|
             raise StandardError, e.read unless (t ? t.value : $?).success?

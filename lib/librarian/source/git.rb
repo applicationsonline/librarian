@@ -74,12 +74,8 @@ module Librarian
         unless sha == repository.current_commit_hash
           repository.fetch!(:tags => true)
           repository.fetch!
-          repository.checkout!(sha || ref)
-          begin
-            repository.merge!("origin/#{ref}") if ref
-          rescue Exception =>e
-            #calling repository.merge! fails if ref is a tag instead if a branch
-          end
+          repository.merge_all_remote_branches!
+          repository.reset_hard! repository.hash_from(sha || ref)
           @sha ||= repository.current_commit_hash
         end
       end
