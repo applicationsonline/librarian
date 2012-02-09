@@ -6,6 +6,7 @@ require 'librarian/helpers'
 require 'librarian/error'
 require 'librarian/action/resolve'
 require 'librarian/action/install'
+require 'librarian/action/update'
 require 'librarian/chef'
 
 module Librarian
@@ -333,6 +334,94 @@ module Librarian
 
             it "should not create the directory for the cookbook" do
               repo_path.join("cookbooks/sample").should_not exist
+            end
+          end
+        end
+
+        context "when upstream updates" do
+          let(:git_path) { tmp_path.join("upstream-updates-repo") }
+          let(:repo_path) { tmp_path.join("repo/resolve-with-upstream-updates") }
+
+          let(:sample_metadata) do
+            Helpers.strip_heredoc(<<-METADATA)
+              version "0.6.5"
+            METADATA
+          end
+          before do
+
+            # set up the git repo as normal, but let's also set up a release-stable branch
+            # from which our Cheffile will only pull stable releases
+            git_path.rmtree if git_path.exist?
+            git_path.mkpath
+            git_path.join("metadata.rb").open("w+b"){|f| f.write(sample_metadata)}
+
+            Dir.chdir(git_path) do
+              `git init`
+              `git add metadata.rb`
+              `git commit -m "Initial Commit."`
+              `git checkout -b some-branch --quiet`
+              `echo 'hi' > some-file`
+              `git add some-file`
+              `git commit -m 'Some File.'`
+              `git checkout master --quiet`
+            end
+
+            # set up the chef repo as normal, except the Cheffile points to the release-stable
+            # branch - we expect when the upstream copy of that branch is changed, then we can
+            # fetch & merge those changes when we update
+            repo_path.rmtree if repo_path.exist?
+            repo_path.mkpath
+            repo_path.join("cookbooks").mkpath
+            cheffile = Helpers.strip_heredoc(<<-CHEFFILE)
+              cookbook "sample",
+                :git => #{git_path.to_s.inspect},
+                :ref => "some-branch"
+            CHEFFILE
+            repo_path.join("Cheffile").open("wb") { |f| f.write(cheffile) }
+            Action::Resolve.new(env).run
+
+            # change the upstream copy of that branch: we expect to be able to pull the latest
+            # when we re-resolve
+            Dir.chdir(git_path) do
+              `git checkout some-branch --quiet`
+              `echo 'ho' > some-other-file`
+              `git add some-other-file`
+              `git commit -m 'Some Other File.'`
+              `git checkout master --quiet`
+            end
+          end
+
+          let(:metadata_file) { repo_path.join("cookbooks/sample/metadata.rb") }
+          let(:old_code_file) { repo_path.join("cookbooks/sample/some-file") }
+          let(:new_code_file) { repo_path.join("cookbooks/sample/some-other-file") }
+
+          context "when updating not a cookbook from that source" do
+            before do
+              Action::Update.new(env).run
+            end
+
+            it "should pull the tip from upstream" do
+              Action::Install.new(env).run
+
+              metadata_file.should exist #sanity
+              old_code_file.should exist #sanity
+
+              new_code_file.should_not exist # the assertion
+            end
+          end
+
+          context "when updating a cookbook from that source" do
+            before do
+              Action::Update.new(env, :names => %w(sample)).run
+            end
+
+            it "should pull the tip from upstream" do
+              Action::Install.new(env).run
+
+              metadata_file.should exist #sanity
+              old_code_file.should exist #sanity
+
+              new_code_file.should exist # the assertion
             end
           end
         end
