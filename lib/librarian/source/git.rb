@@ -65,6 +65,14 @@ module Librarian
         options
       end
 
+      def pinned?
+        !!sha
+      end
+
+      def unpin!
+        @sha = nil
+      end
+
       def cache!(dependencies)
         unless repository.git?
           repository.path.rmtree if repository.path.exist?

@@ -17,6 +17,8 @@ module Librarian
         spec = specfile.read(previous_resolution.sources)
         spec_changes = spec_change_set(spec, previous_resolution)
         raise Error, "Cannot update when the specfile has been changed." unless spec_changes.same?
+        unpinnable_sources = previous_resolution.sources - partial_manifests.map(&:source)
+        unpinnable_sources.each(&:unpin!)
         resolution = resolver.resolve(spec, partial_manifests)
         unless resolution.correct?
           raise Error, "Could not resolve the dependencies."

@@ -43,6 +43,13 @@ module Librarian
         {:remote => path}
       end
 
+      def pinned?
+        false
+      end
+
+      def unpin!
+      end
+
       def cache!(dependencies)
       end
 
