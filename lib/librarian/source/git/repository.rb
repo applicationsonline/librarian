@@ -40,17 +40,11 @@ module Librarian
           end
         end
 
-        def checkout!(reference)
+        def checkout!(reference, options ={ })
           within do
             command = "checkout #{reference}"
+            command <<  " --force" if options[:force]
             run!(command)
-          end
-        end
-
-        def reset_hard!(reference)
-          within do
-            command = "reset --hard #{reference}"
-            run!(command, false)
           end
         end
 
@@ -72,7 +66,7 @@ module Librarian
         def hash_from(reference)
           within do
             command = "rev-parse #{reference}"
-            run!(command)
+            run!(command).strip
           end
         end
 
@@ -85,7 +79,7 @@ module Librarian
 
         def merge_all_remote_branches!
           remote_branches.each do |branch|
-            checkout!(branch.slice(%r{[^/]+$}))
+            checkout!(branch.slice(%r{[^/]+$}), :force => true)
             merge! branch
           end
         end
