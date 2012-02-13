@@ -83,7 +83,7 @@ module Librarian
           repository.fetch!(:tags => true)
           repository.fetch!
           repository.merge_all_remote_branches!
-          repository.reset_hard! repository.hash_from(sha || ref)
+          repository.checkout!(repository.hash_from(sha || ref), :force => true)
           @sha ||= repository.current_commit_hash
         end
       end
