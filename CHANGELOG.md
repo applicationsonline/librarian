@@ -1,3 +1,7 @@
+## 0.0.14
+
+* \#39 Fixes a regression induced by using `git reset --hard SHA`.
+
 ## 0.0.13
 
 * \#36 Fixes an issue where, if a dependency has a git source (the upstream), and the upstream is updated,
