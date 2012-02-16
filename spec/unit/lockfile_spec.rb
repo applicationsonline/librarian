@@ -4,6 +4,7 @@ require 'librarian/mock'
 module Librarian
   describe Lockfile do
 
+    # TODO: Eliminate mocks in favor of accurate examples using FakeFS
     let(:env) { Mock::Environment.new }
 
     before do
