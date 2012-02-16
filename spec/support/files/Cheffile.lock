@@ -1,0 +1,3 @@
+# Some Cheffile.lock example:
+#  - Used to parse/consume
+#  - Used to validate a created file (RSpec diff of contents)
