@@ -7,10 +7,6 @@ module FakeFSTrigger
         require 'fakefs/spec_helpers'
         config.include ::FakeFS::SpecHelpers
         ::FakeFS.activate!
-        puts '  Loaded fakefs/spec_helpers'
-      end
-      config.after(:each) do
-        #FakeFS::FileSystem.clear
       end
       config.after(:suite) do
         ::FakeFS::FileSystem.clear
