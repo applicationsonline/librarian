@@ -1,5 +1,8 @@
 *.gem
 .bundle
+bin/*
+!bin/librarian-chef
+!bin/librarian-mock
 Gemfile.lock
 pkg/*
 tmp
