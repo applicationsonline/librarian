@@ -54,6 +54,13 @@ module Librarian
           {:remote => uri}
         end
 
+        def pinned?
+          false
+        end
+
+        def unpin!
+        end
+
         def cache!(dependencies)
           cache_path.mkpath
           dependencies.each do |dependency|

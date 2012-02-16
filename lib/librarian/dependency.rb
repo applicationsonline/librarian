@@ -10,12 +10,16 @@ module Librarian
 
     include Helpers::Debug
 
-    attr_reader :name, :requirement, :source
+    attr_accessor :name, :requirement, :source
+    private :name=, :requirement=, :source=
 
     def initialize(name, requirement, source)
-      @name = name
-      @requirement = Requirement.create(requirement)
-      @source = source
+      assert_name_valid! name
+
+      self.name = name
+      self.requirement = Requirement.create(requirement)
+      self.source = source
+
       @manifests = nil
     end
 
@@ -48,6 +52,10 @@ module Librarian
 
     def environment
       source.environment
+    end
+
+    def assert_name_valid!(name)
+      raise ArgumentError, "name (#{name.inspect}) must be sensible" unless name =~ /^\S.*\S$/
     end
 
   end

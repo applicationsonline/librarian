@@ -8,6 +8,17 @@ module Librarian
 
       let(:env) { Environment.new }
 
+      context "a single source and a single dependency with a blank name" do
+        it "should not not run with a blank name" do
+          expect do
+            env.dsl do
+              src 'source-1'
+              dep ''
+            end
+          end.to raise_error(ArgumentError, %{name ("") must be sensible})
+        end
+      end
+
       context "a single dependency but no applicable source" do
 
         it "should not run without any sources" do

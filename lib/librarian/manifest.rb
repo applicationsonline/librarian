@@ -12,14 +12,18 @@ module Librarian
     include Support::AbstractMethod
     include Helpers::Debug
 
-    attr_reader :source, :name
+    attr_accessor :source, :name
+    private :source=, :name=
 
     abstract_method :fetch_version!, :fetch_dependencies!
     abstract_method :install!
 
     def initialize(source, name)
-      @source = source
-      @name = name
+      assert_name_valid! name
+
+      self.source = source
+      self.name = name
+
       @fetched_version = nil
       @defined_version = nil
       @fetched_dependencies = nil
@@ -82,6 +86,10 @@ module Librarian
         dependencies = dependencies.map{|k, v| Dependency.new(k, v, nil)}
       end
       dependencies.sort_by{|d| d.name}
+    end
+
+    def assert_name_valid!(name)
+      raise ArgumentError, "name (#{name.inspect}) must be sensible" unless name =~ /^\S.*\S$/
     end
 
   end

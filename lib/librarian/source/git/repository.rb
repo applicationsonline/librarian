@@ -40,9 +40,10 @@ module Librarian
           end
         end
 
-        def checkout!(reference)
+        def checkout!(reference, options ={ })
           within do
             command = "checkout #{reference}"
+            command <<  " --force" if options[:force]
             run!(command)
           end
         end
@@ -55,10 +56,17 @@ module Librarian
           end
         end
 
+        def merge!(reference)
+          within do
+            command = "merge #{reference}"
+            run!(command)
+          end
+        end
+
         def hash_from(reference)
           within do
             command = "rev-parse #{reference}"
-            run!(command)
+            run!(command).strip
           end
         end
 
@@ -69,10 +77,26 @@ module Librarian
           end
         end
 
+        def merge_all_remote_branches!
+          remote_branches.each do |branch|
+            checkout!(branch.slice(%r{[^/]+$}), :force => true)
+            merge! branch
+          end
+        end
+
+        def remote_branches
+          within do
+            command ="branch -r --no-color"
+            run!(command, false).split("\n  ").reject do |r|
+              r.include? '->' #delete pointers like origin/HEAD -> origin/master
+            end.collect {|r|r.strip}
+          end
+        end
       private
 
-        def run!(text)
-          text = "git #{text} --quiet"
+        def run!(text, quiet = true)
+          text = "git #{text}"
+          text << " --quiet" if quiet
           debug { "Running `#{text}` in #{relative_path_to(Dir.pwd)}" }
           out = Open3.popen3(text) do |i, o, e, t|
             raise StandardError, e.read unless (t ? t.value : $?).success?

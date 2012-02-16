@@ -65,6 +65,14 @@ module Librarian
         options
       end
 
+      def pinned?
+        !!sha
+      end
+
+      def unpin!
+        @sha = nil
+      end
+
       def cache!(dependencies)
         unless repository.git?
           repository.path.rmtree if repository.path.exist?
@@ -73,7 +81,9 @@ module Librarian
         end
         unless sha == repository.current_commit_hash
           repository.fetch!(:tags => true)
-          repository.checkout!(sha || ref)
+          repository.fetch!
+          repository.merge_all_remote_branches!
+          repository.checkout!(repository.hash_from(sha || ref), :force => true)
           @sha ||= repository.current_commit_hash
         end
       end
