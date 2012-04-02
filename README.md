@@ -51,25 +51,30 @@ __Add dependencies and their sources to Cheffile__
 
 __There are several supported methods to add cookbook sources__
 
-`cookbook 'name'` will use the community url provided to `site` and download from the [opscode community](http://community.opscode.com/) cookbook site.
+`cookbook 'name'` will use the community url provided to `site` and download from the [opscode community](http://community.opscode.com/) cookbook site, because it is the default source.
 
     cookbook 'name',
       :git => 'https://github.com/user/cookbook'
       :ref => 'v0.8.0'
 
-__:git__ Allows you to point at a git repo
-__:ref__ can be used to point to a tag or commit hash
-
+`:git` allows you to point at a git repo. `:ref`, when used with `:git`, can be used to point to a branch or tag or to the SHA of a particular commit. In this example, `:ref` points to a tag.
 
     cookbook 'name',
       :path => '/Path/to/dev_area/name-cookbook'
 
-__:path__ allows you to point to a local location for cookbooks.
+`:path` allows you to point to a local location for cookbooks.
 
 
 __install dependencies into ./cookbooks__
 
     $ librarian-chef install [--clean] [--verbose]
+
+This command looks at each `cookbook` declaration and fetches the cookbook from the source specified for that cookbook, or from the default source if none is provided.
+
+Each cookbook is inspected and its dependencies determined, and each dependency is also fetched. For example, if you declare `cookbook 'nagios'`, and that cookbook depends on other cookbooks such as `'php'`, then those other cookbooks including `'php'` will be fetched. This goes all the way down the chain of dependencies.
+
+This command then copies all of the fetched cookbooks into your `./cookbooks` directory, overwriting whatever was there before. You can then use `knife cookbook upload -all` to upload the cookbooks to your chef-server, if you are using the client-server model.
+
 
 __Check your Cheffile.lock into version control__
 
