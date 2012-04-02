@@ -45,6 +45,27 @@ __Add dependencies and their sources to Cheffile__
         cookbook 'rvm',
           :git => 'https://github.com/fnichol/chef-rvm',
           :ref => 'v0.7.1'
+        cookbook 'cloudera',
+          :path => '/Path/to/dev_area/cloudera-cookbook'
+          
+          
+__There are several supported methods to add cookbook sources__
+
+`cookbook 'name'` will use the community url provided to `site` and download from the [opscode community](http://community.opscode.com/) cookbook site.
+
+    cookbook 'name',
+      :git => 'https://github.com/user/cookbook'
+      :ref => 'v0.8.0'
+
+__:git__ Allows you to point at a git repo
+__:ref__ can be used to point to a tag or commit hash
+
+
+    cookbook 'name',
+      :path => '/Path/to/dev_area/name-cookbook'
+
+__:path__ allows you to point to a local location for cookbooks.
+
 
 __install dependencies into ./cookbooks__
 
@@ -54,6 +75,8 @@ __Check your Cheffile.lock into version control__
 
     $ git add Cheffile.lock
     $ git commit -m "I want these particular versions of these particular cookbooks from these particular."
+    
+Make sure you check your Cheffile.lock into version control.  This will ensure dependencies do not need to be resolved every run, greatly reducing dependency resolution time.
 
 __Update your cheffile with new/changed/removed constraints/sources/dependencies__
 
