@@ -47,8 +47,8 @@ __Add dependencies and their sources to Cheffile__
           :ref => 'v0.7.1'
         cookbook 'cloudera',
           :path => '/Path/to/dev_area/cloudera-cookbook'
-          
-          
+
+
 __There are several supported methods to add cookbook sources__
 
 `cookbook 'name'` will use the community url provided to `site` and download from the [opscode community](http://community.opscode.com/) cookbook site.
@@ -75,7 +75,7 @@ __Check your Cheffile.lock into version control__
 
     $ git add Cheffile.lock
     $ git commit -m "I want these particular versions of these particular cookbooks from these particular."
-    
+
 Make sure you check your Cheffile.lock into version control.  This will ensure dependencies do not need to be resolved every run, greatly reducing dependency resolution time.
 
 __Update your cheffile with new/changed/removed constraints/sources/dependencies__
