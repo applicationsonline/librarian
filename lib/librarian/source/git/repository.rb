@@ -33,6 +33,10 @@ module Librarian
           path.join('.git').exist?
         end
 
+        def default_remote
+          "origin"
+        end
+
         def clone!(repository_url)
           within do
             command = "clone #{repository_url} ."
@@ -48,22 +52,51 @@ module Librarian
           end
         end
 
-        def fetch!(options = { })
+        def fetch!(remote, options = { })
           within do
-            command = "fetch"
+            command = "fetch #{remote}"
             command << " --tags" if options[:tags]
             run!(command)
           end
         end
 
-        def merge!(reference)
+        def reset_hard!
           within do
-            command = "merge #{reference}"
+            command = "reset --hard"
             run!(command)
           end
         end
 
-        def hash_from(reference)
+        def remote_names
+          within do
+            command = "remote"
+            run!(command, false).strip.lines.map(&:strip)
+          end
+        end
+
+        def remote_branch_names
+          remotes = remote_names.sort_by(&:length).reverse
+
+          within do
+            command = "branch -r"
+            names = run!(command, false).strip.lines.map(&:strip).to_a
+            names.each{|n| n.gsub!(/\s*->.*$/, "")}
+            names.reject!{|n| n =~ /\/HEAD$/}
+            Hash[remotes.map do |r|
+              matching_names = names.select{|n| n.start_with?("#{r}/")}
+              matching_names.each{|n| names.delete(n)}
+              matching_names.each{|n| n.slice!(0, r.size + 1)}
+              [r, matching_names]
+            end]
+          end
+        end
+
+        def hash_from(remote, reference)
+          branch_names = remote_branch_names[remote]
+          if branch_names.include?(reference)
+            reference = "#{remote}/#{reference}"
+          end
+
           within do
             command = "rev-parse #{reference}"
             run!(command).strip
@@ -74,22 +107,6 @@ module Librarian
           within do
             command = "rev-parse HEAD"
             run!(command).strip!
-          end
-        end
-
-        def merge_all_remote_branches!
-          remote_branches.each do |branch|
-            checkout!(branch.slice(%r{[^/]+$}), :force => true)
-            merge! branch
-          end
-        end
-
-        def remote_branches
-          within do
-            command ="branch -r --no-color"
-            run!(command, false).split("\n  ").reject do |r|
-              r.include? '->' #delete pointers like origin/HEAD -> origin/master
-            end.collect {|r|r.strip}
           end
         end
       private

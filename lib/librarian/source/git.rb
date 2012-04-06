@@ -79,12 +79,16 @@ module Librarian
           repository.path.mkpath
           repository.clone!(uri)
         end
+        repository.reset_hard!
         unless sha == repository.current_commit_hash
-          repository.fetch!(:tags => true)
-          repository.fetch!
-          repository.merge_all_remote_branches!
-          repository.checkout!(repository.hash_from(sha || ref), :force => true)
-          @sha ||= repository.current_commit_hash
+          remote = repository.default_remote
+          repository.fetch!(remote)
+          repository.fetch!(remote, :tags => true)
+
+          new_sha = repository.hash_from(remote, sha || ref)
+          repository.checkout!(new_sha)
+
+          @sha ||= new_sha
         end
       end
 
