@@ -1,3 +1,9 @@
+## 0.0.15
+
+* Rewrite the README.
+
+* \#44, \#49. Better updating of cached git sources without using local merges.
+
 ## 0.0.14
 
 * \#39 Fixes a regression induced by using `git reset --hard SHA`.
