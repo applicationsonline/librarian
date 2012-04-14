@@ -57,7 +57,7 @@ module Librarian
       clean!
     end
 
-    desc "install", "Installs all of the dependencies you specify."
+    desc "install", "Resolves and installs all of the dependencies you specify."
     method_option "verbose"
     method_option "line-numbers"
     method_option "clean"
@@ -68,17 +68,7 @@ module Librarian
       install!
     end
 
-    desc "resolve", "Resolves the dependencies you specify."
-    method_option "verbose"
-    method_option "line-numbers"
-    method_option "clean"
-    def resolve
-      ensure!
-      clean! if options["clean"]
-      resolve!
-    end
-
-    desc "update", "Updates the dependencies you specify."
+    desc "update", "Updates and installs the dependencies you specify."
     method_option "verbose"
     method_option "line-numbers"
     def update(*names)
@@ -88,6 +78,7 @@ module Librarian
       else
         update!(:names => names)
       end
+      install!
     end
 
     desc "init", "Initializes the current directory."
