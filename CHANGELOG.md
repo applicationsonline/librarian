@@ -1,3 +1,14 @@
+## 0.0.16
+
+* Recache site-sourced dependency metadata per each run.
+
+* \#46. Always install.
+
+* \#53. Abstract versions & requirements from rubygems.
+
+* Own the install path. Recreate it on each install.
+    WARNING: If you have your own content in the install path, it will be deleted without mercy.
+
 ## 0.0.15
 
 * Rewrite the README.
