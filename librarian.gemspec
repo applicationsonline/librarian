@@ -29,4 +29,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef", ">= 0.10"
   s.add_dependency "highline"
+  s.add_dependency "archive-tar-minitar", ">= 0.5.2"
 end
