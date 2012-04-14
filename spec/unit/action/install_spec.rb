@@ -94,13 +94,14 @@ module Librarian
             end
           end
 
-          it "should not try to create the install path if it already exists" do
+          it "should recreate the install path if it already exists" do
             action.stub(:sorted_manifests) { sorted_manifests }
             action.stub(:cache_manifests)
             action.stub(:install_manifests)
 
             install_path.stub(:exist?) { true }
-            install_path.should_not_receive(:mkpath)
+            install_path.should_receive(:rmtree)
+            install_path.should_receive(:mkpath)
           end
 
         end

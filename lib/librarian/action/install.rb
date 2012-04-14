@@ -47,7 +47,8 @@ module Librarian
       end
 
       def create_install_path
-        install_path.mkpath unless install_path.exist?
+        install_path.rmtree if install_path.exist?
+        install_path.mkpath
       end
 
       def install_manifests(manifests)
