@@ -5,8 +5,8 @@ module Librarian
   module Mock
     class Environment < Environment
 
-      def specfile_name
-        "Mockfile"
+      def adapter_name
+        "mock"
       end
 
       def install_path

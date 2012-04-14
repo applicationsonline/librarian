@@ -6,8 +6,8 @@ module Librarian
   module Chef
     class Environment < Environment
 
-      def specfile_name
-        "Cheffile"
+      def adapter_name
+        "chef"
       end
 
       def install_path

@@ -21,15 +21,33 @@ module Librarian
 
     def initialize(options = { })
       @project_path = options[:project_path]
+      @specfile_name = options[:specfile_name]
     end
 
     def project_path
       @project_path ||= begin
         root = Pathname.new(Dir.pwd)
-        root = root.dirname until root.join(specfile_name).exist? || root.dirname == root
+        root = root.dirname until project_path?(root)
         path = root.join(specfile_name)
-        path.exist? ? root : nil
+        path.file? ? root : nil
       end
+    end
+
+    def project_path?(path)
+      path.join(config_name).directory? ||
+      path.join(specfile_name).file? ||
+      path.dirname == path
+    end
+
+    def default_specfile_name
+      @default_specfile_name ||= begin
+        capped = adapter_name.capitalize
+        "#{capped}file"
+      end
+    end
+
+    def specfile_name
+      @specfile_name ||= default_specfile_name
     end
 
     def specfile_path
@@ -38,6 +56,18 @@ module Librarian
 
     def specfile
       Specfile.new(self, specfile_path)
+    end
+
+    def adapter_name
+      nil
+    end
+
+    def config_name
+      File.join(*[config_prefix, adapter_name].compact)
+    end
+
+    def config_prefix
+      ".librarian"
     end
 
     def lockfile_name
