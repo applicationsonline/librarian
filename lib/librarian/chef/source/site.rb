@@ -144,7 +144,8 @@ module Librarian
           dependency_cache_path = cache_path.join(dependency.name)
           dependency_cache_path.mkpath
           metadata_cache_path = metadata_cache_path(dependency)
-          unless metadata_cache_path.exist?
+
+          caching_metadata do
             dep_uri = URI.parse(dependency_uri(dependency))
             debug { "Caching #{dep_uri}" }
             http = Net::HTTP.new(dep_uri.host, dep_uri.port)
@@ -159,6 +160,13 @@ module Librarian
               f.write(metadata_blob)
             end
           end
+        end
+
+        def caching_metadata
+          return if @_metadata_cached
+          result = yield
+          @_metadata_cached = true
+          result
         end
 
         def cache_version_metadata!(dependency, version_uri)
