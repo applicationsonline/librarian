@@ -5,7 +5,39 @@ require 'librarian/helpers/debug'
 module Librarian
   class Dependency
 
-    class Requirement < Gem::Requirement
+    class Requirement
+      def initialize(*args)
+        args = initialize_normalize_args(args)
+
+        self.backing = Gem::Requirement.create(*args)
+      end
+
+      def to_gem_requirement
+        backing
+      end
+
+      def satisfied_by?(version)
+        to_gem_requirement.satisfied_by?(version.to_gem_version)
+      end
+
+      def ==(other)
+        to_gem_requirement == other.to_gem_requirement
+      end
+
+      def to_s
+        to_gem_requirement.to_s
+      end
+
+      private
+
+      def initialize_normalize_args(args)
+        args.map do |arg|
+          arg = [arg] if self.class === arg
+          arg
+        end
+      end
+
+      attr_accessor :backing
     end
 
     include Helpers::Debug
@@ -17,7 +49,7 @@ module Librarian
       assert_name_valid! name
 
       self.name = name
-      self.requirement = Requirement.create(requirement)
+      self.requirement = Requirement.new(requirement)
       self.source = source
 
       @manifests = nil
