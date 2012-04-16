@@ -198,7 +198,7 @@ module Librarian
             dependency_cache_path = dependency_cache_path(dependency)
             version_unpacked_temp_path = dependency_cache_path.join(dependency.name)
             Zlib::GzipReader.open(version_archive_cache_path) do |input|
-              Archive::Tar::Minitar.unpack(input, version_unpacked_temp_path)
+              Archive::Tar::Minitar.unpack(input, version_unpacked_temp_path.to_s)
             end
             FileUtils.move(version_unpacked_temp_path.join(dependency.name), version_package_cache_path)
           end
