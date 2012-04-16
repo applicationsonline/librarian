@@ -32,10 +32,14 @@ module Librarian
         private :environment=
         attr_reader :uri
 
+        attr_accessor :_metadata_cache
+        private :_metadata_cache, :_metadata_cache=
+
         def initialize(environment, uri, options = {})
           self.environment = environment
           @uri = uri
           @cache_path = nil
+          self._metadata_cache = { }
         end
 
         def to_s
@@ -147,7 +151,7 @@ module Librarian
           dependency_cache_path.mkpath
           metadata_cache_path = metadata_cache_path(dependency)
 
-          caching_metadata do
+          caching_metadata(dependency.name) do
             dep_uri = URI.parse(dependency_uri(dependency))
             debug { "Caching #{dep_uri}" }
             http = Net::HTTP.new(dep_uri.host, dep_uri.port)
@@ -164,11 +168,9 @@ module Librarian
           end
         end
 
-        def caching_metadata
-          return if @_metadata_cached
-          result = yield
-          @_metadata_cached = true
-          result
+        def caching_metadata(name)
+          _metadata_cache[name] = yield unless _metadata_cache.include?(name)
+          _metadata_cache[name]
         end
 
         def cache_version_metadata!(dependency, version_uri)
