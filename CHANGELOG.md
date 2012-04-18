@@ -1,5 +1,19 @@
 # Change Log
 
+## 0.0.17
+
+* Use a pure-Ruby implementation of tar/gz. Helps with Windows support, since
+  Windows boxes are less likely than *NIX boxes to have the `tar` executable.
+
+* Fix an issue where the chef site source considers uncached manifests to be
+  cached, and skips caching them, causing the install action to fail.
+
+* Fail fast if the resolver produces an inconsistent resolution. It is a known
+  issue that the resolver will sometimes (deterministically, not randomly)
+  produce an inconsistent resolution when performing an update action (#57).
+  Start debugging this by failing fast at this point and spitting out gobs of
+  debug-level log details.
+
 ## 0.0.16
 
 * Recache site-sourced dependency metadata per each run.
