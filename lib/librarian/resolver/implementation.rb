@@ -52,28 +52,28 @@ module Librarian
                 debug { "Checking manifests" }
                 scope do
                   dependency.manifests.each do |manifest|
-                    unless resolution
-                      debug { "Checking #{manifest}" }
-                      scope do
-                        if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
-                          m = manifests.merge(dependency.name => manifest)
-                          a = manifest.dependencies.map { |d|
-                            d.source ? d :
-                            !dependency_source_map.key?(d.name) ?
-                            Dependency.new(d.name, d.requirement, source) :
-                            Dependency.new(d.name, d.requirement, dependency_source_map[d.name])
-                          }
-                          a.each do |d|
-                            debug { "Scheduling #{d}" }
-                          end
-                          q = queue + a
-                          resolution = recursive_resolve(dependencies.dup, m, q)
+                    break if resolution
+
+                    debug { "Checking #{manifest}" }
+                    scope do
+                      if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
+                        m = manifests.merge(dependency.name => manifest)
+                        a = manifest.dependencies.map { |d|
+                          d.source ? d :
+                          !dependency_source_map.key?(d.name) ?
+                          Dependency.new(d.name, d.requirement, source) :
+                          Dependency.new(d.name, d.requirement, dependency_source_map[d.name])
+                        }
+                        a.each do |d|
+                          debug { "Scheduling #{d}" }
                         end
-                        if resolution
-                          debug { "Resolved #{dependency} at #{manifest}" }
-                        else
-                          debug { "Backtracking from #{manifest}" }
-                        end
+                        q = queue + a
+                        resolution = recursive_resolve(dependencies.dup, m, q)
+                      end
+                      if resolution
+                        debug { "Resolved #{dependency} at #{manifest}" }
+                      else
+                        debug { "Backtracking from #{manifest}" }
                       end
                     end
                   end
