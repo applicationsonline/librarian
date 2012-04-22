@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.0.18
+
+* \#57. Include existing manifests' dependencies in resolution.
+
+* Permit the update action even with a changed specfile.
+
 ## 0.0.17
 
 * Use a pure-Ruby implementation of tar/gz. Helps with Windows support, since
