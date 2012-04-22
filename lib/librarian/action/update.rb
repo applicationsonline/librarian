@@ -13,10 +13,10 @@ module Librarian
           raise Error, "Lockfile missing!"
         end
         previous_resolution = lockfile.load(lockfile_path.read)
-        partial_manifests = ManifestSet.deep_strip(previous_resolution.manifests, dependency_names)
         spec = specfile.read(previous_resolution.sources)
-        spec_changes = spec_change_set(spec, previous_resolution)
-        raise Error, "Cannot update when the specfile has been changed." unless spec_changes.same?
+        changes = spec_change_set(spec, previous_resolution)
+        manifests = changes.same? ? previous_resolution.manifests : changes.analyze
+        partial_manifests = ManifestSet.deep_strip(manifests, dependency_names)
         unpinnable_sources = previous_resolution.sources - partial_manifests.map(&:source)
         unpinnable_sources.each(&:unpin!)
         resolution = resolver.resolve(spec, partial_manifests)
