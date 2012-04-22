@@ -22,6 +22,13 @@ module Librarian
         resolution ? resolution[1] : nil
       end
 
+      def sourced_dependency_for(dependency)
+        return dependency if dependency.source
+
+        s = dependency_source_map[dependency.name] || source
+        Dependency.new(dependency.name, dependency.requirement, s)
+      end
+
       def recursive_resolve(dependencies, manifests, queue)
         if dependencies.empty?
           queue.each do |dependency|
@@ -58,12 +65,7 @@ module Librarian
                     scope do
                       if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
                         m = manifests.merge(dependency.name => manifest)
-                        a = manifest.dependencies.map { |d|
-                          d.source ? d :
-                          !dependency_source_map.key?(d.name) ?
-                          Dependency.new(d.name, d.requirement, source) :
-                          Dependency.new(d.name, d.requirement, dependency_source_map[d.name])
-                        }
+                        a = manifest.dependencies.map { |d| sourced_dependency_for(d) }
                         a.each do |d|
                           debug { "Scheduling #{d}" }
                         end
