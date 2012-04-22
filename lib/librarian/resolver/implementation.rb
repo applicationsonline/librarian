@@ -18,7 +18,10 @@ module Librarian
       end
 
       def resolve(dependencies, manifests = {})
-        resolution = recursive_resolve([], manifests, dependencies.dup)
+        dependencies += manifests.values.flat_map { |m|
+          m.dependencies.map { |d| sourced_dependency_for(d) }
+        }
+        resolution = recursive_resolve([], manifests, dependencies)
         resolution ? resolution[1] : nil
       end
 
