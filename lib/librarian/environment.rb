@@ -106,8 +106,8 @@ module Librarian
       lockfile.read
     end
 
-    def dsl(&block)
-      dsl_class.run(self, &block)
+    def dsl(*args, &block)
+      dsl_class.run(self, *args, &block)
     end
 
     def dsl_class

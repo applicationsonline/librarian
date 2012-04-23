@@ -15,7 +15,7 @@ module Librarian
     end
 
     def read(precache_sources = [])
-      environment.dsl_class.run(environment, path.read, precache_sources)
+      environment.dsl(path.read, precache_sources)
     end
 
   end
