@@ -214,6 +214,10 @@ Update your cheffile with new/changed/removed constraints/sources/dependencies:
     $ git add Cheffile.lock
     $ git commit -m "I also want these additional cookbooks."
 
+Find out which dependencies are outdated and may be updated:
+
+    $ librarian-chef outdated [--verbose]
+
 Update the version of a dependency:
 
     $ librarian-chef update ntp timezone monit [--verbose]
