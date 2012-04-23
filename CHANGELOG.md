@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.19
+
+* Fix breakage on 1.8.
+
 ## 0.0.18
 
 * \#57. Include existing manifests' dependencies in resolution.
