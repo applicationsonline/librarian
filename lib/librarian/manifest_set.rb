@@ -63,6 +63,8 @@ module Librarian
     end
 
     def shallow_strip!(names)
+      assert_strings!(names)
+
       names.each do |name|
         index.delete(name)
       end
@@ -75,6 +77,8 @@ module Librarian
 
     def deep_strip!(names)
       names = Array === names ? names.dup : names.to_a
+      assert_strings!(names)
+
       until names.empty?
         name = names.shift
         manifest = index.delete(name)
@@ -92,6 +96,8 @@ module Librarian
     end
 
     def shallow_keep!(names)
+      assert_strings!(names)
+
       names = Set.new(names) unless Set === names
       index.reject! { |k, v| !names.include?(k) }
       self
@@ -103,6 +109,8 @@ module Librarian
 
     def deep_keep!(names)
       names = Array === names ? names.dup : names.to_a
+      assert_strings!(names)
+
       marks = Set.new
       until names.empty?
         keep = names.shift
@@ -128,6 +136,11 @@ module Librarian
   private
 
     attr_accessor :index
+
+    def assert_strings!(names)
+      non_strings = names.reject{|name| String === name}
+      non_strings.empty? or raise TypeError, "names must all be strings"
+    end
 
   end
 end
