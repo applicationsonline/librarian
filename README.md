@@ -1,4 +1,4 @@
-Librarian
+Librarian [![Build Status](https://secure.travis-ci.org/applicationsonline/librarian.png)](http://travis-ci.org/applicationsonline/librarian)
 =========
 
 Librarian is a framework for writing bundlers, which are tools that resolve,
