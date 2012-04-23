@@ -81,6 +81,21 @@ module Librarian
       install!
     end
 
+    desc "outdated", "Lists outdated dependencies."
+    method_option "verbose"
+    method_option "line-numbers"
+    def outdated
+      ensure!
+      resolution = environment.lock
+      resolution.manifests.sort_by(&:name).each do |manifest|
+        source = manifest.source
+        source.cache!([manifest])
+        source_manifest = source.manifests(manifest).first
+        next if manifest.version == source_manifest.version
+        say "#{manifest.name} (#{manifest.version} -> #{source_manifest.version})"
+      end
+    end
+
     desc "init", "Initializes the current directory."
     def init
       puts "Nothing to do."
