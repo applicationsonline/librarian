@@ -109,6 +109,7 @@ module Librarian
             run!(command).strip!
           end
         end
+
       private
 
         def run!(text, quiet = true)
