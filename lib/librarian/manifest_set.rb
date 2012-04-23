@@ -79,15 +79,9 @@ module Librarian
       names = Array === names ? names.dup : names.to_a
       assert_strings!(names)
 
-      until names.empty?
-        name = names.shift
-        manifest = index.delete(name)
-        if manifest
-          manifest.dependencies.each do |dependency|
-            names << dependency.name
-          end
-        end
-      end
+      strippables = dependencies_of(names)
+      shallow_strip!(strippables)
+
       self
     end
 
@@ -111,17 +105,10 @@ module Librarian
       names = Array === names ? names.dup : names.to_a
       assert_strings!(names)
 
-      marks = Set.new
-      until names.empty?
-        keep = names.shift
-        unless marks.include?(keep)
-          marks << keep
-          index[keep].dependencies.each do |d|
-            names << d.name
-          end
-        end
-      end
-      shallow_keep!(marks)
+      keepables = dependencies_of(names)
+      shallow_keep!(keepables)
+
+      self
     end
 
     def consistent?
@@ -140,6 +127,22 @@ module Librarian
     def assert_strings!(names)
       non_strings = names.reject{|name| String === name}
       non_strings.empty? or raise TypeError, "names must all be strings"
+    end
+
+    # Straightforward breadth-first graph traversal algorithm.
+    def dependencies_of(names)
+      names = Array === names ? names.dup : names.to_a
+      assert_strings!(names)
+
+      deps = Set.new
+      until names.empty?
+        name = names.shift
+        next if deps.include?(name)
+
+        deps << name
+        names.concat index[name].dependencies.map(&:name)
+      end
+      deps.to_a
     end
 
   end
