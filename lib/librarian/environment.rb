@@ -111,7 +111,7 @@ module Librarian
     end
 
     def dsl_class
-      self.class.name.split("::")[0 ... -1].inject(Object) { |constant, fragment| constant.const_get(fragment) }::Dsl
+      self.class.name.split("::")[0 ... -1].inject(Object, &:const_get)::Dsl
     end
 
   private
