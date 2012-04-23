@@ -19,7 +19,7 @@ Librarian-Chef
 ---------------
 
 Librarian-Chef is a bundler for infrastructure repositories using Chef. You can
-use Librarian-Chef to resolve your infrastructure's cookbook dependencies and
+use Librarian-Chef to resolve your infrastructure's cookbook dependencies,
 fetch them and install them into your infrastructure.
 
 Librarian-Chef is for resolving and fetching third-party, publicly-released
@@ -29,15 +29,15 @@ infrastructure repository.
 
 Librarian-Chef *takes over* your `cookbooks/` directory and manages it for you
 based on your `Cheffile`. Your `Cheffile` becomes the authoritative source for
-what cookbooks your infrastructure repository depends on. You should not modify
+the cookbooks your infrastructure repository depends on. You should not modify
 the contents of your `cookbooks/` directory when using Librarian-Chef. If you
-have custom cookbooks specific to your infrastructure repository that you need,
-those should go in your `site-cookbooks/` directory.
+have custom cookbooks which are specific to your infrastructure repository,
+they should go in your `site-cookbooks/` directory.
 
 ### The Cheffile
 
 Every infrastruture repository that uses Librarian-Chef will have a file named
-`Cheffile` in the root directory of the repository. The full specification for
+`Cheffile` in the root directory of that repository. The full specification for
 which third-party, publicly-rleased cookbooks your infrastructure repository
 depends will go here.
 
@@ -91,10 +91,10 @@ Our infrastructure repository depends on the `rvm` cookbook, but not the one
 from the default source. Instead, the cookbook is to be fetched from the
 specified Git repository and from the specified Git tag only.
 
-We do not have to use a `:ref =>`. If we do not, then Librarian-Chef will assume
-we meant the branch `master`. (In the future, this will be changed to whatever
-branch is the default branch according to the Git remote, which may not be
-`master`.)
+When using a Git source, we do not have to use a `:ref =>`. If we do not,
+then Librarian-Chef will assume we meant the `master` branch. (In the future,
+this will be changed to whatever branch is the default branch according to
+the Git remote, which may not be `master`.)
 
 If we use a `:ref =>`, we can use anything that Git will recognize as a ref.
 This includes any branch name, tag name, SHA, or SHA unique prefix. If we use a
@@ -122,7 +122,7 @@ option.
 
 ### How to Use
 
-Install librarian-chef:
+Install Librarian-Chef:
 
     $ gem install librarian
 
@@ -171,12 +171,11 @@ This is the same `Cheffile` we saw above.
     $ librarian-chef install [--clean] [--verbose]
 
 This command looks at each `cookbook` declaration and fetches the cookbook from
-the source specified for that cookbook, or from the default source if none is
-provided for that cookbook.
+the source specified, or from the default source if none is provided.
 
-Each cookbook is inspected and its dependencies determined, and each dependency
-is also fetched. For example, if you declare `cookbook 'nagios'`, and that
-cookbook depends on other cookbooks such as `'php'`, then those other cookbooks
+Each cookbook is inspected, its dependencies are determined, and each dependency
+is also fetched. For example, if you declare `cookbook 'nagios'`, which
+depends on other cookbooks such as `'php'`, then those other cookbooks
 including `'php'` will be fetched. This goes all the way down the chain of
 dependencies.
 
@@ -193,11 +192,11 @@ Check your `Cheffile` and `Cheffile.lock` into version control:
     $ git add Cheffile.lock
     $ git commit -m "I want these particular versions of these particular cookbooks from these particular."
 
-Make sure you check your Cheffile.lock into version control. This will ensure
+Make sure you check your `Cheffile.lock` into version control. This will ensure
 dependencies do not need to be resolved every run, greatly reducing dependency
 resolution time.
 
-Update your cheffile with new/changed/removed constraints/sources/dependencies:
+Update your `Cheffile` with new/changed/removed constraints/sources/dependencies:
 
     $ cat Cheffile
         site 'http://community.opscode.com/api/v1'
