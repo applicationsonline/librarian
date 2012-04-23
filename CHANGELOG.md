@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.20
+
+* A command to print outdated dependencies.
+
 ## 0.0.19
 
 * Fix breakage on 1.8.
