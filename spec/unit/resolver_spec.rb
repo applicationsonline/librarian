@@ -10,25 +10,30 @@ module Librarian
 
     context "a simple specfile" do
 
-      it "should work" do
+      before do
         env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.1'
           end
         end
-        spec = env.dsl do
+      end
+
+      let(:spec) do
+        env.dsl do
           src 'source-1'
           dep 'butter'
         end
-        resolution = resolver.resolve(spec)
-        resolution.should be_correct
       end
+
+      let(:resolution) { resolver.resolve(spec) }
+
+      specify { resolution.should be_correct }
 
     end
 
     context "a specfile with a dep from one src depending on a dep from another src" do
 
-      it "should work" do
+      before do
         env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.1'
@@ -39,21 +44,26 @@ module Librarian
             end
           end
         end
-        spec = env.dsl do
+      end
+
+      let(:spec) do
+        env.dsl do
           src 'source-1'
           src 'source-2' do
             dep 'jam'
           end
         end
-        resolution = resolver.resolve(spec)
-        resolution.should be_correct
       end
+
+      let(:resolution) { resolver.resolve(spec) }
+
+      specify { resolution.should be_correct }
 
     end
 
     context "a specfile with a dep depending on a nonexistent dep" do
 
-      it "should not work" do
+      before do
         env.registry :clear => true do
           source 'source-1' do
             spec 'jam', '1.2' do
@@ -61,19 +71,24 @@ module Librarian
             end
           end
         end
-        spec = env.dsl do
+      end
+
+      let(:spec) do
+        env.dsl do
           src 'source-1'
           dep 'jam'
         end
-        resolution = resolver.resolve(spec)
-        resolution.should_not be_correct
       end
+
+      let(:resolution) { resolver.resolve(spec) }
+
+      specify { resolution.should_not be_correct }
 
     end
 
     context "a specfile with conflicting constraints" do
 
-      it "should not work" do
+      before do
         env.registry :clear => true do
           source 'source-1' do
             spec 'butter', '1.0'
@@ -83,14 +98,19 @@ module Librarian
             end
           end
         end
-        spec = env.dsl do
+      end
+
+      let(:spec) do
+        env.dsl do
           src 'source-1'
           dep 'butter', '1.0'
           dep 'jam'
         end
-        resolution = resolver.resolve(spec)
-        resolution.should_not be_correct
       end
+
+      let(:resolution) { resolver.resolve(spec) }
+
+      specify { resolution.should_not be_correct }
 
     end
 
