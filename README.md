@@ -196,6 +196,14 @@ Make sure you check your `Cheffile.lock` into version control. This will ensure
 dependencies do not need to be resolved every run, greatly reducing dependency
 resolution time.
 
+Get an overview of your `Cheffile.lock` with:
+
+    $ librarian-chef show
+
+Inspect the details of specific resolved dependencies with:
+
+    $ librarian-chef show NAME1 [NAME2, ...]
+
 Update your `Cheffile` with new/changed/removed constraints/sources/dependencies:
 
     $ cat Cheffile

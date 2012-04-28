@@ -9,6 +9,8 @@ require "librarian/ui"
 module Librarian
   class Cli < Thor
 
+    autoload :ManifestPresenter, "librarian/cli/manifest_presenter"
+
     include Thor::Actions
 
     module Particularity
@@ -96,6 +98,15 @@ module Librarian
       end
     end
 
+    desc "show", "Shows dependencies"
+    method_option "verbose"
+    method_option "line-numbers"
+    method_option "detailed", :type => :boolean
+    def show(*names)
+      ensure!
+      manifest_presenter.present(names, :detailed => options["detailed"])
+    end
+
     desc "init", "Initializes the current directory."
     def init
       puts "Nothing to do."
@@ -125,6 +136,10 @@ module Librarian
 
     def update!(options = { })
       Action::Update.new(environment, options).run
+    end
+
+    def manifest_presenter
+      ManifestPresenter.new(self, environment.lock.manifests)
     end
 
   end
