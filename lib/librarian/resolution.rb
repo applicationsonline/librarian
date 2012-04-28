@@ -1,4 +1,15 @@
 module Librarian
+  #
+  # Represents the output of the resolution process. Captures the declared
+  # dependencies plus the full set of resolved manifests. The sources are
+  # already known by the dependencies and by the resolved manifests, so they do
+  # not need to be captured explicitly.
+  #
+  # This representation may be produced by the resolver, may be serialized into
+  # a lockfile, and may be deserialized from a lockfile. It is expected that the
+  # lockfile is a direct representation in text of this representation, so that
+  # the serialization-deserialization process is just the identity function.
+  #
   class Resolution
     attr_reader :dependencies, :manifests, :manifests_index
 
