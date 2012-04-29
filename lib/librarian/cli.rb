@@ -52,17 +52,17 @@ module Librarian
     end
 
     desc "clean", "Cleans out the cache and install paths."
-    method_option "verbose"
-    method_option "line-numbers"
+    option "verbose"
+    option "line-numbers"
     def clean
       ensure!
       clean!
     end
 
     desc "install", "Resolves and installs all of the dependencies you specify."
-    method_option "verbose"
-    method_option "line-numbers"
-    method_option "clean"
+    option "verbose"
+    option "line-numbers"
+    option "clean"
     def install
       ensure!
       clean! if options["clean"]
@@ -71,8 +71,8 @@ module Librarian
     end
 
     desc "update", "Updates and installs the dependencies you specify."
-    method_option "verbose"
-    method_option "line-numbers"
+    option "verbose"
+    option "line-numbers"
     def update(*names)
       ensure!
       if names.empty?
@@ -84,8 +84,8 @@ module Librarian
     end
 
     desc "outdated", "Lists outdated dependencies."
-    method_option "verbose"
-    method_option "line-numbers"
+    option "verbose"
+    option "line-numbers"
     def outdated
       ensure!
       resolution = environment.lock
@@ -99,9 +99,9 @@ module Librarian
     end
 
     desc "show", "Shows dependencies"
-    method_option "verbose"
-    method_option "line-numbers"
-    method_option "detailed", :type => :boolean
+    option "verbose"
+    option "line-numbers"
+    option "detailed", :type => :boolean
     def show(*names)
       ensure!
       manifest_presenter.present(names, :detailed => options["detailed"])
