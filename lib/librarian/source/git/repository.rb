@@ -63,37 +63,37 @@ module Librarian
 
         def clone!(repository_url)
           within do
-            command = "clone #{repository_url} ."
+            command = %W(clone #{repository_url} .)
             run!(command)
           end
         end
 
         def checkout!(reference, options ={ })
           within do
-            command = "checkout #{reference}"
-            command <<  " --force" if options[:force]
+            command = %W(checkout #{reference})
+            command <<  "--force" if options[:force]
             run!(command)
           end
         end
 
         def fetch!(remote, options = { })
           within do
-            command = "fetch #{remote}"
-            command << " --tags" if options[:tags]
+            command = %W(fetch #{remote})
+            command << "--tags" if options[:tags]
             run!(command)
           end
         end
 
         def reset_hard!
           within do
-            command = "reset --hard"
+            command = %W(reset --hard)
             run!(command)
           end
         end
 
         def remote_names
           within do
-            command = "remote"
+            command = %W(remote)
             run!(command, false).strip.lines.map(&:strip)
           end
         end
@@ -102,7 +102,7 @@ module Librarian
           remotes = remote_names.sort_by(&:length).reverse
 
           within do
-            command = "branch -r"
+            command = %W(branch -r)
             names = run!(command, false).strip.lines.map(&:strip).to_a
             names.each{|n| n.gsub!(/\s*->.*$/, "")}
             names.reject!{|n| n =~ /\/HEAD$/}
@@ -122,14 +122,14 @@ module Librarian
           end
 
           within do
-            command = "rev-parse #{reference}"
+            command = %W(rev-parse #{reference})
             run!(command).strip
           end
         end
 
         def current_commit_hash
           within do
-            command = "rev-parse HEAD"
+            command = %W(rev-parse HEAD)
             run!(command).strip!
           end
         end
@@ -140,11 +140,12 @@ module Librarian
           self.class.bin
         end
 
-        def run!(text, quiet = true)
-          text = "#{bin} #{text}"
-          text << " --quiet" if quiet
-          debug { "Running `#{text}` in #{relative_path_to(Dir.pwd)}" }
-          out = Open3.popen3(text) do |i, o, e, t|
+        def run!(args, quiet = true)
+          command = [bin]
+          command.concat(args)
+          command << "--quiet" if quiet
+          debug { "Running `#{command.join(' ')}` in #{relative_path_to(Dir.pwd)}" }
+          out = Open3.popen3(*command) do |i, o, e, t|
             raise StandardError, e.read unless (t ? t.value : $?).success?
             o.read
           end
