@@ -15,6 +15,30 @@ module Librarian
             git.clone!(repository_url)
             git
           end
+
+          def bin
+            @bin ||= which("git") or raise Error, "cannot find git"
+          end
+
+          private
+
+          # Cross-platform way of finding an executable in the $PATH.
+          #
+          #   which('ruby') #=> /usr/bin/ruby
+          #
+          # From:
+          #   https://github.com/defunkt/hub/commit/353031307e704d860826fc756ff0070be5e1b430#L2R173
+          def which(cmd)
+            exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+            ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+              path = File.expand_path(path)
+              exts.each do |ext|
+                exe = File.join(path, cmd + ext)
+                return exe if File.executable?(exe)
+              end
+            end
+            nil
+          end
         end
 
         include Helpers::Debug
@@ -112,8 +136,12 @@ module Librarian
 
       private
 
+        def bin
+          self.class.bin
+        end
+
         def run!(text, quiet = true)
-          text = "git #{text}"
+          text = "#{bin} #{text}"
           text << " --quiet" if quiet
           debug { "Running `#{text}` in #{relative_path_to(Dir.pwd)}" }
           out = Open3.popen3(text) do |i, o, e, t|
