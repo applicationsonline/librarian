@@ -131,8 +131,9 @@ module Librarian
 
           command = [bin]
           command.concat(args)
+          command << open3_options
           debug { "Running `#{command.join(' ')}` in #{relative_path_to(chdir || Dir.pwd)}" }
-          out = Open3.popen3(*command, open3_options) do |i, o, e, t|
+          out = Open3.popen3(*command) do |i, o, e, t|
             raise StandardError, e.read unless (t ? t.value : $?).success?
             o.read
           end
