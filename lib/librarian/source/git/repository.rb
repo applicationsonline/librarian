@@ -126,19 +126,26 @@ module Librarian
           chdir = options.delete(:chdir)
           chdir = path.to_s if chdir == true
 
-          open3_options = { }
-          open3_options[:chdir] = chdir if chdir
-
           command = [bin]
           command.concat(args)
-          command << open3_options
-          debug { "Running `#{command.join(' ')}` in #{relative_path_to(chdir || Dir.pwd)}" }
-          out = Open3.popen3(*command) do |i, o, e, t|
-            raise StandardError, e.read unless (t ? t.value : $?).success?
-            o.read
+
+          maybe_within(chdir) do
+            debug { "Running `#{command.join(' ')}` in #{relative_path_to(Dir.pwd)}" }
+            out = Open3.popen3(*command) do |i, o, e, t|
+              raise StandardError, e.read unless (t ? t.value : $?).success?
+              o.read
+            end
+            debug { "    ->  #{out}" } if out.size > 0
+            out
           end
-          debug { "    ->  #{out}" } if out.size > 0
-          out
+        end
+
+        def maybe_within(path)
+          if path
+            Dir.chdir(path) { yield }
+          else
+            yield
+          end
         end
 
       end
