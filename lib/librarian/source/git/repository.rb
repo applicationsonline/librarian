@@ -43,14 +43,12 @@ module Librarian
 
         include Helpers::Debug
 
-        attr_accessor :environment
-        private :environment=
-        attr_reader :path
+        attr_accessor :environment, :path
+        private :environment=, :path=
 
         def initialize(environment, path)
           self.environment = environment
-          path = Pathname.new(path)
-          @path = path
+          self.path = Pathname.new(path)
         end
 
         def git?
@@ -62,57 +60,45 @@ module Librarian
         end
 
         def clone!(repository_url)
-          within do
-            command = %W(clone #{repository_url} .)
-            run!(command)
-          end
+          command = %W(clone #{repository_url} . --quiet)
+          run!(command, :chdir => true)
         end
 
         def checkout!(reference, options ={ })
-          within do
-            command = %W(checkout #{reference})
-            command <<  "--force" if options[:force]
-            run!(command)
-          end
+          command = %W(checkout #{reference} --quiet)
+          command <<  "--force" if options[:force]
+          run!(command, :chdir => true)
         end
 
         def fetch!(remote, options = { })
-          within do
-            command = %W(fetch #{remote})
-            command << "--tags" if options[:tags]
-            run!(command)
-          end
+          command = %W(fetch #{remote} --quiet)
+          command << "--tags" if options[:tags]
+          run!(command, :chdir => true)
         end
 
         def reset_hard!
-          within do
-            command = %W(reset --hard)
-            run!(command)
-          end
+          command = %W(reset --hard --quiet)
+          run!(command, :chdir => true)
         end
 
         def remote_names
-          within do
-            command = %W(remote)
-            run!(command, false).strip.lines.map(&:strip)
-          end
+          command = %W(remote)
+          run!(command, :chdir => true).strip.lines.map(&:strip)
         end
 
         def remote_branch_names
           remotes = remote_names.sort_by(&:length).reverse
 
-          within do
-            command = %W(branch -r)
-            names = run!(command, false).strip.lines.map(&:strip).to_a
-            names.each{|n| n.gsub!(/\s*->.*$/, "")}
-            names.reject!{|n| n =~ /\/HEAD$/}
-            Hash[remotes.map do |r|
-              matching_names = names.select{|n| n.start_with?("#{r}/")}
-              matching_names.each{|n| names.delete(n)}
-              matching_names.each{|n| n.slice!(0, r.size + 1)}
-              [r, matching_names]
-            end]
-          end
+          command = %W(branch -r)
+          names = run!(command, :chdir => true).strip.lines.map(&:strip).to_a
+          names.each{|n| n.gsub!(/\s*->.*$/, "")}
+          names.reject!{|n| n =~ /\/HEAD$/}
+          Hash[remotes.map do |r|
+            matching_names = names.select{|n| n.start_with?("#{r}/")}
+            matching_names.each{|n| names.delete(n)}
+            matching_names.each{|n| n.slice!(0, r.size + 1)}
+            [r, matching_names]
+          end]
         end
 
         def hash_from(remote, reference)
@@ -121,17 +107,13 @@ module Librarian
             reference = "#{remote}/#{reference}"
           end
 
-          within do
-            command = %W(rev-parse #{reference})
-            run!(command).strip
-          end
+          command = %W(rev-parse #{reference} --quiet)
+          run!(command, :chdir => true).strip
         end
 
         def current_commit_hash
-          within do
-            command = %W(rev-parse HEAD)
-            run!(command).strip!
-          end
+          command = %W(rev-parse HEAD --quiet)
+          run!(command, :chdir => true).strip!
         end
 
       private
@@ -140,21 +122,22 @@ module Librarian
           self.class.bin
         end
 
-        def run!(args, quiet = true)
+        def run!(args, options = { })
+          chdir = options.delete(:chdir)
+          chdir = path.to_s if chdir == true
+
+          open3_options = { }
+          open3_options[:chdir] = chdir if chdir
+
           command = [bin]
           command.concat(args)
-          command << "--quiet" if quiet
-          debug { "Running `#{command.join(' ')}` in #{relative_path_to(Dir.pwd)}" }
-          out = Open3.popen3(*command) do |i, o, e, t|
+          debug { "Running `#{command.join(' ')}` in #{relative_path_to(chdir || Dir.pwd)}" }
+          out = Open3.popen3(*command, open3_options) do |i, o, e, t|
             raise StandardError, e.read unless (t ? t.value : $?).success?
             o.read
           end
           debug { "    ->  #{out}" } if out.size > 0
           out
-        end
-
-        def within
-          Dir.chdir(path) { yield }
         end
 
       end
