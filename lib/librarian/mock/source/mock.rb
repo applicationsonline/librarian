@@ -67,9 +67,9 @@ module Librarian
           Manifest.new(self, name, {:version => version, :dependencies => dependencies})
         end
 
-        def manifests(dependency)
-          if d = registry[dependency.name]
-            d.map{|v| Manifest.new(self, dependency.name, v)}
+        def manifests(name)
+          if d = registry[name]
+            d.map{|v| Manifest.new(self, name, v)}
           else
             nil
           end

@@ -60,8 +60,8 @@ module Librarian
     end
 
     def cache_manifests!
-      source.cache!([self])
-      source.manifests(self)
+      source.cache!([name])
+      source.manifests(name)
     end
 
     def satisfied_by?(manifest)

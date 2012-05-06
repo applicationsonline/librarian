@@ -73,7 +73,7 @@ module Librarian
         @sha = nil
       end
 
-      def cache!(dependencies)
+      def cache!(names)
         unless repository.git?
           repository.path.rmtree if repository.path.exist?
           repository.path.mkpath

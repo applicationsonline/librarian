@@ -37,8 +37,8 @@ module Librarian
 
           def version_uri
             @version_uri ||= begin
-              source.cache!([self])
-              source.manifests(self).find{|m| m.version == version}.version_uri
+              source.cache!([name])
+              source.manifests(name).find{|m| m.version == version}.version_uri
             end
           end
 
@@ -47,7 +47,7 @@ module Librarian
           end
 
           def cache_path
-            @cache_path ||= source.version_cache_path(self, version_uri)
+            @cache_path ||= source.version_cache_path(name, version_uri)
           end
           def metadata_cache_path
             @metadata_cache_path ||= cache_path.join('version.json')
@@ -61,7 +61,7 @@ module Librarian
           end
 
           def fetch_version_metadata!
-            source.cache_version_metadata!(self, version_uri)
+            source.cache_version_metadata!(name, version_uri)
             JSON.parse(metadata_cache_path.read)
           end
 
@@ -70,7 +70,7 @@ module Librarian
           end
 
           def fetch_version_manifest!
-            source.cache_version_package!(self, version_uri, version_metadata['file'])
+            source.cache_version_package!(name, version_uri, version_metadata['file'])
             manifest_path = manifest_path(package_cache_path)
             read_manifest(name, manifest_path)
           end
@@ -82,7 +82,7 @@ module Librarian
               debug { "Deleting #{relative_path_to(install_path)}" }
               install_path.rmtree
             end
-            package_cache_path = source.version_package_cache_path(self, version_uri)
+            package_cache_path = source.version_package_cache_path(name, version_uri)
             debug { "Copying #{relative_path_to(package_cache_path)} to #{relative_path_to(install_path)}" }
             FileUtils.cp_r(package_cache_path, install_path)
           end

@@ -11,8 +11,8 @@ module Librarian
 
           class << self
 
-            def create(source, dependency, path)
-              new(source, dependency.name, path)
+            def create(source, name, path)
+              new(source, name, path)
             end
 
             def manifest?(dependency, path)
@@ -20,9 +20,9 @@ module Librarian
               !!manifest_path(path)
             end
 
-            def check_manifest(dependency, manifest_path)
-              manifest = read_manifest(dependency.name, manifest_path)
-              manifest["name"] == dependency.name
+            def check_manifest(name, manifest_path)
+              manifest = read_manifest(name, manifest_path)
+              manifest["name"] == name
             end
 
           end
@@ -36,7 +36,7 @@ module Librarian
           end
 
           def found_path
-            @found_path ||= source.manifest_search_paths(self).find{|p| self.class.manifest?(self, p)}
+            @found_path ||= source.manifest_search_paths(name).find{|p| self.class.manifest?(self, p)}
           end
 
           def manifest

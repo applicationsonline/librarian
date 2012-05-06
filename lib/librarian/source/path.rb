@@ -50,7 +50,7 @@ module Librarian
       def unpin!
       end
 
-      def cache!(dependencies)
+      def cache!(names)
       end
 
       def filesystem_path

@@ -42,7 +42,7 @@ module Librarian
 
       def cache_manifests(manifests)
         manifests.each do |manifest|
-          manifest.source.cache!([manifest])
+          manifest.source.cache!([manifest.name])
         end
       end
 

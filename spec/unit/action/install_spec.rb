@@ -63,8 +63,12 @@ module Librarian
 
         describe "performing the install" do
 
-          let(:manifests) { [mock, mock, mock] }
-          let(:sorted_manifests) { [mock, mock, mock, mock] }
+          def mock_manifest(i)
+            double(:name => "manifest-#{i}")
+          end
+
+          let(:manifests) { 3.times.map{|i| mock_manifest(i)} }
+          let(:sorted_manifests) { 4.times.map{|i| mock_manifest(i + 3)} }
           let(:install_path) { mock }
 
           before do
@@ -83,7 +87,7 @@ module Librarian
             sorted_manifests.each do |manifest|
               source = mock
               manifest.stub(:source) { source }
-              source.should_receive(:cache!).with([manifest]).exactly(:once).ordered
+              source.should_receive(:cache!).with([manifest.name]).exactly(:once).ordered
             end
 
             install_path.stub(:exist?) { false }
