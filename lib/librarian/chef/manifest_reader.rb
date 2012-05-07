@@ -32,6 +32,16 @@ module Librarian
         {"name" => md.name, "version" => md.version, "dependencies" => md.dependencies}
       end
 
+      def manifest?(name, path)
+        path = Pathname.new(path)
+        !!ManifestReader.manifest_path(path)
+      end
+
+      def check_manifest(name, manifest_path)
+        manifest = ManifestReader.read_manifest(name, manifest_path)
+        manifest["name"] == name
+      end
+
     end
   end
 end

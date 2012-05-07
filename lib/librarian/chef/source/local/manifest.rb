@@ -15,16 +15,6 @@ module Librarian
               new(source, name, path)
             end
 
-            def manifest?(dependency, path)
-              path = Pathname.new(path)
-              !!ManifestReader.manifest_path(path)
-            end
-
-            def check_manifest(name, manifest_path)
-              manifest = ManifestReader.read_manifest(name, manifest_path)
-              manifest["name"] == name
-            end
-
           end
 
           attr_reader :path
@@ -36,7 +26,7 @@ module Librarian
           end
 
           def found_path
-            @found_path ||= source.manifest_search_paths(name).find{|p| self.class.manifest?(self, p)}
+            @found_path ||= source.manifest_search_paths(name).find{|p| ManifestReader.manifest?(self, p)}
           end
 
           def manifest
