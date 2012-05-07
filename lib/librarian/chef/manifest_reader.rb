@@ -29,7 +29,7 @@ module Librarian
         md = ::Chef::Cookbook::Metadata.new
         md.name(name)
         md.from_file(path.join('metadata.rb').to_s)
-        JSON.parse(::Chef::JSONCompat.to_json_pretty(md))
+        {"name" => md.name, "version" => md.version, "dependencies" => md.dependencies}
       end
 
     end
