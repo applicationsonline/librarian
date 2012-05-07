@@ -53,11 +53,6 @@ module Librarian
 
       self.source = source
       self.name = name
-
-      @fetched_version = nil
-      @defined_version = nil
-      @fetched_dependencies = nil
-      @defined_dependencies = nil
     end
 
     def to_s
@@ -65,35 +60,32 @@ module Librarian
     end
 
     def version
-      @defined_version || @fetched_version ||= _normalize_version(fetch_version!)
+      defined_version || fetched_version
     end
 
     def version=(version)
-      @defined_version = _normalize_version(version)
+      self.defined_version = _normalize_version(version)
     end
 
     def version?
-      if @defined_version
-        @fetched_version ||= _normalize_version(fetch_version!)
-        @defined_version == @fetched_version
-      end
+      return unless defined_version
+
+      defined_version == fetched_version
     end
 
     def dependencies
-      @defined_dependencies || @fetched_dependencies ||= _normalize_dependencies(fetch_dependencies!)
+      defined_dependencies || fetched_dependencies
     end
 
     def dependencies=(dependencies)
-      @defined_dependencies = _normalize_dependencies(dependencies)
+      self.defined_dependencies = _normalize_dependencies(dependencies)
     end
 
     def dependencies?
-      if @defined_dependencies
-        @fetched_dependencies ||= _normalize_dependencies(fetch_dependencies!)
-        @defined_dependencies.zip(@fetched_dependencies).all? do |pair|
-          a, b = *pair
-          a.name == b.name && a.requirement == b.requirement
-        end
+      return unless defined_dependencies
+
+      defined_dependencies.zip(fetched_dependencies).all? do |(a, b)|
+        a.name == b.name && a.requirement == b.requirement
       end
     end
 
@@ -103,8 +95,18 @@ module Librarian
 
   private
 
+    attr_accessor :defined_version, :defined_dependencies
+
     def environment
       source.environment
+    end
+
+    def fetched_version
+      @fetched_version ||= _normalize_version(fetch_version!)
+    end
+
+    def fetched_dependencies
+      @fetched_dependencies ||= _normalize_dependencies(fetch_dependencies!)
     end
 
     def _normalize_version(version)
@@ -115,7 +117,7 @@ module Librarian
       if Hash === dependencies
         dependencies = dependencies.map{|k, v| Dependency.new(k, v, nil)}
       end
-      dependencies.sort_by{|d| d.name}
+      dependencies.sort_by(&:name)
     end
 
     def assert_name_valid!(name)
