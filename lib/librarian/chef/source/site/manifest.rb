@@ -3,7 +3,7 @@ require "fileutils"
 require "json"
 
 require "librarian/dependency"
-require 'librarian/chef/manifest'
+require 'librarian/chef/manifest_reader'
 
 module Librarian
   module Chef
@@ -71,8 +71,8 @@ module Librarian
 
           def fetch_version_manifest!
             source.cache_version_package!(name, version_uri, version_metadata['file'])
-            manifest_path = manifest_path(package_cache_path)
-            read_manifest(name, manifest_path)
+            manifest_path = ManifestReader.manifest_path(package_cache_path)
+            ManifestReader.read_manifest(name, manifest_path)
           end
 
           def install!

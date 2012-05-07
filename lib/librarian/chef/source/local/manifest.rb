@@ -1,7 +1,7 @@
 require 'fileutils'
 require 'pathname'
 
-require 'librarian/chef/manifest'
+require 'librarian/chef/manifest_reader'
 
 module Librarian
   module Chef
@@ -17,11 +17,11 @@ module Librarian
 
             def manifest?(dependency, path)
               path = Pathname.new(path)
-              !!manifest_path(path)
+              !!ManifestReader.manifest_path(path)
             end
 
             def check_manifest(name, manifest_path)
-              manifest = read_manifest(name, manifest_path)
+              manifest = ManifestReader.read_manifest(name, manifest_path)
               manifest["name"] == name
             end
 
@@ -46,7 +46,7 @@ module Librarian
           def fetch_manifest!
             expect_manifest
 
-            read_manifest(name, manifest_path(found_path))
+            ManifestReader.read_manifest(name, ManifestReader.manifest_path(found_path))
           end
 
           def fetch_version!
@@ -71,7 +71,7 @@ module Librarian
         private
 
           def expect_manifest
-            return if found_path && manifest_path(found_path)
+            return if found_path && ManifestReader.manifest_path(found_path)
             raise Error, "No metadata file found for #{name} from #{source}! If this should be a cookbook, you might consider contributing a metadata file upstream or forking the cookbook to add your own metadata file."
           end
 
