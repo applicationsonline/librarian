@@ -28,6 +28,18 @@ module Librarian
         paths.select{|s| s.exist?}
       end
 
+      def found_path(name)
+        @_found_paths ||= { }
+        @_found_paths[name] ||= begin
+          paths = manifest_search_paths(name)
+          paths.find{|p| manifest?(name, p)}
+        end
+      end
+
+    private
+
+      abstract_method :manifest? # (name, path) -> boolean
+
     end
   end
 end

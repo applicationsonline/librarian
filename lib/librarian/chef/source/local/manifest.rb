@@ -18,7 +18,7 @@ module Librarian
           end
 
           def found_path
-            @found_path ||= source.manifest_search_paths(name).find{|p| ManifestReader.manifest?(self, p)}
+            source.found_path(name)
           end
 
           def manifest

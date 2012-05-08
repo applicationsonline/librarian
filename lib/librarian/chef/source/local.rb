@@ -1,3 +1,4 @@
+require 'librarian/chef/manifest_reader'
 require 'librarian/chef/source/local/manifest'
 
 module Librarian
@@ -7,6 +8,12 @@ module Librarian
 
         def manifest_class
           Manifest
+        end
+
+      private
+
+        def manifest?(name, path)
+          ManifestReader.manifest?(name, path)
         end
 
       end
