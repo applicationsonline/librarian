@@ -12,7 +12,6 @@ module Librarian
         class Manifest < Manifest
 
           attr_reader :version_uri
-          attr_reader :install_path
 
           def initialize(source, name, version_uri = nil)
             super(source, name)
@@ -21,7 +20,6 @@ module Librarian
             @cache_path = nil
             @metadata_cache_path = nil
             @package_cache_path = nil
-            @install_path = environment.install_path.join(name)
 
             @version_metadata = nil
             @version_manifest = nil
@@ -76,15 +74,7 @@ module Librarian
           end
 
           def install!
-            debug { "Installing #{self}" }
-            version_manifest # make sure it's cached
-            if install_path.exist?
-              debug { "Deleting #{relative_path_to(install_path)}" }
-              install_path.rmtree
-            end
-            package_cache_path = source.version_package_cache_path(name, version_uri)
-            debug { "Copying #{relative_path_to(package_cache_path)} to #{relative_path_to(install_path)}" }
-            FileUtils.cp_r(package_cache_path, install_path)
+            source.install!(self)
           end
 
         end

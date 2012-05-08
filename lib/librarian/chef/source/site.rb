@@ -74,6 +74,27 @@ module Librarian
           end
         end
 
+        def install!(manifest)
+          manifest.source == self or raise ArgumentError
+
+          debug { "Installing #{manifest}" }
+
+          name, version_uri = manifest.name, manifest.version_uri
+          cache_version_metadata!(name, version_uri)
+          version_metadata = JSON.parse(version_metadata_cache_path(name, version_uri).read)
+          cache_version_package!(name, version_uri, version_metadata["file"])
+
+          install_path = environment.install_path.join(name)
+          if install_path.exist?
+            debug { "Deleting #{relative_path_to(install_path)}" }
+            install_path.rmtree
+          end
+
+          package_cache_path = version_package_cache_path(name, version_uri)
+          debug { "Copying #{relative_path_to(package_cache_path)} to #{relative_path_to(install_path)}" }
+          FileUtils.cp_r(package_cache_path, install_path)
+        end
+
         # NOTE:
         #   Assumes the Opscode Site API responds with versions in reverse sorted order
         def manifests(name)
