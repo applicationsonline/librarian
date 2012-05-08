@@ -73,7 +73,7 @@ module Librarian
           end
         end
 
-        def cache!(dependencies)
+        def cache!(names)
         end
 
         def install!(manifest)
