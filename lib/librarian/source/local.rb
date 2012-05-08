@@ -12,12 +12,12 @@ module Librarian
       abstract_method :path
 
       def manifests(name)
-        manifest = manifest_class.create(self, name, filesystem_path)
+        manifest = manifest_class.new(self, name, filesystem_path)
         [manifest].compact
       end
 
       def manifest(name, version, dependencies)
-        manifest = manifest_class.create(self, name, filesystem_path)
+        manifest = manifest_class.new(self, name, filesystem_path)
         manifest.version = version
         manifest.dependencies = dependencies
         manifest

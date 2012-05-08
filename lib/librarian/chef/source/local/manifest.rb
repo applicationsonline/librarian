@@ -9,14 +9,6 @@ module Librarian
       module Local
         class Manifest < Manifest
 
-          class << self
-
-            def create(source, name, path)
-              new(source, name, path)
-            end
-
-          end
-
           attr_reader :path
 
           def initialize(source, name, path)
