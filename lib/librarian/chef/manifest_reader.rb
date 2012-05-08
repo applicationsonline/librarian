@@ -34,11 +34,11 @@ module Librarian
 
       def manifest?(name, path)
         path = Pathname.new(path)
-        !!ManifestReader.manifest_path(path)
+        !!manifest_path(path)
       end
 
       def check_manifest(name, manifest_path)
-        manifest = ManifestReader.read_manifest(name, manifest_path)
+        manifest = read_manifest(name, manifest_path)
         manifest["name"] == name
       end
 
