@@ -1,3 +1,4 @@
+require 'librarian/helpers/debug'
 require 'librarian/support/abstract_method'
 
 module Librarian
@@ -7,6 +8,7 @@ module Librarian
     #   #environment
     module Local
 
+      include Helpers::Debug
       include Support::AbstractMethod
 
       abstract_method :path
