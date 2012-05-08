@@ -40,14 +40,7 @@ module Librarian
           end
 
           def install!
-            debug { "Installing #{name}-#{version}" }
-            install_path = environment.install_path.join(name)
-            if install_path.exist?
-              debug { "Deleting #{relative_path_to(install_path)}" }
-              install_path.rmtree
-            end
-            debug { "Copying #{relative_path_to(found_path)} to #{relative_path_to(install_path)}" }
-            FileUtils.cp_r(found_path, install_path)
+            source.install!(self)
           end
 
         private
