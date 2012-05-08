@@ -18,8 +18,6 @@ module Librarian
           def fetch_dependencies!
             manifest[:dependencies]
           end
-          def install!
-          end
         end
 
         class << self
@@ -76,6 +74,9 @@ module Librarian
         end
 
         def cache!(dependencies)
+        end
+
+        def install!(manifest)
         end
 
         def to_s

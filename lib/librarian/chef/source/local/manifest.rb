@@ -39,10 +39,6 @@ module Librarian
             manifest['dependencies']
           end
 
-          def install!
-            source.install!(self)
-          end
-
         private
 
           def expect_manifest

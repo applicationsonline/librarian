@@ -46,7 +46,6 @@ module Librarian
     private :source=, :name=
 
     abstract_method :fetch_version!, :fetch_dependencies!
-    abstract_method :install!
 
     def initialize(source, name)
       assert_name_valid! name
@@ -91,6 +90,10 @@ module Librarian
 
     def satisfies?(dependency)
       dependency.requirement.satisfied_by?(version)
+    end
+
+    def install!
+      source.install!(self)
     end
 
   private

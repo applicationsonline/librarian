@@ -73,10 +73,6 @@ module Librarian
             ManifestReader.read_manifest(name, manifest_path)
           end
 
-          def install!
-            source.install!(self)
-          end
-
         end
       end
     end
