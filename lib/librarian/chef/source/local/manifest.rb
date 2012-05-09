@@ -14,7 +14,6 @@ module Librarian
           def initialize(source, name, path)
             super(source, name)
             @path = Pathname.new(path)
-            @found_path = nil
           end
 
           def found_path
