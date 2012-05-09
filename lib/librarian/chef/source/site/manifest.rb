@@ -16,10 +16,6 @@ module Librarian
           def initialize(source, name, extra = { })
             super(source, name, extra)
 
-            @cache_path = nil
-            @metadata_cache_path = nil
-            @package_cache_path = nil
-
             @version_metadata = nil
             @version_manifest = nil
           end
@@ -33,10 +29,7 @@ module Librarian
           end
 
           def version_uri
-            extra[:version_uri] ||= begin
-              source.cache!([name])
-              source.manifests(name).find{|m| m.version == version}.version_uri
-            end
+            extra[:version_uri] ||= source.find_version_uri(name, version)
           end
 
           def version_uri=(version_uri)
@@ -44,13 +37,13 @@ module Librarian
           end
 
           def cache_path
-            @cache_path ||= source.version_cache_path(name, version_uri)
+            source.version_cache_path(name, version_uri)
           end
           def metadata_cache_path
-            @metadata_cache_path ||= cache_path.join('version.json')
+            source.version_metadata_cache_path(name, version_uri)
           end
           def package_cache_path
-            @package_cache_path ||= cache_path.join('package')
+            source.version_package_cache_path(name, version_uri)
           end
 
           def version_metadata

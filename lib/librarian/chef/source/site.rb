@@ -109,6 +109,11 @@ module Librarian
           manifest
         end
 
+        def find_version_uri(name, version)
+          cache!([name])
+          manifests(name).find{|m| m.version == version}.version_uri
+        end
+
         def install_path(name)
           environment.install_path.join(name)
         end
