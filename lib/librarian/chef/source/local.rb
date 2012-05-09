@@ -28,10 +28,30 @@ module Librarian
           FileUtils.cp_r(found_path, install_path)
         end
 
+        def manifest_data(name)
+          @manifest_data ||= { }
+          @manifest_data[name] ||= fetch_manifest_data(name)
+        end
+
       private
+
+        def fetch_manifest_data(name)
+          expect_manifest!(name)
+
+          found_path = found_path(name)
+          manifest_path = ManifestReader.manifest_path(found_path)
+          ManifestReader.read_manifest(name, manifest_path)
+        end
 
         def manifest?(name, path)
           ManifestReader.manifest?(name, path)
+        end
+
+        def expect_manifest!(name)
+          found_path = found_path(name)
+          return if found_path && ManifestReader.manifest_path(found_path)
+
+          raise Error, "No metadata file found for #{name} from #{self}! If this should be a cookbook, you might consider contributing a metadata file upstream or forking the cookbook to add your own metadata file."
         end
 
       end
