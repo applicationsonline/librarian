@@ -13,9 +13,8 @@ module Librarian
 
           attr_reader :version_uri
 
-          def initialize(source, name, version_uri = nil)
-            super(source, name)
-            @version_uri = version_uri
+          def initialize(source, name, extra = { })
+            super(source, name, extra)
 
             @cache_path = nil
             @metadata_cache_path = nil
@@ -34,14 +33,14 @@ module Librarian
           end
 
           def version_uri
-            @version_uri ||= begin
+            extra[:version_uri] ||= begin
               source.cache!([name])
               source.manifests(name).find{|m| m.version == version}.version_uri
             end
           end
 
           def version_uri=(version_uri)
-            @version_uri = version_uri
+            extra[:version_uri] = version_uri
           end
 
           def cache_path

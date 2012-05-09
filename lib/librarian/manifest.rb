@@ -47,11 +47,12 @@ module Librarian
 
     abstract_method :fetch_version!, :fetch_dependencies!
 
-    def initialize(source, name)
+    def initialize(source, name, extra = { })
       assert_name_valid! name
 
       self.source = source
       self.name = name
+      self.extra = extra
     end
 
     def to_s
@@ -98,7 +99,7 @@ module Librarian
 
   private
 
-    attr_accessor :defined_version, :defined_dependencies
+    attr_accessor :extra, :defined_version, :defined_dependencies
 
     def environment
       source.environment
