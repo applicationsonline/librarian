@@ -114,6 +114,33 @@ module Librarian
           manifests(name).find{|m| m.version == version}.version_uri
         end
 
+        def version_metadata(name, version_uri)
+          @version_metadata ||= { }
+          @version_metadata[name] ||= { }
+          @version_metadata[name][version_uri] ||= fetch_version_metadata(name, version_uri)
+        end
+
+        def version_manifest(name, version_uri)
+          @version_manifest ||= { }
+          @version_manifest[name] ||= { }
+          @version_manifest[name][version_uri] ||= fetch_version_manifest(name, version_uri)
+        end
+
+        def fetch_version_metadata(name, version_uri)
+          cache_version_metadata!(name, version_uri)
+          JSON.parse(version_metadata_cache_path(name, version_uri).read)
+        end
+
+        def fetch_version_manifest(name, version_uri)
+          package_cache_path = version_package_cache_path(name, version_uri)
+          version_metadata = version_metadata(name, version_uri)
+          file_uri = version_metadata['file']
+
+          cache_version_package!(name, version_uri, file_uri)
+          manifest_path = ManifestReader.manifest_path(package_cache_path)
+          ManifestReader.read_manifest(name, manifest_path)
+        end
+
         def install_path(name)
           environment.install_path.join(name)
         end

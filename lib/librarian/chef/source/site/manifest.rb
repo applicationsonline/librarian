@@ -1,9 +1,4 @@
-require "fileutils"
-
-require "json"
-
 require "librarian/dependency"
-require 'librarian/chef/manifest_reader'
 
 module Librarian
   module Chef
@@ -12,13 +7,6 @@ module Librarian
         class Manifest < Manifest
 
           attr_reader :version_uri
-
-          def initialize(source, name, extra = { })
-            super(source, name, extra)
-
-            @version_metadata = nil
-            @version_manifest = nil
-          end
 
           def fetch_version!
             version_metadata['version']
@@ -47,22 +35,11 @@ module Librarian
           end
 
           def version_metadata
-            @version_metadata ||= fetch_version_metadata!
-          end
-
-          def fetch_version_metadata!
-            source.cache_version_metadata!(name, version_uri)
-            JSON.parse(metadata_cache_path.read)
+            source.version_metadata(name, version_uri)
           end
 
           def version_manifest
-            @version_manifest ||= fetch_version_manifest!
-          end
-
-          def fetch_version_manifest!
-            source.cache_version_package!(name, version_uri, version_metadata['file'])
-            manifest_path = ManifestReader.manifest_path(package_cache_path)
-            ManifestReader.read_manifest(name, manifest_path)
+            source.version_manifest(name, version_uri)
           end
 
         end
