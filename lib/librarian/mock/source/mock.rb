@@ -6,20 +6,6 @@ module Librarian
     module Source
       class Mock
 
-        class Manifest < Manifest
-          attr_reader :manifest
-          def initialize(source, name, manifest)
-            super(source, name)
-            @manifest = manifest
-          end
-          def fetch_version!
-            manifest[:version]
-          end
-          def fetch_dependencies!
-            manifest[:dependencies]
-          end
-        end
-
         class << self
           LOCK_NAME = 'MOCK'
           def lock_name
@@ -62,12 +48,15 @@ module Librarian
         end
 
         def manifest(name, version, dependencies)
-          Manifest.new(self, name, {:version => version, :dependencies => dependencies})
+          manifest = Manifest.new(self, name)
+          manifest.version = version
+          manifest.dependencies = dependencies
+          manifest
         end
 
         def manifests(name)
           if d = registry[name]
-            d.map{|v| Manifest.new(self, name, v)}
+            d.map{|v| manifest(name, v[:version], v[:dependencies])}
           else
             nil
           end
@@ -81,6 +70,16 @@ module Librarian
 
         def to_s
           name
+        end
+
+        def fetch_version(name, extra)
+          extra
+        end
+
+        def fetch_dependencies(name, version, extra)
+          d = registry[name]
+          m = d.find{|v| v[:version] == version.to_s}
+          m[:dependencies]
         end
 
       end
