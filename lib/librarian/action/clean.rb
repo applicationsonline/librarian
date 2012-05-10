@@ -7,7 +7,6 @@ module Librarian
       def run
         clean_cache_path
         clean_install_path
-        clean_lockfile_path
       end
 
     private
@@ -28,23 +27,12 @@ module Librarian
         end
       end
 
-      def clean_lockfile_path
-        if lockfile_path.exist?
-          debug { "Deleting #{project_relative_path_to(lockfile_path)}" }
-          lockfile_path.rmtree
-        end
-      end
-
       def cache_path
         environment.cache_path
       end
 
       def install_path
         environment.install_path
-      end
-
-      def lockfile_path
-        environment.lockfile_path
       end
 
       def project_relative_path_to(path)

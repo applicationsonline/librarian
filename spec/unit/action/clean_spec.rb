@@ -22,7 +22,6 @@ module Librarian
 
           before do
             action.stub(:clean_install_path)
-            action.stub(:clean_lockfile_path)
           end
 
           context "when the cache path is missing" do
@@ -51,7 +50,6 @@ module Librarian
 
           before do
             action.stub(:clean_cache_path)
-            action.stub(:clean_lockfile_path)
           end
 
           context "when the install path is missing" do
@@ -91,35 +89,6 @@ module Librarian
               children.reject(&:file?).each do |child|
                 child.should_receive(:rmtree).exactly(:once)
               end
-            end
-          end
-
-        end
-
-        describe "clearing the lockfile path" do
-
-          before do
-            action.stub(:clean_cache_path)
-            action.stub(:clean_install_path)
-          end
-
-          context "when the lockfile path is missing" do
-            before do
-              env.stub_chain(:lockfile_path, :exist?) { false }
-            end
-
-            it "should not try to clear the lockfile path" do
-              env.lockfile_path.should_receive(:rmtree).never
-            end
-          end
-
-          context "when the lockfile path is present" do
-            before do
-              env.stub_chain(:lockfile_path, :exist?) { true }
-            end
-
-            it "should try to clear the lockfile path" do
-              env.lockfile_path.should_receive(:rmtree).exactly(:once)
             end
           end
 
