@@ -283,7 +283,7 @@ module Librarian
           end
 
           def parse_local_json(path)
-            JSON.parse(File.binread(path))
+            JSON.parse(path.read)
           end
 
           def hexdigest(bytes)
