@@ -243,7 +243,7 @@ module Librarian
 
           def cache_remote_json!(path, uri)
             path = Pathname(path)
-            uri = URI(uri)
+            uri = to_uri(uri)
 
             path.dirname.mkpath unless path.dirname.directory?
 
@@ -262,7 +262,7 @@ module Librarian
 
           def cache_remote_object!(path, uri)
             path = Pathname(path)
-            uri = URI(uri)
+            uri = to_uri(uri)
 
             path.dirname.mkpath unless path.dirname.directory?
 
@@ -288,6 +288,11 @@ module Librarian
 
           def hexdigest(bytes)
             Digest::MD5.hexdigest(bytes)
+          end
+
+          def to_uri(uri)
+            uri = URI(uri) unless URI === uri
+            uri
           end
 
         end
