@@ -11,6 +11,7 @@ require 'archive/tar/minitar'
 require 'librarian/helpers/debug'
 
 require 'librarian/chef/source/site/manifest'
+require 'librarian/chef/manifest_reader'
 
 module Librarian
   module Chef
