@@ -42,12 +42,12 @@ module Librarian
     include Support::AbstractMethod
     include Helpers::Debug
 
-    attr_accessor :source, :name
-    private :source=, :name=
+    attr_accessor :source, :name, :extra
+    private :source=, :name=, :extra=
 
     abstract_method :fetch_version!, :fetch_dependencies!
 
-    def initialize(source, name, extra = { })
+    def initialize(source, name, extra = nil)
       assert_name_valid! name
 
       self.source = source
@@ -99,7 +99,7 @@ module Librarian
 
   private
 
-    attr_accessor :extra, :defined_version, :defined_dependencies
+    attr_accessor :defined_version, :defined_dependencies
 
     def environment
       source.environment

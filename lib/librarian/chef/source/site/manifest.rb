@@ -15,11 +15,11 @@ module Librarian
           end
 
           def version_uri
-            extra[:version_uri] ||= source.find_version_uri(name, version)
+            self.extra = extra || source.find_version_uri(name, version)
           end
 
           def version_uri=(version_uri)
-            extra[:version_uri] = version_uri
+            self.extra = version_uri
           end
 
           def version_metadata

@@ -99,7 +99,7 @@ module Librarian
         #   Assumes the Opscode Site API responds with versions in reverse sorted order
         def manifests(name)
           metadata = JSON.parse(metadata_cache_path(name).read)
-          metadata['versions'].map{|version_uri| Manifest.new(self, name, :version_uri => version_uri)}
+          metadata['versions'].map{|version_uri| Manifest.new(self, name, version_uri)}
         end
 
         def manifest(name, version, dependencies)
