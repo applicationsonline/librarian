@@ -1,14 +1,9 @@
 require 'librarian/chef/manifest_reader'
-require 'librarian/chef/source/local/manifest'
 
 module Librarian
   module Chef
     module Source
       module Local
-
-        def manifest_class
-          Manifest
-        end
 
         def install!(manifest)
           manifest.source == self or raise ArgumentError
