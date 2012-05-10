@@ -28,12 +28,20 @@ module Librarian
           FileUtils.cp_r(found_path, install_path)
         end
 
+        def fetch_version(name, extra)
+          manifest_data(name)["version"]
+        end
+
+        def fetch_dependencies(name, version, extra)
+          manifest_data(name)["dependencies"]
+        end
+
+      private
+
         def manifest_data(name)
           @manifest_data ||= { }
           @manifest_data[name] ||= fetch_manifest_data(name)
         end
-
-      private
 
         def fetch_manifest_data(name)
           expect_manifest!(name)

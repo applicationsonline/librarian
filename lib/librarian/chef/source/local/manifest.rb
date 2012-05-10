@@ -9,16 +9,12 @@ module Librarian
       module Local
         class Manifest < Manifest
 
-          def manifest
-            source.manifest_data(name)
-          end
-
           def fetch_version!
-            manifest['version']
+            source.fetch_version(name, extra)
           end
 
           def fetch_dependencies!
-            manifest['dependencies']
+            source.fetch_dependencies(name, version, extra)
           end
 
         end
