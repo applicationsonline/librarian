@@ -6,8 +6,6 @@ module Librarian
       class Site
         class Manifest < Manifest
 
-          attr_reader :version_uri
-
           def fetch_version!
             version_metadata['version']
           end
@@ -22,16 +20,6 @@ module Librarian
 
           def version_uri=(version_uri)
             extra[:version_uri] = version_uri
-          end
-
-          def cache_path
-            source.version_cache_path(name, version_uri)
-          end
-          def metadata_cache_path
-            source.version_metadata_cache_path(name, version_uri)
-          end
-          def package_cache_path
-            source.version_package_cache_path(name, version_uri)
           end
 
           def version_metadata
