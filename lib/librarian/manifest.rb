@@ -113,6 +113,14 @@ module Librarian
       @fetched_dependencies ||= _normalize_dependencies(fetch_dependencies!)
     end
 
+    def fetch_version!
+      source.fetch_version(name, extra)
+    end
+
+    def fetch_dependencies!
+      source.fetch_dependencies(name, version, extra)
+    end
+
     def _normalize_version(version)
       Version.new(version)
     end
