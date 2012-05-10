@@ -5,6 +5,7 @@ require 'net/http'
 require 'json'
 require 'digest'
 require 'zlib'
+require 'tmpdir'
 require 'archive/tar/minitar'
 
 require 'librarian/helpers/debug'
@@ -17,6 +18,279 @@ module Librarian
       class Site
 
         include Helpers::Debug
+
+        class Line
+
+          include Helpers::Debug
+
+          attr_accessor :source, :name
+          private :source=, :name=
+
+          def initialize(source, name)
+            self.source = source
+            self.name = name
+          end
+
+          def install_version!(version, install_path)
+            cache_version_unpacked! version
+
+            if install_path.exist?
+              debug { "Deleting #{relative_path_to(install_path)}" }
+              install_path.rmtree
+            end
+
+            unpacked_path = version_unpacked_cache_path(version)
+
+            debug { "Copying #{relative_path_to(unpacked_path)} to #{relative_path_to(install_path)}" }
+            FileUtils.cp_r(unpacked_path, install_path)
+          end
+
+          def manifests
+            version_uris.map do |version_uri|
+              Manifest.new(source, name, version_uri)
+            end
+          end
+
+          def to_version(version_uri)
+            version_uri_metadata(version_uri)["version"]
+          end
+
+          def version_dependencies(version)
+            version_manifest(version)["dependencies"]
+          end
+
+        private
+
+          attr_accessor :metadata_cached
+          alias metadata_cached? metadata_cached
+
+          def environment
+            source.environment
+          end
+
+          def uri
+            @uri ||= URI.parse("#{source.uri}/cookbooks/#{name}")
+          end
+
+          def version_uris
+            metadata["versions"]
+          end
+
+          def version_metadata(version)
+            version_uri = to_version_uri(version)
+            version_uri_metadata(version_uri)
+          end
+
+          def version_uri_metadata(version_uri)
+            @version_uri_metadata ||= { }
+            @version_uri_metadata[version_uri.to_s] ||= begin
+              cache_version_uri_metadata! version_uri
+              parse_local_json(version_uri_metadata_cache_path(version_uri))
+            end
+          end
+
+          def version_manifest(version)
+            version_uri = to_version_uri(version)
+            version_uri_manifest(version_uri)
+          end
+
+          def version_uri_manifest(version_uri)
+            @version_uri_manifest ||= { }
+            @version_uri_manifest[version_uri.to_s] ||= begin
+              cache_version_uri_unpacked! version_uri
+              unpacked_path = version_uri_unpacked_cache_path(version_uri)
+              manifest_path = ManifestReader.manifest_path(unpacked_path)
+              ManifestReader.read_manifest(name, manifest_path)
+            end
+          end
+
+          def metadata
+            @metadata ||= begin
+              cache_metadata!
+              parse_local_json(metadata_cache_path)
+            end
+          end
+
+          def to_version_uri(version)
+            @to_version_uri ||= { }
+            @to_version_uri[version.to_s] ||= begin
+              cache_version! version
+              version_cache_path(version).read
+            end
+          end
+
+          def metadata_cached!
+            self.metadata_cached = true
+          end
+
+          def cache_path
+            @cache_path ||= source.cache_path.join(name)
+          end
+
+          def metadata_cache_path
+            @metadata_cache_path ||= cache_path.join("metadata.json")
+          end
+
+          def version_cache_path(version)
+            @version_cache_path ||= { }
+            @version_cache_path[version.to_s] ||= begin
+              cache_path.join("version").join(version.to_s)
+            end
+          end
+
+          def version_uri_cache_path(version_uri)
+            @version_uri_cache_path ||= { }
+            @version_uri_cache_path[version_uri.to_s] ||= begin
+              cache_path.join("version-uri").join(hexdigest(version_uri))
+            end
+          end
+
+          def version_metadata_cache_path(version)
+            version_uri = to_version_uri(version)
+            version_uri_metadata_cache_path(version_uri)
+          end
+
+          def version_uri_metadata_cache_path(version_uri)
+            @version_uri_metadata_cache_path ||= { }
+            @version_uri_metadata_cache_path[version_uri.to_s] ||= begin
+              version_uri_cache_path(version_uri).join("metadata.json")
+            end
+          end
+
+          def version_package_cache_path(version)
+            version_uri = to_version_uri(version)
+            version_uri_package_cache_path(version_uri)
+          end
+
+          def version_uri_package_cache_path(version_uri)
+            @version_uri_package_cache_path ||= { }
+            @version_uri_package_cache_path[version_uri.to_s] ||= begin
+              version_uri_cache_path(version_uri).join("package.tar.gz")
+            end
+          end
+
+          def version_unpacked_cache_path(version)
+            version_uri = to_version_uri(version)
+            version_uri_unpacked_cache_path(version_uri)
+          end
+
+          def version_uri_unpacked_cache_path(version_uri)
+            @version_uri_unpacked_cache_path ||= { }
+            @version_uri_unpacked_cache_path[version_uri.to_s] ||= begin
+              version_uri_cache_path(version_uri).join("package")
+            end
+          end
+
+          def cache_metadata!
+            metadata_cached? and return or metadata_cached!
+            cache_remote_json! metadata_cache_path, uri
+          end
+
+          def cache_version_uri_metadata!(version_uri)
+            path = version_uri_metadata_cache_path(version_uri)
+            path.file? and return
+
+            cache_remote_json! path, version_uri
+          end
+
+          def cache_version!(version)
+            path = version_cache_path(version)
+            path.file? and return
+
+            version_uris.each do |version_uri|
+              m = version_uri_metadata(version_uri)
+              v = m["version"]
+              if version.to_s == v
+                write! path, version_uri.to_s
+                break
+              end
+            end
+          end
+
+          def cache_version_package!(version)
+            version_uri = to_version_uri(version)
+            cache_version_uri_package! version_uri
+          end
+
+          def cache_version_uri_package!(version_uri)
+            path = version_uri_package_cache_path(version_uri)
+            path.file? and return
+
+            file_uri = version_uri_metadata(version_uri)["file"]
+            cache_remote_object! path, file_uri
+          end
+
+          def cache_version_unpacked!(version)
+            version_uri = to_version_uri(version)
+            cache_version_uri_unpacked! version_uri
+          end
+
+          def cache_version_uri_unpacked!(version_uri)
+            cache_version_uri_package!(version_uri)
+
+            path = version_uri_unpacked_cache_path(version_uri)
+            path.directory? and return
+
+            package_path = version_uri_package_cache_path(version_uri)
+            unpacked_path = version_uri_unpacked_cache_path(version_uri)
+            temp_path = Pathname(Dir.tmpdir)
+
+            Zlib::GzipReader.open(package_path) do |input|
+              Archive::Tar::Minitar.unpack(input, temp_path.to_s)
+            end
+            FileUtils.move(temp_path.join(name), unpacked_path)
+          end
+
+          def cache_remote_json!(path, uri)
+            path = Pathname(path)
+            uri = URI(uri)
+
+            path.dirname.mkpath unless path.dirname.directory?
+
+            debug { "Caching #{uri} to #{path}" }
+
+            http = Net::HTTP.new(uri.host, uri.port)
+            request = Net::HTTP::Get.new(uri.path)
+            response = http.start{|http| http.request(request)}
+            unless Net::HTTPSuccess === response
+              raise Error, "Could not get #{uri} because #{response.code} #{response.message}!"
+            end
+            json = response.body
+            JSON.parse(json) # verify that it's really JSON.
+            write! path, json
+          end
+
+          def cache_remote_object!(path, uri)
+            path = Pathname(path)
+            uri = URI(uri)
+
+            path.dirname.mkpath unless path.dirname.directory?
+
+            debug { "Caching #{uri} to #{path}" }
+
+            http = Net::HTTP.new(uri.host, uri.port)
+            request = Net::HTTP::Get.new(uri.path)
+            response = http.start{|http| http.request(request)}
+            unless Net::HTTPSuccess === response
+              raise Error, "Could not get #{uri} because #{response.code} #{response.message}!"
+            end
+            write! path, response.body
+          end
+
+          def write!(path, bytes)
+            path.dirname.mkpath
+            path.open("wb"){|f| f.write(bytes)}
+          end
+
+          def parse_local_json(path)
+            JSON.parse(File.binread(path))
+          end
+
+          def hexdigest(bytes)
+            Digest::MD5.hexdigest(bytes)
+          end
+
+        end
 
         class << self
           LOCK_NAME = 'SITE'
@@ -68,38 +342,25 @@ module Librarian
         end
 
         def cache!(names)
-          cache_path.mkpath
-          names.each do |name|
-            cache_metadata!(name)
-          end
         end
 
         def install!(manifest)
           manifest.source == self or raise ArgumentError
 
-          debug { "Installing #{manifest}" }
+          name = manifest.name
+          version = manifest.version
+          install_path = install_path(name)
+          line = line(name)
 
-          name, version_uri = manifest.name, manifest.version_uri
-          cache_version_metadata!(name, version_uri)
-          version_metadata = JSON.parse(version_metadata_cache_path(name, version_uri).read)
-          cache_version_package!(name, version_uri, version_metadata["file"])
+          debug { "Installing: #{manifest}" }
 
-          install_path = environment.install_path.join(name)
-          if install_path.exist?
-            debug { "Deleting #{relative_path_to(install_path)}" }
-            install_path.rmtree
-          end
-
-          package_cache_path = version_package_cache_path(name, version_uri)
-          debug { "Copying #{relative_path_to(package_cache_path)} to #{relative_path_to(install_path)}" }
-          FileUtils.cp_r(package_cache_path, install_path)
+          line.install_version! version, install_path
         end
 
         # NOTE:
         #   Assumes the Opscode Site API responds with versions in reverse sorted order
         def manifests(name)
-          metadata = JSON.parse(metadata_cache_path(name).read)
-          metadata['versions'].map{|version_uri| Manifest.new(self, name, version_uri)}
+          line(name).manifests
         end
 
         def manifest(name, version, dependencies)
@@ -109,42 +370,6 @@ module Librarian
           manifest
         end
 
-        def find_version_uri(name, version)
-          cache!([name])
-          manifests(name).find{|m| m.version == version}.version_uri
-        end
-
-        def version_metadata(name, version_uri)
-          @version_metadata ||= { }
-          @version_metadata[name] ||= { }
-          @version_metadata[name][version_uri] ||= fetch_version_metadata(name, version_uri)
-        end
-
-        def version_manifest(name, version_uri)
-          @version_manifest ||= { }
-          @version_manifest[name] ||= { }
-          @version_manifest[name][version_uri] ||= fetch_version_manifest(name, version_uri)
-        end
-
-        def fetch_version_metadata(name, version_uri)
-          cache_version_metadata!(name, version_uri)
-          JSON.parse(version_metadata_cache_path(name, version_uri).read)
-        end
-
-        def fetch_version_manifest(name, version_uri)
-          package_cache_path = version_package_cache_path(name, version_uri)
-          version_metadata = version_metadata(name, version_uri)
-          file_uri = version_metadata['file']
-
-          cache_version_package!(name, version_uri, file_uri)
-          manifest_path = ManifestReader.manifest_path(package_cache_path)
-          ManifestReader.read_manifest(name, manifest_path)
-        end
-
-        def install_path(name)
-          environment.install_path.join(name)
-        end
-
         def cache_path
           @cache_path ||= begin
             dir = Digest::MD5.hexdigest(uri)
@@ -152,109 +377,23 @@ module Librarian
           end
         end
 
-        def dependency_cache_path(name)
-          cache_path.join(name)
+        def install_path(name)
+          environment.install_path.join(name)
         end
 
-        def metadata_cache_path(name)
-          dependency_cache_path(name).join("metadata.json")
+        def fetch_version(name, version_uri)
+          line(name).to_version(version_uri)
         end
 
-        def version_cache_path(name, version_uri)
-          dependency_cache_path(name).join(Digest::MD5.hexdigest(version_uri))
+        def fetch_dependencies(name, version, version_uri)
+          line(name).version_dependencies(version).map{|k, v| Dependency.new(k, v, nil)}
         end
 
-        def version_metadata_cache_path(name, version_uri)
-          version_cache_path(name, version_uri).join("version.json")
-        end
+      private
 
-        def version_archive_cache_file(name, version_uri)
-          Pathname.new("archive.tgz")
-        end
-
-        def version_archive_cache_path(name, version_uri)
-          version_archive_cache_file = version_archive_cache_file(name, version_uri)
-          version_cache_path(name, version_uri).join(version_archive_cache_file)
-        end
-
-        def version_unpacked_cache_file(name, version_uri)
-          Pathname.new(name)
-        end
-
-        def version_unpacked_cache_path(name, version_uri)
-          version_unpacked_cache_file = version_unpacked_cache_file(name, version_uri)
-          version_cache_path(name, version_uri).join(version_unpacked_cache_file)
-        end
-
-        def version_package_cache_file(name, version_uri)
-          Pathname.new("package")
-        end
-
-        def version_package_cache_path(name, version_uri)
-          version_package_cache_file = version_package_cache_file(name, version_uri)
-          version_cache_path(name, version_uri).join(version_package_cache_file)
-        end
-
-        def dependency_uri(name)
-          "#{uri}/cookbooks/#{name}"
-        end
-
-        def cache_metadata!(name)
-          dependency_cache_path = cache_path.join(name)
-          dependency_cache_path.mkpath
-          metadata_cache_path = metadata_cache_path(name)
-
-          caching_metadata(name) do
-            dep_uri = URI.parse(dependency_uri(name))
-            debug { "Caching #{dep_uri}" }
-            http = Net::HTTP.new(dep_uri.host, dep_uri.port)
-            request = Net::HTTP::Get.new(dep_uri.path)
-            response = http.start{|http| http.request(request)}
-            unless Net::HTTPSuccess === response
-              raise Error, "Could not cache #{name} from #{dep_uri} because #{response.code} #{response.message}!"
-            end
-            metadata_blob = response.body
-            JSON.parse(metadata_blob) # check that it's JSON
-            metadata_cache_path(name).open('wb') do |f|
-              f.write(metadata_blob)
-            end
-          end
-        end
-
-        def caching_metadata(name)
-          _metadata_cache[name] = yield unless _metadata_cache.include?(name)
-          _metadata_cache[name]
-        end
-
-        def cache_version_metadata!(name, version_uri)
-          version_cache_path = version_cache_path(name, version_uri)
-          unless version_cache_path.exist?
-            version_cache_path.mkpath
-            debug { "Caching #{version_uri}" }
-            version_metadata_blob = Net::HTTP.get(URI.parse(version_uri))
-            JSON.parse(version_metadata_blob) # check that it's JSON
-            version_metadata_cache_path(name, version_uri).open('wb') do |f|
-              f.write(version_metadata_blob)
-            end
-          end
-        end
-
-        def cache_version_package!(name, version_uri, file_uri)
-          version_archive_cache_path = version_archive_cache_path(name, version_uri)
-          unless version_archive_cache_path.exist?
-            version_archive_cache_path.open('wb') do |f|
-              f.write(Net::HTTP.get(URI.parse(file_uri)))
-            end
-          end
-          version_package_cache_path = version_package_cache_path(name, version_uri)
-          unless version_package_cache_path.exist?
-            dependency_cache_path = dependency_cache_path(name)
-            version_unpacked_temp_path = dependency_cache_path.join(name)
-            Zlib::GzipReader.open(version_archive_cache_path) do |input|
-              Archive::Tar::Minitar.unpack(input, version_unpacked_temp_path.to_s)
-            end
-            FileUtils.move(version_unpacked_temp_path.join(name), version_package_cache_path)
-          end
+        def line(name)
+          @line ||= { }
+          @line[name] ||= Line.new(self, name)
         end
 
       end

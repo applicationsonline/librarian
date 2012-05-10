@@ -1,4 +1,4 @@
-require "librarian/dependency"
+require "librarian/manifest"
 
 module Librarian
   module Chef
@@ -7,27 +7,11 @@ module Librarian
         class Manifest < Manifest
 
           def fetch_version!
-            version_metadata['version']
+            source.fetch_version(name, extra)
           end
 
           def fetch_dependencies!
-            version_manifest['dependencies'].map{|k, v| Dependency.new(k, v, nil)}
-          end
-
-          def version_uri
-            self.extra = extra || source.find_version_uri(name, version)
-          end
-
-          def version_uri=(version_uri)
-            self.extra = version_uri
-          end
-
-          def version_metadata
-            source.version_metadata(name, version_uri)
-          end
-
-          def version_manifest
-            source.version_manifest(name, version_uri)
+            source.fetch_dependencies(name, version, extra)
           end
 
         end
