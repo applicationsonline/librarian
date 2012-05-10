@@ -1,7 +1,4 @@
-require 'fileutils'
-require 'pathname'
-
-require 'librarian/chef/manifest_reader'
+require 'librarian/manifest'
 
 module Librarian
   module Chef
