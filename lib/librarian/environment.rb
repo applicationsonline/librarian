@@ -8,6 +8,7 @@ require "librarian/lockfile"
 require "librarian/specfile"
 require "librarian/resolver"
 require "librarian/dsl"
+require "librarian/source"
 
 module Librarian
   class Environment
