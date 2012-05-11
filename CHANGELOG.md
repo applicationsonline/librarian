@@ -2,6 +2,8 @@
 
 ## 0.0.21
 
+* \#64. Sources now raise when given unrecognized options in the specfile.
+
 * A new `show` CLI command.
 
 * Changed the `clean` CLI command no longer to delete the lockfile.
