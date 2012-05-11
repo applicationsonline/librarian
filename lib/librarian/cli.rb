@@ -91,8 +91,8 @@ module Librarian
       resolution = environment.lock
       resolution.manifests.sort_by(&:name).each do |manifest|
         source = manifest.source
-        source.cache!([manifest])
-        source_manifest = source.manifests(manifest).first
+        source.cache!([manifest.name])
+        source_manifest = source.manifests(manifest.name).first
         next if manifest.version == source_manifest.version
         say "#{manifest.name} (#{manifest.version} -> #{source_manifest.version})"
       end
