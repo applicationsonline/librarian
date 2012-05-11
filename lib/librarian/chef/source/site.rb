@@ -233,12 +233,8 @@ module Librarian
 
             package_path = version_uri_package_cache_path(version_uri)
             unpacked_path = version_uri_unpacked_cache_path(version_uri)
-            temp_path = Pathname(Dir.tmpdir)
 
-            Zlib::GzipReader.open(package_path) do |input|
-              Archive::Tar::Minitar.unpack(input, temp_path.to_s)
-            end
-            FileUtils.move(temp_path.join(name), unpacked_path)
+            unpack! unpacked_path, package_path
           end
 
           def cache_remote_json!(path, uri)
@@ -280,6 +276,20 @@ module Librarian
           def write!(path, bytes)
             path.dirname.mkpath
             path.open("wb"){|f| f.write(bytes)}
+          end
+
+          def unpack!(path, source)
+            path = Pathname(path)
+            source = Pathname(source)
+
+            Dir.mktmpdir do |temp|
+              temp = Pathname(temp)
+
+              Zlib::GzipReader.open(source) do |input|
+                Archive::Tar::Minitar.unpack(input, temp.to_s)
+              end
+              FileUtils.move(temp.join(name), path)
+            end
           end
 
           def parse_local_json(path)
