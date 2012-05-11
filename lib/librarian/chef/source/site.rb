@@ -5,7 +5,7 @@ require 'net/http'
 require 'json'
 require 'digest'
 require 'zlib'
-require 'tmpdir'
+require 'securerandom'
 require 'archive/tar/minitar'
 
 require 'librarian/helpers/debug'
@@ -234,7 +234,7 @@ module Librarian
             package_path = version_uri_package_cache_path(version_uri)
             unpacked_path = version_uri_unpacked_cache_path(version_uri)
 
-            unpack! unpacked_path, package_path
+            unpack_package! unpacked_path, package_path
           end
 
           def cache_remote_json!(path, uri)
@@ -278,18 +278,26 @@ module Librarian
             path.open("wb"){|f| f.write(bytes)}
           end
 
-          def unpack!(path, source)
+          def unpack_package!(path, source)
             path = Pathname(path)
             source = Pathname(source)
 
-            Dir.mktmpdir do |temp|
-              temp = Pathname(temp)
+            temp = environment.scratch_path.join(SecureRandom.hex(16))
+            temp.mkpath
 
-              Zlib::GzipReader.open(source) do |input|
-                Archive::Tar::Minitar.unpack(input, temp.to_s)
-              end
-              FileUtils.move(temp.join(name), path)
+            debug { "Unpacking #{relative_path_to(source)} to #{relative_path_to(temp)}" }
+            Zlib::GzipReader.open(source) do |input|
+              Archive::Tar::Minitar.unpack(input, temp.to_s)
             end
+
+            # Cookbook files, as pulled from Opscode Community Site API, are
+            # embedded in a subdirectory of the tarball, and the subdirectory's
+            # name is equal to the name of the cookbook.
+            subtemp = temp.join(name)
+            debug { "Moving #{relative_path_to(subtemp)} to #{relative_path_to(path)}" }
+            FileUtils.mv(subtemp, path)
+          ensure
+            temp.rmtree if temp && temp.exist?
           end
 
           def parse_local_json(path)
