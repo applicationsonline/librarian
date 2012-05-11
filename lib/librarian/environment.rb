@@ -95,6 +95,10 @@ module Librarian
       project_path.join("tmp/librarian/cache")
     end
 
+    def scratch_path
+      project_path.join("tmp/librarian/scratch")
+    end
+
     def project_relative_path_to(path)
       Pathname.new(path).relative_path_from(project_path)
     end
