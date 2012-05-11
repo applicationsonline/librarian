@@ -33,7 +33,7 @@ module Librarian
       private :environment=
       attr_reader :uri, :ref, :sha, :path
 
-      def initialize(environment, uri, options = {})
+      def initialize(environment, uri, options)
         self.environment = environment
         @uri = uri
         @ref = options[:ref] || DEFAULTS[:ref]
