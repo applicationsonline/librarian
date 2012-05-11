@@ -18,6 +18,14 @@ module Librarian
           new(environment, options[:remote], options.reject{|k, v| k == :remote})
         end
 
+        def from_spec_args(environment, path, options)
+          recognized_options = []
+          unrecognized_options = options.keys - recognized_options
+          unrecognized_options.empty? or raise Error, "unrecognized options: #{unrecognized_options.join(", ")}"
+
+          new(environment, path, options)
+        end
+
       end
 
       attr_accessor :environment

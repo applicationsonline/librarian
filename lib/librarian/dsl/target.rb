@@ -146,7 +146,7 @@ module Librarian
       def source_from_params(name, param, options)
         source_cache[[name, param, options]] ||= begin
           type = source_types_map[name]
-          type.new(environment, param, options)
+          type.from_spec_args(environment, param, options)
         end
       end
 

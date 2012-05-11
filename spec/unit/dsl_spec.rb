@@ -174,6 +174,20 @@ module Librarian
 
       end
 
+      context "validating source options" do
+
+        it "should raise when given unrecognized optiosn options" do
+          expect do
+            env.dsl do
+              dep 'dependency-1',
+                :src => 'source-1',
+                :huh => 'yikes'
+            end
+          end.to raise_error(Error, %{unrecognized options: huh})
+        end
+
+      end
+
     end
 
   end
