@@ -1,5 +1,19 @@
 # Change Log
 
+## 0.0.21
+
+* A new `show` CLI command.
+
+* Changed the `clean` CLI command no longer to delete the lockfile.
+
+* Simplify the architecture of `Librarian::Manifest` vis-a-vis sources. It is no
+  longer a base class for adapters to inherit. Now, sources expose a small
+  interface, which `Librarian::Manifest` can call, for delay-loading attributes.
+
+* The git source now resolves the `git` binary before `chdir`ing.
+
+* Test on Rubinius.
+
 ## 0.0.20
 
 * A command to print outdated dependencies.
