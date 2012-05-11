@@ -7,13 +7,17 @@ module Librarian
       class Mock
 
         class << self
+
           LOCK_NAME = 'MOCK'
+
           def lock_name
             LOCK_NAME
           end
+
           def from_lock_options(environment, options)
             new(environment, options[:remote], options.reject{|k, v| k == :remote})
           end
+
         end
 
         attr_accessor :environment

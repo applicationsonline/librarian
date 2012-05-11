@@ -7,13 +7,17 @@ module Librarian
       include Local
 
       class << self
+
         LOCK_NAME = 'PATH'
+
         def lock_name
           LOCK_NAME
         end
+
         def from_lock_options(environment, options)
           new(environment, options[:remote], options.reject{|k, v| k == :remote})
         end
+
       end
 
       attr_accessor :environment
