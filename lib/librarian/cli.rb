@@ -6,6 +6,8 @@ require 'librarian/error'
 require 'librarian/action'
 require "librarian/ui"
 
+require "librarian/helpers/debug"
+
 module Librarian
   class Cli < Thor
 
@@ -21,6 +23,8 @@ module Librarian
 
     include Particularity
     extend Particularity
+
+    include Helpers::Debug
 
     class << self
       def bin!
@@ -44,6 +48,8 @@ module Librarian
       environment.ui = UI::Shell.new(the_shell)
       environment.ui.debug! if options["verbose"]
       environment.ui.debug_line_numbers! if options["verbose"] && options["line-numbers"]
+
+      write_debug_header
     end
 
     desc "version", "Displays the version."
@@ -140,6 +146,19 @@ module Librarian
 
     def manifest_presenter
       ManifestPresenter.new(self, environment.lock.manifests)
+    end
+
+    def write_debug_header
+      debug { "Ruby Version: #{RUBY_VERSION}" }
+      debug { "Ruby Platform: #{RUBY_PLATFORM}" }
+      debug { "Rubinius Version: #{Rubinius::VERSION}" } if defined?(Rubinius)
+      debug { "JRuby Version: #{JRUBY_VERSION}" } if defined?(JRUBY_VERSION)
+      debug { "Rubygems Version: #{Gem::VERSION}" }
+      debug { "Librarian Version: #{VERSION}" }
+      debug { "Librarian Adapter: #{environment.adapter_name}"}
+      debug { "Project: #{environment.project_path}" }
+      debug { "Specfile: #{relative_path_to(environment.specfile_path)}" }
+      debug { "Lockfile: #{relative_path_to(environment.lockfile_path)}" }
     end
 
   end
