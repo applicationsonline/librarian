@@ -369,7 +369,7 @@ module Librarian
           install_path = install_path(name)
           line = line(name)
 
-          debug { "Installing: #{manifest}" }
+          debug { "Installing #{manifest}" }
 
           line.install_version! version, install_path
         end
