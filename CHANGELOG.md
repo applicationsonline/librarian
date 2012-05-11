@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.22
+
+* Fix the `outdated` CLI command.
+
 ## 0.0.21
 
 * \#64. Sources now raise when given unrecognized options in the specfile.
