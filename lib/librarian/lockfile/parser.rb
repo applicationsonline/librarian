@@ -28,7 +28,7 @@ module Librarian
         string = string.dup
         source_type_names_map = Hash[dsl_class.source_types.map{|t| [t[1].lock_name, t[1]]}]
         source_type_names = dsl_class.source_types.map{|t| t[1].lock_name}
-        lines = string.split(/(\r?\n)+/).reject{|l| l =~ /^\s*$/}
+        lines = string.split(/(\r?\n)+/).select{|l| l =~ /\S$/}
         sources = []
         while source_type_names.include?(lines.first)
           source = {}
