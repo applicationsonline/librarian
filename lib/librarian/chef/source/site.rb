@@ -376,9 +376,6 @@ module Librarian
         def unpin!
         end
 
-        def cache!(names)
-        end
-
         def install!(manifest)
           manifest.source == self or raise ArgumentError
 

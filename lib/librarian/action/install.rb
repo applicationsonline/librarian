@@ -35,15 +35,8 @@ module Librarian
       def perform_installation
         manifests = sorted_manifests
 
-        cache_manifests(manifests)
         create_install_path
         install_manifests(manifests)
-      end
-
-      def cache_manifests(manifests)
-        manifests.each do |manifest|
-          manifest.source.cache!([manifest.name])
-        end
       end
 
       def create_install_path

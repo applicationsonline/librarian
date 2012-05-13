@@ -62,7 +62,6 @@ module Librarian
     end
 
     def cache_manifests!
-      source.cache!([name])
       source.manifests(name)
     end
 

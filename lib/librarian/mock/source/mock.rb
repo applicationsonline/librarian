@@ -74,9 +74,6 @@ module Librarian
           end
         end
 
-        def cache!(names)
-        end
-
         def install!(manifest)
         end
 

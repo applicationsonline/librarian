@@ -88,7 +88,9 @@ module Librarian
         @sha = nil
       end
 
-      def cache!(names)
+      def cache!
+        repository_cached? and return or repository_cached!
+
         unless repository.git?
           repository.path.rmtree if repository.path.exist?
           repository.path.mkpath
@@ -109,6 +111,13 @@ module Librarian
       end
 
     private
+
+      attr_accessor :repository_cached
+      alias repository_cached? repository_cached
+
+      def repository_cached!
+        self.repository_cached = true
+      end
 
       def repository_cache_path
         @repository_cache_path ||= begin

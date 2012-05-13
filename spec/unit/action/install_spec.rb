@@ -81,14 +81,8 @@ module Librarian
             action.run
           end
 
-          it "should sort, cache, and install the manifests" do
+          it "should sort and install the manifests" do
             ManifestSet.should_receive(:sort).with(manifests).exactly(:once).ordered { sorted_manifests }
-
-            sorted_manifests.each do |manifest|
-              source = mock
-              manifest.stub(:source) { source }
-              source.should_receive(:cache!).with([manifest.name]).exactly(:once).ordered
-            end
 
             install_path.stub(:exist?) { false }
             install_path.should_receive(:mkpath).exactly(:once).ordered
@@ -100,7 +94,6 @@ module Librarian
 
           it "should recreate the install path if it already exists" do
             action.stub(:sorted_manifests) { sorted_manifests }
-            action.stub(:cache_manifests)
             action.stub(:install_manifests)
 
             install_path.stub(:exist?) { true }
