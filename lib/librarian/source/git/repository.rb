@@ -184,7 +184,7 @@ module Librarian
                 debug { "    --> #{line}" }
               end
             else
-              debug { "    --- No Output" }
+              debug { "    --- No output" }
             end
           end
 
