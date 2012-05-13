@@ -39,14 +39,17 @@ module Librarian
 
       attr_accessor :environment
       private :environment=
-      attr_reader :uri, :ref, :sha, :path
+
+      attr_accessor :uri, :ref, :sha, :path
+      private :uri=, :ref=, :sha=, :path=
 
       def initialize(environment, uri, options)
         self.environment = environment
-        @uri = uri
-        @ref = options[:ref] || DEFAULTS[:ref]
-        @sha = options[:sha]
-        @path = options[:path]
+        self.uri = uri
+        self.ref = options[:ref] || DEFAULTS[:ref]
+        self.sha = options[:sha]
+        self.path = options[:path]
+
         @repository = nil
         @repository_cache_path = nil
       end
