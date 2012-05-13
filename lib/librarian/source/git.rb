@@ -108,6 +108,8 @@ module Librarian
         end
       end
 
+      private
+
       def repository_cache_path
         @repository_cache_path ||= begin
           environment.cache_path.join("source/git/#{cache_key}")
@@ -123,8 +125,6 @@ module Librarian
       def filesystem_path
         @filesystem_path ||= path ? repository.path.join(path) : repository.path
       end
-
-      private
 
       def cache_key
         @cache_key ||= begin
