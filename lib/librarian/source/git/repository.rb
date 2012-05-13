@@ -143,21 +143,12 @@ module Librarian
           command.concat(args)
 
           maybe_within(chdir) do
-            debug { "Running `#{command.join(' ')}` in #{relative_path_to(Dir.pwd)}" } unless silent
-            out = Open3.popen3(*command) do |i, o, e, t|
-              raise StandardError, e.read unless (t ? t.value : $?).success?
-              o.read
-            end
-            unless silent
-              if out.size > 0
-                out.lines.each do |line|
-                  debug { "    --> #{line}" }
-                end
-              else
-                debug { "    --- No Output" }
+            logging_command(command, :silent => silent) do
+              Open3.popen3(*command) do |i, o, e, t|
+                raise StandardError, e.read unless (t ? t.value : $?).success?
+                o.read
               end
             end
-            out
           end
         end
 
@@ -167,6 +158,30 @@ module Librarian
           else
             yield
           end
+        end
+
+        def logging_command(command, options)
+          silent = options.delete(:silent)
+
+          pwd = Dir.pwd
+
+          unless silent
+            debug { "Running `#{command.join(' ')}` in #{relative_path_to(pwd)}" }
+          end
+
+          out = yield
+
+          unless silent
+            if out.size > 0
+              out.lines.each do |line|
+                debug { "    --> #{line}" }
+              end
+            else
+              debug { "    --- No Output" }
+            end
+          end
+
+          out
         end
 
       end
