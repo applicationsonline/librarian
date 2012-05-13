@@ -148,7 +148,15 @@ module Librarian
               raise StandardError, e.read unless (t ? t.value : $?).success?
               o.read
             end
-            debug { "    ->  #{out}" } if out.size > 0 unless silent
+            unless silent
+              if out.size > 0
+                out.lines.each do |line|
+                  debug { "    --> #{line}" }
+                end
+              else
+                debug { "    --- No Output" }
+              end
+            end
             out
           end
         end
