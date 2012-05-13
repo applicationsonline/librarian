@@ -151,9 +151,19 @@ module Librarian
 
         def maybe_within(path)
           if path
-            Dir.chdir(path) { yield }
+            Dir.chdir(path) { with_env_var("GIT_DIR", nil) { yield } }
           else
             yield
+          end
+        end
+
+        def with_env_var(name, value)
+          original_value = ENV[name]
+          begin
+            ENV[name] = value
+            yield
+          ensure
+            ENV[name] = original_value
           end
         end
 
