@@ -60,7 +60,7 @@ module Librarian
         dependencies = []
         while lines.first =~ /^ {2}([\w-]+)(?: \((.*)\))?$/
           lines.shift
-          name, requirement = $1, $2
+          name, requirement = $1, $2.split(/,\s*/)
           dependencies << Dependency.new(name, requirement, manifests_index[name].source)
         end
         Resolution.new(dependencies, manifests)
