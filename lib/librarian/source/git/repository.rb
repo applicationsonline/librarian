@@ -144,10 +144,7 @@ module Librarian
 
           maybe_within(chdir) do
             logging_command(command, :silent => silent) do
-              Open3.popen3(*command) do |i, o, e, t|
-                raise StandardError, e.read unless (t ? t.value : $?).success?
-                o.read
-              end
+              run_command_internal(command)
             end
           end
         end
@@ -182,6 +179,13 @@ module Librarian
           end
 
           out
+        end
+
+        def run_command_internal(command)
+          Open3.popen3(*command) do |i, o, e, t|
+            raise StandardError, e.read unless (t ? t.value : $?).success?
+            o.read
+          end
         end
 
       end
