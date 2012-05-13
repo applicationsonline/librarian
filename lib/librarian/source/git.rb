@@ -95,6 +95,7 @@ module Librarian
           repository.clone!(uri)
         end
         repository.reset_hard!
+        repository.clean!
         unless repository.checked_out?(sha)
           remote = repository.default_remote
           repository.fetch!(remote)

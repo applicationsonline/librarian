@@ -92,6 +92,11 @@ module Librarian
           run!(command, :chdir => true)
         end
 
+        def clean!
+          command = %w(clean -x -d --force --force)
+          run!(command, :chdir => true)
+        end
+
         def checked_out?(sha)
           current_commit_hash == sha
         end
