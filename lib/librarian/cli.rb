@@ -159,6 +159,8 @@ module Librarian
       debug { "Project: #{environment.project_path}" }
       debug { "Specfile: #{relative_path_to(environment.specfile_path)}" }
       debug { "Lockfile: #{relative_path_to(environment.lockfile_path)}" }
+      debug { "Git: #{Source::Git::Repository.bin}" }
+      debug { "Git Version: #{Source::Git::Repository.new(environment, environment.project_path).version(:silent => true)}" }
     end
 
   end

@@ -59,6 +59,17 @@ module Librarian
           "origin"
         end
 
+        def version(options = { })
+          version!(options).strip
+        end
+
+        def version!(options = { })
+          silent = options.delete(:silent)
+
+          command = %w(--version)
+          run!(command, :silent => silent)
+        end
+
         def clone!(repository_url)
           command = %W(clone #{repository_url} . --quiet)
           run!(command, :chdir => true)
@@ -126,16 +137,18 @@ module Librarian
           chdir = options.delete(:chdir)
           chdir = path.to_s if chdir == true
 
+          silent = options.delete(:silent)
+
           command = [bin]
           command.concat(args)
 
           maybe_within(chdir) do
-            debug { "Running `#{command.join(' ')}` in #{relative_path_to(Dir.pwd)}" }
+            debug { "Running `#{command.join(' ')}` in #{relative_path_to(Dir.pwd)}" } unless silent
             out = Open3.popen3(*command) do |i, o, e, t|
               raise StandardError, e.read unless (t ? t.value : $?).success?
               o.read
             end
-            debug { "    ->  #{out}" } if out.size > 0
+            debug { "    ->  #{out}" } if out.size > 0 unless silent
             out
           end
         end
