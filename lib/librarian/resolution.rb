@@ -33,10 +33,7 @@ module Librarian
     end
 
     def manifests_consistent_with_dependencies?
-      dependencies.all? do |dependency|
-        manifest = manifests_index[dependency.name]
-        dependency.satisfied_by?(manifest)
-      end
+      ManifestSet.new(manifests).in_compliance_with?(dependencies)
     end
 
     def manifests_internally_consistent?

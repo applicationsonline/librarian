@@ -113,10 +113,14 @@ module Librarian
 
     def consistent?
       index.values.all? do |manifest|
-        manifest.dependencies.all? do |dependency|
-          match = index[dependency.name]
-          match && match.satisfies?(dependency)
-        end
+        in_compliance_with?(manifest.dependencies)
+      end
+    end
+
+    def in_compliance_with?(dependencies)
+      dependencies.all? do |dependency|
+        manifest = index[dependency.name]
+        manifest && manifest.satisfies?(dependency)
       end
     end
 

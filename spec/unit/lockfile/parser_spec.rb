@@ -108,5 +108,55 @@ module Librarian
       end
     end
 
+    context "a mock lockfile with one source and a complex dependency" do
+      let(:lockfile) do
+        Helpers.strip_heredoc <<-LOCKFILE
+          MOCK
+            remote: source-a
+            specs:
+              butter (2.5.3)
+              jelly (1.3.5)
+                butter (< 3, >= 1.1)
+
+          DEPENDENCIES
+            jelly (!= 1.2.6, ~> 1.1)
+
+        LOCKFILE
+      end
+
+      it "should give a list of one dependency" do
+        resolution.should have(1).dependencies
+      end
+
+      it "should have the expected dependency" do
+        dependency = resolution.dependencies.first
+
+        dependency.name.should == "jelly"
+      end
+
+      it "should give a list of all the manifests" do
+        resolution.should have(2).manifests
+      end
+
+      it "should include all the expected manifests" do
+        manifests = ManifestSet.new(resolution.manifests)
+
+        manifests.to_hash.keys.should =~ %w(butter jelly)
+      end
+
+      it "should have an internally consistent set of manifests" do
+        manifests = ManifestSet.new(resolution.manifests)
+
+        manifests.should be_consistent
+      end
+
+      it "should have an externally consistent set of manifests" do
+        dependencies = resolution.dependencies
+        manifests = ManifestSet.new(resolution.manifests)
+
+        manifests.should be_in_compliance_with dependencies
+      end
+    end
+
   end
 end

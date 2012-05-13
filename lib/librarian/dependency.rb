@@ -28,16 +28,18 @@ module Librarian
         to_gem_requirement.to_s
       end
 
+      protected
+
+      attr_accessor :backing
+
       private
 
       def initialize_normalize_args(args)
         args.map do |arg|
-          arg = [arg] if self.class === arg
+          arg = arg.backing if self.class === arg
           arg
         end
       end
-
-      attr_accessor :backing
     end
 
     include Helpers::Debug
