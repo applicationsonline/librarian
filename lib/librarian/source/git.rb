@@ -108,7 +108,7 @@ module Librarian
         end
       end
 
-      private
+    private
 
       def repository_cache_path
         @repository_cache_path ||= begin
