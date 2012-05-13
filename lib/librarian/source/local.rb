@@ -11,7 +11,7 @@ module Librarian
       include Helpers::Debug
       include Support::AbstractMethod
 
-      abstract_method :path
+      abstract_method :path, :fetch_version, :fetch_dependencies
 
       def manifests(name)
         manifest = Manifest.new(self, name)
