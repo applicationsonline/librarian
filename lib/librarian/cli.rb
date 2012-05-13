@@ -161,6 +161,15 @@ module Librarian
       debug { "Lockfile: #{relative_path_to(environment.lockfile_path)}" }
       debug { "Git: #{Source::Git::Repository.bin}" }
       debug { "Git Version: #{Source::Git::Repository.new(environment, environment.project_path).version(:silent => true)}" }
+      debug { "Git Environment Variables:" }
+      git_env = ENV.to_a.select{|(k, v)| k =~ /\AGIT/}.sort_by{|(k, v)| k}
+      if git_env.empty?
+        debug { "  (empty)" }
+      else
+        git_env.each do |(k, v)|
+          debug { "  #{k}=#{v}"}
+        end
+      end
     end
 
   end
