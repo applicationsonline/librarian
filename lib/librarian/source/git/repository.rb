@@ -92,6 +92,10 @@ module Librarian
           run!(command, :chdir => true)
         end
 
+        def checked_out?(sha)
+          current_commit_hash == sha
+        end
+
         def remote_names
           command = %W(remote)
           run!(command, :chdir => true).strip.lines.map(&:strip)

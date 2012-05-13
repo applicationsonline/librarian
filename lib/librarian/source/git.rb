@@ -95,15 +95,15 @@ module Librarian
           repository.clone!(uri)
         end
         repository.reset_hard!
-        unless sha == repository.current_commit_hash
+        unless repository.checked_out?(sha)
           remote = repository.default_remote
           repository.fetch!(remote)
           repository.fetch!(remote, :tags => true)
 
-          new_sha = repository.hash_from(remote, sha || ref)
-          repository.checkout!(new_sha)
+          self.sha = repository.hash_from(remote, ref) unless sha
+          repository.checkout!(sha) unless repository.checked_out?(sha)
 
-          @sha ||= new_sha
+          raise Error, "failed to checkout #{sha}" unless repository.checked_out?(sha)
         end
       end
 
