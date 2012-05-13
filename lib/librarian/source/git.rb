@@ -109,9 +109,7 @@ module Librarian
 
       def repository_cache_path
         @repository_cache_path ||= begin
-          dir = path ? "#{uri}/#{path}" : uri
-          dir = Digest::MD5.hexdigest(dir)
-          environment.cache_path.join("source/git/#{dir}")
+          environment.cache_path.join("source/git/#{cache_key}")
         end
       end
 
@@ -123,6 +121,18 @@ module Librarian
 
       def filesystem_path
         @filesystem_path ||= path ? repository.path.join(path) : repository.path
+      end
+
+      private
+
+      def cache_key
+        @cache_key ||= begin
+          uri_part = uri
+          path_part = "/#{path}" if path
+          ref_part = "##{ref}"
+          key_source = [uri_part, path_part, ref_part].join
+          Digest::MD5.hexdigest(key_source)
+        end
       end
 
     end
