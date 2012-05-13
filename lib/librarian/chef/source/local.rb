@@ -10,8 +10,6 @@ module Librarian
 
           debug { "Installing #{manifest}" }
 
-          cache!
-
           name, version = manifest.name, manifest.version
           found_path = found_path(name)
 
@@ -26,14 +24,10 @@ module Librarian
         end
 
         def fetch_version(name, extra)
-          cache!
-
           manifest_data(name)["version"]
         end
 
         def fetch_dependencies(name, version, extra)
-          cache!
-
           manifest_data(name)["dependencies"]
         end
 

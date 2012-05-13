@@ -26,8 +26,12 @@ module Librarian
       end
 
       def manifest_search_paths(name)
-        paths = [filesystem_path, filesystem_path.join(name)]
-        paths.select{|s| s.exist?}
+        @manifest_search_paths ||= { }
+        @manifest_search_paths[name] ||= begin
+          cache!
+          paths = [filesystem_path, filesystem_path.join(name)]
+          paths.select{|s| s.exist?}
+        end
       end
 
       def found_path(name)
