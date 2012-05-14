@@ -1,5 +1,23 @@
 # Change Log
 
+## 0.0.23
+
+* \#41. Build gems with a built gemspec.
+
+* \#67. Cache remote objects at the latest possible moments, and only when they
+  are needed.
+
+* \#68. Fix unpacking chef site-sourced packages on Windows by pivoting from a
+  Librarian-managed scratch space, rather than pivoting from Windows' temp
+  directory. There were unexplained problems with using the Windows temp
+  directory in certain cases, possibly related to the temp directory and the
+  Librarian cache directory being on different volumes.
+
+* \#69. Fix invoking Librarian with git-sourced dependencies from git hooks by
+  unsetting `GIT_DIR` around shelling out to git.
+
+* Print general environment information when running with `--verbose`.
+
 ## 0.0.22
 
 * Fix the `outdated` CLI command.
