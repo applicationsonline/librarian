@@ -103,7 +103,7 @@ most recent version of the cookbook from that same branch.
 
 The Git source also supports a `:path =>` option. If we use the path option,
 Librarian-Chef will navigate down into the Git repository and only use the
-specified subdirectory. Many people have the havit of having a single repository
+specified subdirectory. Many people have the habit of having a single repository
 with many cookbooks in it. If we need a cookbook from such a repository, we can
 use the `:path =>` option here to help Librarian-Chef drill down and find the
 cookbook subdirectory.
