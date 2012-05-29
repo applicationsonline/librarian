@@ -116,6 +116,11 @@ module Librarian
       self.class.name.split("::")[0 ... -1].inject(Object, &:const_get)::Dsl
     end
 
+    def config_keys
+      %[
+      ]
+    end
+
   private
 
     def environment

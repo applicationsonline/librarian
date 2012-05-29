@@ -14,6 +14,12 @@ module Librarian
         project_path.join("cookbooks")
       end
 
+      def config_keys
+        super + %w[
+          install.strip-dot-git
+        ]
+      end
+
     end
   end
 end
