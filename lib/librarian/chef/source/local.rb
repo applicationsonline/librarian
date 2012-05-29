@@ -19,8 +19,7 @@ module Librarian
             install_path.rmtree
           end
 
-          debug { "Copying #{relative_path_to(found_path)} to #{relative_path_to(install_path)}" }
-          FileUtils.cp_r(found_path, install_path)
+          install_perform_step_copy!(found_path, install_path)
         end
 
         def fetch_version(name, extra)
@@ -32,6 +31,11 @@ module Librarian
         end
 
       private
+
+        def install_perform_step_copy!(found_path, install_path)
+          debug { "Copying #{relative_path_to(found_path)} to #{relative_path_to(install_path)}" }
+          FileUtils.cp_r(found_path, install_path)
+        end
 
         def manifest_data(name)
           @manifest_data ||= { }
