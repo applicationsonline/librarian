@@ -95,7 +95,7 @@ module Librarian
 
         FileSource.new(adapter_name,
           :config_path => config_path,
-          :forbidden_keys => [config_key, specfile_key],
+          :forbidden_keys => [config_key, specfile_key]
         )
       end
 
@@ -186,7 +186,7 @@ module Librarian
         prefix = raw_key_prefix
 
         data = underlying_env.dup
-        data.select!{|k, _| k.start_with?(prefix) && k.size > prefix.size}
+        data.reject!{|k, _| !k.start_with?(prefix) || k.size <= prefix.size}
         data
       end
 

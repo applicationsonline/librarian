@@ -36,7 +36,7 @@ module Librarian
           :env => @env,
           :home => @home,
           :project_path => @project_path,
-          :specfile_name => default_specfile_name,
+          :specfile_name => default_specfile_name
         )
       end
     end

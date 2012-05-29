@@ -37,7 +37,7 @@ describe Librarian::Config::Database do
       :pwd => pwd.to_s,
       :home => home.to_s,
       :project_path => project_path,
-      :specfile_name => specfile_name,
+      :specfile_name => specfile_name
     )
   end
 

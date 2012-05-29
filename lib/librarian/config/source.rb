@@ -107,7 +107,7 @@ module Librarian
       end
 
       def assert_values_valid!(data)
-        bad_data = Hash[data.reject{|v| String === v}]
+        bad_data = data.reject{|k, v| String === v}
         bad_keys = bad_data.keys
 
         unless bad_keys.empty?
