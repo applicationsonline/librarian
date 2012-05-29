@@ -57,6 +57,36 @@ module Librarian
       say "librarian-#{root_module.version}"
     end
 
+    desc "config", "Show or edit the config."
+    option "verbose"
+    option "line-numbers"
+    option "global", :type => :boolean, :default => false
+    option "local", :type => :boolean, :default => false
+    option "delete", :type => :boolean, :default => false
+    def config(key = nil, value = nil)
+      if key
+        raise Error, "cannot set both value and delete" if value && options["delete"]
+        if options["delete"]
+          raise Error, "must set either global or local" unless options["global"] ^ options["local"]
+          scope = options["global"] ? :global : options["local"] ? :local : nil
+          environment.config_db[key, scope] = nil
+        elsif value
+          raise Error, "must set either global or local" unless options["global"] ^ options["local"]
+          scope = options["global"] ? :global : options["local"] ? :local : nil
+          environment.config_db[key, scope] = value
+        else
+          raise Error, "cannot set both global and local" if options["global"] && options["local"]
+          scope = options["global"] ? :global : options["local"] ? :local : nil
+          if value = environment.config_db[key, scope]
+            prefix = scope ? "#{key} (#{scope})" : key
+            say "#{prefix}: #{value}"
+          end
+        end
+      else
+        raise Error, "must set a key"
+      end
+    end
+
     desc "clean", "Cleans out the cache and install paths."
     option "verbose"
     option "line-numbers"
