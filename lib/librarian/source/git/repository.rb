@@ -34,7 +34,7 @@ module Librarian
               path = File.expand_path(path)
               exts.each do |ext|
                 exe = File.join(path, cmd + ext)
-                return exe if File.executable?(exe)
+                return exe if File.file?(exe) && File.executable?(exe)
               end
             end
             nil
