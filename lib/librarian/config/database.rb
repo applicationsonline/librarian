@@ -146,7 +146,7 @@ module Librarian
         else
           path = underlying_pwd
           path = path.dirname until project_root_path?(path) || path.dirname == path
-          project_root_path?(path) ? path : nil
+          project_root_path?(path) ? path : underlying_pwd
         end
       end
 
