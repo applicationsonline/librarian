@@ -12,27 +12,43 @@ A bundler written with Librarian will expect you to provide a specfile listing
 your project's declared dependencies, including any version constraints and
 including the upstream sources for finding them. Librarian can resolve the spec,
 write a lockfile listing the full resolution, fetch the resolved dependencies,
-install them, and isolate them in your project. This is what Bundler does for
-projects that depend on Ruby gems.
+install them, and isolate them in your project.
+
+A bundler written with Librarian will be similar in kind to [Bundler](http://gembundler.com),
+the bundler for Ruby gems that many modern Rails applications use.
 
 Librarian-Chef
 ---------------
 
-Librarian-Chef is a bundler for infrastructure repositories using Chef. You can
-use Librarian-Chef to resolve your infrastructure's cookbook dependencies,
-fetch them and install them into your infrastructure.
+Librarian-Chef is a tool that helps you manage the cookbooks that your chef-repo
+depends on. Here are some more details.
 
-Librarian-Chef is for resolving and fetching third-party, publicly-released
-cookbooks, and installing them into your infrastructure repository. It is not
-for dealing with the cookbooks you're actively working on within your
-infrastructure repository.
+Librarian-Chef is a bundler for infrastructure repositories using Chef. You can
+use Librarian-Chef to resolve your infrastructure's cookbook dependencies, fetch
+them, and install them into your infrastructure repository.
+
+Librarian-Chef can resolve and fetch third-party, publicly-released cookbooks,
+and install them into your infrastructure repository. It can also source
+cookbooks directly from their own source control repositories.
+
+Librarian-Chef can also deal with cookbooks you may actively be working on
+outside your infrastructure repository. For example, it can deal with cookbooks
+directly from their own private source control repositories, whether they are
+remote or local to your machine, and it can deal with cookbooks released to and
+hosted on a private cookbooks server.
+
+Librarian-Chef is not primarily intended for dealing with the cookbooks you are
+actively working on *within* your infrastructure repository. In such a case, you
+can still use Librarian-Chef, but it is likely unnecessary.
 
 Librarian-Chef *takes over* your `cookbooks/` directory and manages it for you
 based on your `Cheffile`. Your `Cheffile` becomes the authoritative source for
 the cookbooks your infrastructure repository depends on. You should not modify
 the contents of your `cookbooks/` directory when using Librarian-Chef. If you
-have custom cookbooks which are specific to your infrastructure repository,
-they should go in your `site-cookbooks/` directory.
+have cookbooks which are, rather than being separate projects, inherently part
+of your infrastructure repository, then they should go in a separate directory,
+like your `site-cookbooks/` directory, and you do not need to use Librarian-Chef
+to manage them.
 
 ### The Cheffile
 
