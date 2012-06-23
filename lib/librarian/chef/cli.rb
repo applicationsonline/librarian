@@ -39,9 +39,6 @@ module Librarian
         if options.include?("path")
           environment.config_db.local["install.path"] = options["path"]
         end
-        if options.include?("default-path") && options["default-path"]
-          environment.config_db.local["install.path"] = nil
-        end
         resolve!
         install!
       end
