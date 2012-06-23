@@ -27,12 +27,20 @@ module Librarian
       option "line-numbers", :type => :boolean, :default => false
       option "clean", :type => :boolean, :default => false
       option "strip-dot-git", :type => :boolean
+      option "path", :type => :string
+      option "default-path", :type => :boolean
       def install
         ensure!
         clean! if options["clean"]
         if options.include?("strip-dot-git")
           strip_dot_git_val = options["strip-dot-git"] ? "1" : nil
           environment.config_db.local["install.strip-dot-git"] = strip_dot_git_val
+        end
+        if options.include?("path")
+          environment.config_db.local["install.path"] = options["path"]
+        end
+        if options.include?("default-path") && options["default-path"]
+          environment.config_db.local["install.path"] = nil
         end
         resolve!
         install!
