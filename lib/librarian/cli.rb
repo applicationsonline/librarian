@@ -142,7 +142,7 @@ module Librarian
       if environment.lockfile_path.file?
         manifest_presenter.present(names, :detailed => options["detailed"])
       else
-        say "Be sure to install first!"
+        raise Error, "Be sure to install first!"
       end
     end
 

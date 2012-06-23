@@ -28,7 +28,7 @@ Feature: cli/show
   Scenario: Showing al without a lockfile
     Given I remove the file "Cheffile.lock"
     When  I run `librarian-chef show`
-    Then  the exit status should be 0
+    Then  the exit status should be 1
     Then  the output should contain exactly:
       """
       Be sure to install first!
