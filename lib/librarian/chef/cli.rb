@@ -23,9 +23,9 @@ module Librarian
       end
 
       desc "install", "Resolves and installs all of the dependencies you specify."
-      option "verbose"
-      option "line-numbers"
-      option "clean"
+      option "verbose", :type => :boolean, :default => false
+      option "line-numbers", :type => :boolean, :default => false
+      option "clean", :type => :boolean, :default => false
       option "strip-dot-git", :type => :boolean
       def install
         ensure!

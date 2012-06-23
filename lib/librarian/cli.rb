@@ -58,8 +58,8 @@ module Librarian
     end
 
     desc "config", "Show or edit the config."
-    option "verbose"
-    option "line-numbers"
+    option "verbose", :type => :boolean, :default => false
+    option "line-numbers", :type => :boolean, :default => false
     option "global", :type => :boolean, :default => false
     option "local", :type => :boolean, :default => false
     option "delete", :type => :boolean, :default => false
@@ -90,16 +90,16 @@ module Librarian
     end
 
     desc "clean", "Cleans out the cache and install paths."
-    option "verbose"
-    option "line-numbers"
+    option "verbose", :type => :boolean, :default => false
+    option "line-numbers", :type => :boolean, :default => false
     def clean
       ensure!
       clean!
     end
 
     desc "update", "Updates and installs the dependencies you specify."
-    option "verbose"
-    option "line-numbers"
+    option "verbose", :type => :boolean, :default => false
+    option "line-numbers", :type => :boolean, :default => false
     def update(*names)
       ensure!
       if names.empty?
@@ -111,8 +111,8 @@ module Librarian
     end
 
     desc "outdated", "Lists outdated dependencies."
-    option "verbose"
-    option "line-numbers"
+    option "verbose", :type => :boolean, :default => false
+    option "line-numbers", :type => :boolean, :default => false
     def outdated
       ensure!
       resolution = environment.lock
@@ -125,8 +125,8 @@ module Librarian
     end
 
     desc "show", "Shows dependencies"
-    option "verbose"
-    option "line-numbers"
+    option "verbose", :type => :boolean, :default => false
+    option "line-numbers", :type => :boolean, :default => false
     option "detailed", :type => :boolean
     def show(*names)
       ensure!
