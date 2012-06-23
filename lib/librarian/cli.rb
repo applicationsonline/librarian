@@ -139,7 +139,11 @@ module Librarian
     option "detailed", :type => :boolean
     def show(*names)
       ensure!
-      manifest_presenter.present(names, :detailed => options["detailed"])
+      if environment.lockfile_path.file?
+        manifest_presenter.present(names, :detailed => options["detailed"])
+      else
+        say "Be sure to install first!"
+      end
     end
 
     desc "init", "Initializes the current directory."
