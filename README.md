@@ -256,6 +256,75 @@ Upload the cookbooks to your chef-server:
 
     $ knife cookbook upload --all
 
+### Configuration
+
+Configuration comes from three sources with the following highest-to-lowest
+precedence:
+
+* The local config (`./.librarian/chef/config`)
+* The environment
+* The global config (`~/.librarian/chef/config`)
+
+You can inspect the final configuration with:
+
+    $ librarian-chef config
+
+You can find out where a particular key is set with:
+
+    $ librarian-chef config KEY
+
+You can set a key at the global level with:
+
+    $ librarian-chef config KEY VALUE --global
+
+And remove it with:
+
+    $ librarian-chef config KEY --global --delete
+
+You can set a key at the local level with:
+
+    $ librarian-chef config KEY VALUE --local
+
+And remove it with:
+
+    $ librarian-chef config KEY --local --delete
+
+You cannot set or delete environment-level config keys with the CLI.
+
+Configuration set at either the global or local level will affect subsequent
+invocations of `librarian-chef`. Configurations set at the environment level are
+not saved and will not affect subsequent invocations of `librarian-chef`.
+
+You can pass a config at the environment level by taking the original config key
+and transforming it: replace hyphens (`-`) with underscores (`_`) and periods
+(`.`) with doubled underscores (`__`), uppercase, and finally prefix with
+`LIBRARIAN_CHEF_`. For example, to pass a config in the environment for the key
+`part-one.part-two`, set the environment variable
+`LIBRARIAN_CHEF_PART_ONE__PART_TWO`.
+
+Configuration affects how various commands operate.
+
+* The `path` config sets the cookbooks directory to install to. If a relative
+  path, it is relative to the directory containing the `Cheffile`. The
+  equivalent environment variable is `LIBRARIAN_CHEF_PATH`.
+
+* The `install.strip-dot-git` config causes the `.git/` directory to be stripped
+  out when installing cookbooks from a git source. This must be set to exactly
+  "1" to cause this behavior. The equivalent environment variable is
+  `LIBRARIAN_CHEF_INSTALL__STRIP_DOT_GIT`.
+
+Configuration can be set by passing specific options to other commands.
+
+* The `path` config can be set at the local level by passing the `--path` option
+  to the `install` command. It can be unset at the local level by passing the
+  `--no-path` option to the `install` command. Note that if this is set at the
+  environment or global level then, even if `--no-path` is given as an option,
+  the environment or global config will be used.
+
+* The `install.strip-dot-git` config can be set at the local level by passing
+  the `--strip-dot-git` option to the `install` command. It can be unset at the
+  local level by passing the `--no-strip-dot-git` option.
+
 ### Knife Integration
 
 You can integrate your `knife.rb` with Librarian-Chef.
