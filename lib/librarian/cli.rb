@@ -97,17 +97,6 @@ module Librarian
       clean!
     end
 
-    desc "install", "Resolves and installs all of the dependencies you specify."
-    option "verbose"
-    option "line-numbers"
-    option "clean"
-    def install
-      ensure!
-      clean! if options["clean"]
-      resolve!
-      install!
-    end
-
     desc "update", "Updates and installs the dependencies you specify."
     option "verbose"
     option "line-numbers"
