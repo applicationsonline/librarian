@@ -37,7 +37,7 @@ module Librarian
           environment.config_db.local["install.strip-dot-git"] = strip_dot_git_val
         end
         if options.include?("path")
-          environment.config_db.local["install.path"] = options["path"]
+          environment.config_db.local["path"] = options["path"]
         end
         resolve!
         install!
