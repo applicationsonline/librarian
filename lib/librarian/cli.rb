@@ -83,7 +83,9 @@ module Librarian
           end
         end
       else
-        raise Error, "must set a key"
+        environment.config_db.keys.each do |key|
+          say "#{key}: #{environment.config_db[key]}"
+        end
       end
     end
 

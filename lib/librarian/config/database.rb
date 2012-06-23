@@ -64,6 +64,10 @@ module Librarian
         end
       end
 
+      def keys
+        [local, env, global].inject([]){|a, e| a.concat(e.keys) ; a}.sort.uniq
+      end
+
       def project_path
         root || specfile_path.dirname
       end

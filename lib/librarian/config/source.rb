@@ -46,6 +46,12 @@ module Librarian
         save(data)
       end
 
+      def keys
+        load!
+
+        data.keys
+      end
+
     private
 
       attr_accessor :data, :forbidden_keys
