@@ -28,7 +28,6 @@ module Librarian
       option "clean", :type => :boolean, :default => false
       option "strip-dot-git", :type => :boolean
       option "path", :type => :string
-      option "default-path", :type => :boolean
       def install
         ensure!
         clean! if options["clean"]
