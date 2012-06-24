@@ -311,6 +311,10 @@ module Librarian
             environment.logger.debug(*args, &block)
           end
 
+          def relative_path_to(path)
+            environment.logger.relative_path_to(path)
+          end
+
         end
 
         class << self
