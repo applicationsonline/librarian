@@ -1,5 +1,3 @@
-require 'librarian/helpers/debug'
-
 require 'librarian/manifest'
 require 'librarian/dependency'
 require 'librarian/manifest_set'
@@ -14,8 +12,6 @@ module Librarian
           @source, @name, @version, @dependencies = source, name, version, dependencies
         end
       end
-
-      include Helpers::Debug
 
       attr_accessor :environment
       private :environment=

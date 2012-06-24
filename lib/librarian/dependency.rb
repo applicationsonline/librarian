@@ -1,7 +1,5 @@
 require 'rubygems'
 
-require 'librarian/helpers/debug'
-
 module Librarian
   class Dependency
 
@@ -41,8 +39,6 @@ module Librarian
         end
       end
     end
-
-    include Helpers::Debug
 
     attr_accessor :name, :requirement, :source
     private :name=, :requirement=, :source=

@@ -1,7 +1,5 @@
 require 'rubygems'
 
-require 'librarian/helpers/debug'
-
 module Librarian
   class Manifest
 
@@ -37,8 +35,6 @@ module Librarian
 
       attr_accessor :backing
     end
-
-    include Helpers::Debug
 
     attr_accessor :source, :name, :extra
     private :source=, :name=, :extra=
