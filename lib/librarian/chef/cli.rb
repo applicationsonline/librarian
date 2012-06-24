@@ -23,6 +23,7 @@ module Librarian
       end
 
       desc "install", "Resolves and installs all of the dependencies you specify."
+      option "quiet", :type => :boolean, :default => false
       option "verbose", :type => :boolean, :default => false
       option "line-numbers", :type => :boolean, :default => false
       option "clean", :type => :boolean, :default => false

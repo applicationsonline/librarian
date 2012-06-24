@@ -21,7 +21,7 @@ Feature: cli/show
       path 'cookbook-sources'
       cookbook 'main'
       """
-    Given I run `librarian-chef install`
+    Given I run `librarian-chef install --quiet`
 
 
 

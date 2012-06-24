@@ -42,6 +42,7 @@ module Librarian
       super
       the_shell = (options["no-color"] ? Thor::Shell::Basic.new : shell)
       environment.ui = UI::Shell.new(the_shell)
+      environment.ui.be_quiet! if options["quiet"]
       environment.ui.debug! if options["verbose"]
       environment.ui.debug_line_numbers! if options["verbose"] && options["line-numbers"]
 
