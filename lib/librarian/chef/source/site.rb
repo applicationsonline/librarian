@@ -386,6 +386,8 @@ module Librarian
           install_path = install_path(name)
           line = line(name)
 
+          info { "Installing #{manifest.name} (#{manifest.version})" }
+
           debug { "Installing #{manifest}" }
 
           line.install_version! version, install_path
@@ -428,6 +430,10 @@ module Librarian
         def line(name)
           @line ||= { }
           @line[name] ||= Line.new(self, name)
+        end
+
+        def info(*args, &block)
+          environment.logger.info(*args, &block)
         end
 
         def debug(*args, &block)

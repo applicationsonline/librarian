@@ -8,6 +8,8 @@ module Librarian
         def install!(manifest)
           manifest.source == self or raise ArgumentError
 
+          info { "Installing #{manifest.name} (#{manifest.version})" }
+
           debug { "Installing #{manifest}" }
 
           name, version = manifest.name, manifest.version

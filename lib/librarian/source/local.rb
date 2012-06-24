@@ -44,6 +44,10 @@ module Librarian
 
       abstract_method :manifest? # (name, path) -> boolean
 
+      def info(*args, &block)
+        environment.logger.info(*args, &block)
+      end
+
       def debug(*args, &block)
         environment.logger.debug(*args, &block)
       end
