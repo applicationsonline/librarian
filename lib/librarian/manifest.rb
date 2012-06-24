@@ -1,7 +1,6 @@
 require 'rubygems'
 
 require 'librarian/helpers/debug'
-require 'librarian/support/abstract_method'
 
 module Librarian
   class Manifest
@@ -39,13 +38,10 @@ module Librarian
       attr_accessor :backing
     end
 
-    include Support::AbstractMethod
     include Helpers::Debug
 
     attr_accessor :source, :name, :extra
     private :source=, :name=, :extra=
-
-    abstract_method :fetch_version!, :fetch_dependencies!
 
     def initialize(source, name, extra = nil)
       assert_name_valid! name
