@@ -7,7 +7,7 @@ require "librarian/source/git/repository"
 describe Librarian::Source::Git::Repository do
 
   let(:env) do
-    double(:ui => nil)
+    double(:ui => nil, :logger => double(:debug => nil, :info => nil))
   end
 
   let(:project_path) do

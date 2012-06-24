@@ -1,7 +1,5 @@
 require 'open3'
 
-require 'librarian/helpers/debug'
-
 module Librarian
   module Source
     class Git
@@ -40,8 +38,6 @@ module Librarian
             nil
           end
         end
-
-        include Helpers::Debug
 
         attr_accessor :environment, :path
         private :environment=, :path=
@@ -205,6 +201,10 @@ module Librarian
             raise StandardError, e.read unless (t ? t.value : $?).success?
             o.read
           end
+        end
+
+        def debug(*args, &block)
+          environment.logger.debug(*args, &block)
         end
 
       end

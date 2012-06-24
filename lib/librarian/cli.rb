@@ -6,8 +6,6 @@ require 'librarian/error'
 require 'librarian/action'
 require "librarian/ui"
 
-require "librarian/helpers/debug"
-
 module Librarian
   class Cli < Thor
 
@@ -23,8 +21,6 @@ module Librarian
 
     include Particularity
     extend Particularity
-
-    include Helpers::Debug
 
     class << self
       def bin!
@@ -194,6 +190,14 @@ module Librarian
           debug { "  #{k}=#{v}"}
         end
       end
+    end
+
+    def debug(*args, &block)
+      environment.logger.debug(*args, &block)
+    end
+
+    def relative_path_to(path)
+      environment.logger.relative_path_to(path)
     end
 
   end

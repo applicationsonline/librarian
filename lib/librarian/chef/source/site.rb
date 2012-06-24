@@ -8,8 +8,6 @@ require 'zlib'
 require 'securerandom'
 require 'archive/tar/minitar'
 
-require 'librarian/helpers/debug'
-
 require 'librarian/chef/manifest_reader'
 
 module Librarian
@@ -17,11 +15,7 @@ module Librarian
     module Source
       class Site
 
-        include Helpers::Debug
-
         class Line
-
-          include Helpers::Debug
 
           attr_accessor :source, :name
           private :source=, :name=
@@ -313,6 +307,10 @@ module Librarian
             uri
           end
 
+          def debug(*args, &block)
+            environment.logger.debug(*args, &block)
+          end
+
         end
 
         class << self
@@ -426,6 +424,10 @@ module Librarian
         def line(name)
           @line ||= { }
           @line[name] ||= Line.new(self, name)
+        end
+
+        def debug(*args, &block)
+          environment.logger.debug(*args, &block)
         end
 
       end

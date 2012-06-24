@@ -1,11 +1,11 @@
 require "pathname"
 
-require "librarian/helpers/debug"
 require "librarian/support/abstract_method"
 
 require "librarian/error"
 require "librarian/config"
 require "librarian/lockfile"
+require "librarian/logger"
 require "librarian/specfile"
 require "librarian/resolver"
 require "librarian/dsl"
@@ -15,7 +15,6 @@ module Librarian
   class Environment
 
     include Support::AbstractMethod
-    include Helpers::Debug
 
     attr_accessor :ui
 
@@ -27,6 +26,10 @@ module Librarian
       @home = options.fetch(:home) { File.expand_path("~") }
       @project_path = options[:project_path]
       @specfile_name = options[:specfile_name]
+    end
+
+    def logger
+      @logger ||= Logger.new(self)
     end
 
     def config_db
