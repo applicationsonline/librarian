@@ -146,8 +146,8 @@ Prepare your infrastructure repository:
 
     $ cd ~/path/to/chef-repo
     $ git rm -r cookbooks
-    $ echo cookbooks >> .gitignore
-    $ echo tmp >> .gitignore
+    $ echo /cookbooks >> .gitignore
+    $ echo /tmp >> .gitignore
 
 Librarian-Chef takes over your `cookbooks/` directory, and will always reinstall
 the cookbooks listed the `Cheffile.lock` into your `cookbooks/` directory. Hence
