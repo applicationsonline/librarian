@@ -232,25 +232,18 @@ module Librarian
           end
 
           def cache_remote_json!(path, uri)
-            path = Pathname(path)
-            uri = to_uri(uri)
-
-            path.dirname.mkpath unless path.dirname.directory?
-
-            debug { "Caching #{uri} to #{path}" }
-
-            http = Net::HTTP.new(uri.host, uri.port)
-            request = Net::HTTP::Get.new(uri.path)
-            response = http.start{|http| http.request(request)}
-            unless Net::HTTPSuccess === response
-              raise Error, "Could not get #{uri} because #{response.code} #{response.message}!"
-            end
+            path, uri, response = prepare_for_caching(path, uri)
             json = response.body
             JSON.parse(json) # verify that it's really JSON.
             write! path, json
           end
 
           def cache_remote_object!(path, uri)
+            path, uri, response = prepare_for_caching(path, uri)
+            write! path, response.body
+          end
+
+          def prepare_for_caching(path, uri)
             path = Pathname(path)
             uri = to_uri(uri)
 
@@ -258,13 +251,11 @@ module Librarian
 
             debug { "Caching #{uri} to #{path}" }
 
-            http = Net::HTTP.new(uri.host, uri.port)
-            request = Net::HTTP::Get.new(uri.path)
-            response = http.start{|http| http.request(request)}
+            response = http_get(uri)
             unless Net::HTTPSuccess === response
               raise Error, "Could not get #{uri} because #{response.code} #{response.message}!"
             end
-            write! path, response.body
+            return path, uri, response
           end
 
           def write!(path, bytes)
@@ -313,6 +304,49 @@ module Librarian
 
           def relative_path_to(path)
             environment.logger.relative_path_to(path)
+          end
+
+          ##
+          # Returns an HTTP proxy URI if one is set in the environment variables.
+          #
+          def get_proxy_from_env
+            env_proxy = ENV['http_proxy'] || ENV['HTTP_PROXY']
+
+            return nil if env_proxy.nil? or env_proxy.empty?
+
+            uri = URI.parse(normalize_uri(env_proxy))
+
+            if uri and uri.user.nil? and uri.password.nil? then
+              # Probably we have http_proxy_* variables?
+              uri.user = ENV['http_proxy_user'] || ENV['HTTP_PROXY_USER']
+              uri.password = ENV['http_proxy_pass'] || ENV['HTTP_PROXY_PASS']
+            end
+
+            uri
+          end
+
+          ##
+          # Normalize the URI by adding "http://" if it is missing.
+          #
+          def normalize_uri(uri)
+            (uri =~ /^(https?|ftp|file):/) ? uri : "http://#{uri}"
+          end
+
+          ##
+          # proxy-aware http get
+          #
+          def http_get(uri)
+            proxy = get_proxy_from_env
+            if (proxy)
+              http = Net::HTTP.new(uri.host, uri.port,
+                proxy.host, proxy.port, proxy.user, proxy.password)
+            else
+              http = Net::HTTP.new(uri.host, uri.port)
+            end
+            request = Net::HTTP::Get.new(uri.path)
+            response = http.start{|http| http.request(request)}
+
+            response
           end
 
         end
