@@ -44,18 +44,19 @@ module Librarian
             "file" => "#{api_url}/cookbooks/sample/versions/0_6_5/file.tar.gz"
           }
         end
+        let(:sample_0_6_5_package) do
+          s = StringIO.new
+          z = Zlib::GzipWriter.new(s, Zlib::NO_COMPRESSION)
+          t = Archive::Tar::Minitar::Output.new(z)
+          t.tar.add_file_simple("sample/metadata.rb", :mode => 0700,
+            :size => sample_metadata.bytesize){|io| io.write(sample_metadata)}
+          t.close
+          z.close unless z.closed?
+          s.string
+        end
 
         # depends on repo_path being defined in each context
         let(:env) { Environment.new(:project_path => repo_path) }
-
-        before :all do
-          sample_path.rmtree if sample_path.exist?
-          sample_path.mkpath
-          sample_path.join("metadata.rb").open("wb") { |f| f.write(sample_metadata) }
-          Dir.chdir(sample_path.dirname) do
-            system "tar --create --gzip --file sample.tar.gz #{sample_path.basename}"
-          end
-        end
 
         before do
           stub_request(:get, "#{api_url}/cookbooks/sample").
@@ -65,7 +66,7 @@ module Librarian
             to_return(:body => JSON.dump(sample_0_6_5_data))
 
           stub_request(:get, "#{api_url}/cookbooks/sample/versions/0_6_5/file.tar.gz").
-            to_return(:body => sample_path.dirname.join("sample.tar.gz").read)
+            to_return(:body => sample_0_6_5_package)
         end
 
         after do
