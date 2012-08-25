@@ -232,22 +232,13 @@ module Librarian
           end
 
           def cache_remote_json!(path, uri)
-            path, response = prepare_for_caching(path, uri)
-            json = response.body
-            JSON.parse(json) # verify that it's really JSON.
-            write! path, json
+            cache_remote_object!(path, uri, :type => :json)
           end
 
-          def cache_remote_object!(path, uri)
-            path, response = prepare_for_caching(path, uri)
-            write! path, response.body
-          end
-
-          def prepare_for_caching(path, uri)
+          def cache_remote_object!(path, uri, options = { })
             path = Pathname(path)
             uri = to_uri(uri)
-
-            path.dirname.mkpath unless path.dirname.directory?
+            type = options[:type]
 
             debug { "Caching #{uri} to #{path}" }
 
@@ -255,7 +246,13 @@ module Librarian
             unless Net::HTTPSuccess === response
               raise Error, "Could not get #{uri} because #{response.code} #{response.message}!"
             end
-            return path, response
+
+            object = response.body
+            case type
+            when :json
+              JSON.parse(object) # verify that it's really JSON.
+            end
+            write! path, object
           end
 
           def write!(path, bytes)
