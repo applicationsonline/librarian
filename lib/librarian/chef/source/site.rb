@@ -342,18 +342,12 @@ module Librarian
 
         end
 
-        attr_accessor :environment
-        private :environment=
-        attr_reader :uri
-
-        attr_accessor :_metadata_cache
-        private :_metadata_cache, :_metadata_cache=
+        attr_accessor :environment, :uri
+        private :environment=, :uri=
 
         def initialize(environment, uri, options = {})
           self.environment = environment
-          @uri = uri
-          @cache_path = nil
-          self._metadata_cache = { }
+          self.uri = uri
         end
 
         def to_s
