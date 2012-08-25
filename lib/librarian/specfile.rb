@@ -3,7 +3,7 @@ module Librarian
 
     attr_accessor :environment
     private :environment=
-    attr_reader :path, :dependencies, :source
+    attr_reader :path
 
     def initialize(environment, path)
       self.environment = environment
