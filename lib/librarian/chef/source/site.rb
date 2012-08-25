@@ -273,9 +273,11 @@ module Librarian
             end
 
             # Cookbook files, as pulled from Opscode Community Site API, are
-            # embedded in a subdirectory of the tarball, and the subdirectory's
-            # name is equal to the name of the cookbook.
-            subtemp = temp.join(name)
+            # embedded in a subdirectory of the tarball.
+            subtemps = temp.children
+            subtemps.empty? and raise "The package archive was empty!"
+            subtemps.size > 1 and raise "The package archive has too many children!"
+            subtemp = subtemps.first
             debug { "Moving #{relative_path_to(subtemp)} to #{relative_path_to(path)}" }
             FileUtils.mv(subtemp, path)
           ensure
