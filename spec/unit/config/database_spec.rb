@@ -10,8 +10,8 @@ describe Librarian::Config::Database do
   include FakeFS::SpecHelpers
 
   def write_yaml!(path, *yamlables)
-    dir = File.dirname(path)
-    FileUtils.mkpath(dir) unless File.directory?(dir)
+    path = Pathname(path)
+    path.dirname.mkpath unless path.dirname.directory?
     File.open(path, "wb"){|f| yamlables.each{|y| YAML.dump(y, f)}}
   end
 
