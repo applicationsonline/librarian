@@ -73,7 +73,7 @@ module Librarian
 
         def checkout!(reference, options ={ })
           command = %W(checkout #{reference} --quiet)
-          command <<  "--force" if options[:force]
+          command << "--force" if options[:force]
           run!(command, :chdir => true)
         end
 
