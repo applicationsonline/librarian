@@ -1,13 +1,12 @@
 module Librarian
   class Specfile
 
-    attr_accessor :environment
-    private :environment=
-    attr_reader :path
+    attr_accessor :environment, :path
+    private :environment=, :path=
 
     def initialize(environment, path)
       self.environment = environment
-      @path = path
+      self.path = path
     end
 
     def read(precache_sources = [])
