@@ -52,6 +52,8 @@ module Librarian
 
         @repository = nil
         @repository_cache_path = nil
+
+        ref.kind_of?(String) or raise TypeError, "ref must be a String"
       end
 
       def to_s
