@@ -36,7 +36,7 @@ module CliMacro
 
   def cli!(*args)
     Dir.chdir(pwd) do
-      described_class.start args, shell: shell
+      described_class.start args, :shell => shell
     end
   end
 
