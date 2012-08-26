@@ -8,8 +8,4 @@ module Librarian
     self::Environment
   end
 
-  def environment
-    @environment ||= environment_class.new
-  end
-
 end

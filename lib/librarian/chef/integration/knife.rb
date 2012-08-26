@@ -24,6 +24,10 @@ module Librarian
       end
     end
 
+    def environment
+      @environment ||= environment_class.new
+    end
+
     def install_path
       environment.install_path
     end
