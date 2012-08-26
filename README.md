@@ -359,11 +359,7 @@ How to Contribute
 
 ### Running the tests
 
-    # Either
     $ rspec spec
-
-    # Or
-    $ rake
 
 You will probably need some way to isolate gems. Librarian provides a `Gemfile`,
 so if you want to use bundler, you can prepare the directory with the usual
@@ -371,7 +367,6 @@ so if you want to use bundler, you can prepare the directory with the usual
 
     $ bundle install
     $ bundle exec rspec spec
-    $ bundle exec rake
 
 ### Installing locally
 
