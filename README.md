@@ -361,7 +361,6 @@ How to Contribute
 
     # Either
     $ rspec spec
-    $ cucumber
 
     # Or
     $ rake
@@ -372,7 +371,6 @@ so if you want to use bundler, you can prepare the directory with the usual
 
     $ bundle install
     $ bundle exec rspec spec
-    $ bundle exec cucumber
     $ bundle exec rake
 
 ### Installing locally
