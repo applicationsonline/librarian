@@ -24,17 +24,28 @@ module Librarian
 
     class << self
       def bin!
-        begin
-          environment = root_module.environment
-          start
-        rescue Librarian::Error => e
-          environment.ui.error e.message
-          environment.ui.debug e.backtrace.join("\n")
-          exit (e.respond_to?(:status_code) ? e.status_code : 1)
-        rescue Interrupt => e
-          environment.ui.error "\nQuitting..."
-          exit 1
+        with_environment do |environment|
+          begin
+            start
+          rescue Librarian::Error => e
+            environment.ui.error e.message
+            environment.ui.debug e.backtrace.join("\n")
+            exit (e.respond_to?(:status_code) ? e.status_code : 1)
+          rescue Interrupt => e
+            environment.ui.error "\nQuitting..."
+            exit 1
+          end
         end
+      end
+
+      attr_accessor :environment
+
+      def with_environment
+        environment = root_module.environment_class.new
+        self.environment, orig_environment = environment, self.environment
+        yield(environment)
+      ensure
+        self.environment = orig_environment
       end
     end
 
@@ -142,7 +153,7 @@ module Librarian
   private
 
     def environment
-      root_module.environment
+      self.class.environment
     end
 
     def ensure!(options = { })

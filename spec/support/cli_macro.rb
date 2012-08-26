@@ -1,3 +1,7 @@
+require "json"
+require "pathname"
+require "securerandom"
+require "stringio"
 require "thor"
 
 require "librarian/helpers"
@@ -13,6 +17,31 @@ module CliMacro
     end
     def stdin
       raise "unsupported"
+    end
+  end
+
+  class FileMatcher
+    attr_accessor :rel_path, :content, :type, :base_path
+    def initialize(rel_path, content, options = { })
+      self.rel_path = rel_path
+      self.content = content
+      self.type = options[:type]
+    end
+    def full_path
+      @full_path ||= base_path + rel_path
+    end
+    def actual_content
+      @actual_content ||= begin
+        s = full_path.read
+        s = JSON.parse(s) if type == :json
+        s
+      end
+    end
+    def matches?(base_path)
+      base_path = Pathname(base_path) unless Pathname === base_path
+      self.base_path = base_path
+
+      full_path.file? && (!content || actual_content == content)
     end
   end
 
@@ -36,12 +65,20 @@ module CliMacro
 
   def cli!(*args)
     Dir.chdir(pwd) do
-      described_class.start args, :shell => shell
+      described_class.with_environment do |env|
+        described_class.start args, :shell => shell
+      end
     end
   end
 
   def write_file!(path, content)
-    pwd.join(path).open("wb"){|f| f.write(content)}
+    path = pwd.join(path)
+    path.dirname.mkpath
+    path.open("wb"){|f| f.write(content)}
+  end
+
+  def write_json_file!(path, content)
+    write_file! path, JSON.dump(content)
   end
 
   def strip_heredoc(text)
@@ -50,6 +87,14 @@ module CliMacro
 
   def stdout
     shell.stdout.string
+  end
+
+  def have_file(rel_path, content = nil)
+    FileMatcher.new(rel_path, content)
+  end
+
+  def have_json_file(rel_path, content)
+    FileMatcher.new(rel_path, content, :type => :json)
   end
 
 end
