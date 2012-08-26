@@ -99,6 +99,96 @@ module Librarian
 
       end
 
+      describe "show" do
+        let(:main_metadata) { {
+          "name" => "main",
+          "version" => "1.0.0",
+          "dependencies" => {
+            "sub" => "1.0.0",
+          }
+        } }
+        let(:sub_metadata) { {
+          "name" => "sub",
+          "version" => "1.0.0",
+          "dependencies" => { },
+        } }
+
+        before do
+          write_json_file! "cookbook-sources/main/metadata.json", main_metadata
+          write_json_file! "cookbook-sources/sub/metadata.json", sub_metadata
+          write_file! "Cheffile", strip_heredoc(<<-CHEFFILE)
+            path 'cookbook-sources'
+            cookbook 'main'
+          CHEFFILE
+
+          cli! "install"
+        end
+
+        context "showing all without a lockfile" do
+          before do
+            pwd.join("Cheffile.lock").delete
+
+            cli! "show"
+          end
+
+          specify { exit_status.should == 1 }
+
+          it "should print a warning" do
+            stdout.should == strip_heredoc(<<-STDOUT)
+              Be sure to install first!
+            STDOUT
+          end
+        end
+
+        context "showing all" do
+          before do
+            cli! "show"
+          end
+
+          specify { exit_status.should == 0 }
+
+          it "should print a summary" do
+            stdout.should == strip_heredoc(<<-STDOUT)
+              main (1.0.0)
+              sub (1.0.0)
+            STDOUT
+          end
+        end
+
+        context "showing one without dependencies" do
+          before do
+            cli! "show", "sub"
+          end
+
+          specify { exit_status.should == 0 }
+
+          it "should print the details" do
+            stdout.should == strip_heredoc(<<-STDOUT)
+              sub (1.0.0)
+                source: cookbook-sources
+            STDOUT
+          end
+        end
+
+        context "showing one with dependencies" do
+          before do
+            cli! "show", "main"
+          end
+
+          specify { exit_status.should == 0 }
+
+          it "should print the details" do
+            stdout.should == strip_heredoc(<<-STDOUT)
+              main (1.0.0)
+                source: cookbook-sources
+                dependencies:
+                  sub (= 1.0.0)
+            STDOUT
+          end
+        end
+
+      end
+
     end
   end
 end
