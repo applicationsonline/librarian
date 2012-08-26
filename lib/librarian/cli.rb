@@ -19,7 +19,6 @@ module Librarian
       end
     end
 
-    include Particularity
     extend Particularity
 
     class << self
@@ -62,7 +61,7 @@ module Librarian
 
     desc "version", "Displays the version."
     def version
-      say "librarian-#{root_module.version}"
+      say "librarian-#{environment.version}"
     end
 
     desc "config", "Show or edit the config."

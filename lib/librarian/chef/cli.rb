@@ -13,7 +13,6 @@ module Librarian
         end
       end
 
-      include Particularity
       extend Particularity
 
       source_root Pathname.new(__FILE__).dirname.join("templates")

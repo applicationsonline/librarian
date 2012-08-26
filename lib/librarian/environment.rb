@@ -121,6 +121,10 @@ module Librarian
       self.class.name.split("::")[0 ... -1].inject(Object, &:const_get)::Dsl
     end
 
+    def version
+      VERSION
+    end
+
     def config_keys
       %[
       ]
