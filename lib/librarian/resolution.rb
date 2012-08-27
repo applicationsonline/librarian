@@ -11,11 +11,13 @@ module Librarian
   # the serialization-deserialization process is just the identity function.
   #
   class Resolution
-    attr_reader :dependencies, :manifests, :manifests_index
+    attr_accessor :dependencies, :manifests, :manifests_index
+    private :dependencies=, :manifests=, :manifests_index=
 
     def initialize(dependencies, manifests)
-      @dependencies, @manifests = dependencies, manifests
-      @manifests_index = build_manifests_index(manifests)
+      self.dependencies = dependencies
+      self.manifests = manifests
+      self.manifests_index = build_manifests_index(manifests)
     end
 
     def correct?
