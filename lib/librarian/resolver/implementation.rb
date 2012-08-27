@@ -10,7 +10,7 @@ module Librarian
           self.sources = sources
         end
         def manifests(name)
-          sources.reverse.flat_map{|source| source.manifests(name)}
+          sources.reverse.map{|source| source.manifests(name)}.flatten(1)
         end
       end
 
