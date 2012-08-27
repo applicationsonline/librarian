@@ -23,19 +23,17 @@ module Librarian
       end
 
       def run(specfile = nil)
-        if block_given?
-          instance_eval(&Proc.new)
+        specfile = Proc.new if block_given?
+
+        case specfile
+        when Specfile
+          eval(specfile.path.read, instance_binding, specfile.path.to_s, 1)
+        when String
+          eval(specfile, instance_binding)
+        when Proc
+          instance_eval(&specfile)
         else
-          case specfile
-          when Specfile
-            eval(specfile.path.read, instance_binding, specfile.path.to_s, 1)
-          when String
-            eval(specfile, instance_binding)
-          when Proc
-            instance_eval(&specfile)
-          else
-            raise ArgumentError, "specfile must be a #{Specfile}, #{String}, or #{Proc} if no block is given (it was #{specfile.inspect})"
-          end
+          raise ArgumentError, "specfile must be a #{Specfile}, #{String}, or #{Proc} if no block is given (it was #{specfile.inspect})"
         end
       end
 
