@@ -1,11 +1,11 @@
 module Librarian
   class Spec
 
-    attr_accessor :source, :dependencies
-    private :source=, :dependencies=
+    attr_accessor :sources, :dependencies
+    private :sources=, :dependencies=
 
-    def initialize(source, dependencies)
-      self.source = source
+    def initialize(sources, dependencies)
+      self.sources = sources
       self.dependencies = dependencies
     end
 

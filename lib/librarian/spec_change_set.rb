@@ -68,7 +68,7 @@ module Librarian
     def explicit_removed_dependency_names
       @explicit_removed_dependency_names ||= removed_dependency_names.reject do |name|
         lock_manifest = lock_manifests_index[name]
-        lock_manifest.source == spec.source
+        spec.sources.include?(lock_manifest.source)
       end.to_set
     end
 

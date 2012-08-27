@@ -61,6 +61,47 @@ module Librarian
 
     end
 
+    context "a specfile with a dep in multiple sources" do
+
+      before do
+        env.registry :clear => true do
+          source 'source-1' do
+            spec 'butter', '1.0'
+            spec 'butter', '1.1'
+          end
+          source 'source-2' do
+            spec 'butter', '1.0'
+            spec 'butter', '1.1'
+          end
+          source 'source-3' do
+            spec 'butter', '1.0'
+          end
+        end
+      end
+
+      let(:spec) do
+        env.dsl do
+          src 'source-1'
+          src 'source-2'
+          dep 'butter', '>= 1.1'
+        end
+      end
+
+      it "should have the expected number of sources" do
+        spec.should have(2).sources
+      end
+
+      let(:resolution) { resolver.resolve(spec) }
+
+      specify { resolution.should be_correct }
+
+      it "should have the manifest from the final source with a matching manifest" do
+        manifest = resolution.manifests.find{|m| m.name == "butter"}
+        manifest.source.name.should == "source-2"
+      end
+
+    end
+
     context "a specfile with a dep depending on a nonexistent dep" do
 
       before do

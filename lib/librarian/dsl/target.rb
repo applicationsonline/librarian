@@ -22,7 +22,7 @@ module Librarian
         end
       end
 
-      SCOPABLES = [:sources]
+      SCOPABLES = [:source, :sources]
 
       attr_accessor :dsl
       private :dsl=
@@ -51,15 +51,12 @@ module Librarian
       end
 
       def to_spec
-        Spec.new(@sources.first, @dependencies)
+        Spec.new(@sources, @dependencies)
       end
 
       def dependency(name, *args)
         options = args.last.is_a?(Hash) ? args.pop : {}
-        source = source_from_options(options) || @sources.last
-        unless source
-          raise Error, "#{dependency_name} #{name} is specified without a source!"
-        end
+        source = source_from_options(options) || @source
         dep = dependency_type.new(name, args, source)
         @dependencies << dep
       end
@@ -70,12 +67,14 @@ module Librarian
         elsif !(Hash === name) && !param && !options
           source = source_shortcuts[name]
           scope_or_directive(block) do
+            @source = source
             @sources = @sources.dup << source
           end
         else
           name, param, options = *normalize_source_options(name, param, options || {})
           source = source_from_params(name, param, options)
           scope_or_directive(block) do
+            @source = source
             @sources = @sources.dup << source
           end
         end

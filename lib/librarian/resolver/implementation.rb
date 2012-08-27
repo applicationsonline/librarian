@@ -4,11 +4,21 @@ module Librarian
   class Resolver
     class Implementation
 
-      attr_reader :resolver, :source, :dependency_source_map
+      class MultiSource
+        attr_accessor :sources
+        def initialize(sources)
+          self.sources = sources
+        end
+        def manifests(name)
+          sources.reverse.flat_map{|source| source.manifests(name)}
+        end
+      end
+
+      attr_reader :resolver, :spec, :dependency_source_map
 
       def initialize(resolver, spec)
         @resolver = resolver
-        @source = spec.source
+        @spec = spec
         @dependency_source_map = Hash[spec.dependencies.map{|d| [d.name, d.source]}]
         @level = 0
       end
@@ -21,11 +31,15 @@ module Librarian
         resolution ? resolution[1] : nil
       end
 
+      def default_source
+        MultiSource.new(spec.sources)
+      end
+
       def sourced_dependency_for(dependency)
         return dependency if dependency.source
 
-        s = dependency_source_map[dependency.name] || source
-        Dependency.new(dependency.name, dependency.requirement, s)
+        source = dependency_source_map[dependency.name] || default_source
+        Dependency.new(dependency.name, dependency.requirement, source)
       end
 
       def recursive_resolve(dependencies, manifests, queue)
