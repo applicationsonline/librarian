@@ -1,5 +1,23 @@
 # Change Log
 
+## 0.0.25
+
+* \#71. Fix an error, given certain locale settings, with reading cookbook
+  metadata files.
+
+* \#89. Fix an error when encountering manifests and dependencies with names of
+  a single letter, such as `"R"`.
+
+* \#92, \#99. HTTP proxy support via the `HTTP_PROXY` environment variable. Also
+  supports `HTTP_PROXY_USER` and `HTTP_PROXY_PASS` environment variables. Thanks
+  @tknerr.
+
+* \#97. Enforce that the `:ref` option in the `:git` source may only be given a
+  string.
+
+* \#98. Fix unpacking chef site-sourced packages where the directory in the
+  tarball does not match the cookbook name.
+
 ## 0.0.24
 
 * \#15. A remembered configuration system.
@@ -12,7 +30,7 @@
 * \#76. Support git annotated tags.
 
 * \#80. Ignore directories in the `PATH` named `git` when looking for the `git`
-  bin.
+  bin. Thanks @avit.
 
 * \#85. Provide a helpful message when running the `show` command without a
   lockfile present.
