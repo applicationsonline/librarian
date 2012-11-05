@@ -1,5 +1,7 @@
 *.gem
+bin
 .bundle
 Gemfile.lock
 pkg/*
 tmp
+vendor
