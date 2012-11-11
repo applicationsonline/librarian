@@ -16,6 +16,7 @@ describe Librarian::Source::Git::Repository do
     project_path
   end
   let(:tmp_path) { project_path + "tmp/spec/unit/source/git/repository-spec" }
+  after { tmp_path.rmtree if tmp_path && tmp_path.exist? }
   let(:git_source_path) { tmp_path + SecureRandom.hex(16) }
   let(:branch) { "the-branch" }
   let(:tag) { "the-tag" }
