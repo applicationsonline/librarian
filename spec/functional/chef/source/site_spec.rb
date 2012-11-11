@@ -20,7 +20,8 @@ module Librarian
           project_path = project_path.dirname until project_path.join("Rakefile").exist?
           project_path
         end
-        let(:tmp_path) { project_path.join("tmp/spec/chef/site-source") }
+        let(:tmp_path) { project_path.join("tmp/spec/functional/chef/source/site") }
+        after { tmp_path.rmtree if tmp_path && tmp_path.exist? }
         let(:sample_path) { tmp_path.join("sample") }
         let(:sample_metadata) do
           Helpers.strip_heredoc(<<-METADATA)

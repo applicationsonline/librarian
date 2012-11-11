@@ -15,7 +15,7 @@ describe Librarian::Source::Git::Repository do
     project_path = project_path.dirname until project_path.join("Rakefile").exist?
     project_path
   end
-  let(:tmp_path) { project_path + "tmp/spec/unit/source/git/repository-spec" }
+  let(:tmp_path) { project_path + "tmp/spec/functional/source/git/repository" }
   after { tmp_path.rmtree if tmp_path && tmp_path.exist? }
   let(:git_source_path) { tmp_path + SecureRandom.hex(16) }
   let(:branch) { "the-branch" }

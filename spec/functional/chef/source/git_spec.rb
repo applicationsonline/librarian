@@ -19,7 +19,8 @@ module Librarian
           project_path = project_path.dirname until project_path.join("Rakefile").exist?
           project_path
         end
-        let(:tmp_path) { project_path.join("tmp/spec/chef/git-source") }
+        let(:tmp_path) { project_path.join("tmp/spec/functional/chef/source/git") }
+        after { tmp_path.rmtree if tmp_path && tmp_path.exist? }
 
         let(:cookbooks_path) { tmp_path.join("cookbooks") }
 
@@ -49,7 +50,7 @@ module Librarian
             METADATA
           end
 
-          before :all do
+          before do
             sample_path.rmtree if sample_path.exist?
             sample_path.mkpath
             sample_path.join("metadata.rb").open("wb") { |f| f.write(sample_metadata) }
@@ -217,7 +218,7 @@ module Librarian
             METADATA
           end
 
-          before :all do
+          before do
             git_path.rmtree if git_path.exist?
             git_path.mkpath
             sample_path.mkpath
@@ -304,6 +305,14 @@ module Librarian
           let(:git_path) { tmp_path.join("big-git-repo") }
           let(:repo_path) { tmp_path.join("repo/resolve") }
           before do
+            git_path.rmtree if git_path.exist?
+            git_path.mkpath
+            Dir.chdir(git_path) do
+              `git init`
+              `touch not-a-metadata`
+              `git add .`
+              `git commit -m "Initial commit."`
+            end
             repo_path.rmtree if repo_path.exist?
             repo_path.mkpath
             repo_path.join("cookbooks").mkpath
