@@ -16,13 +16,6 @@ module Librarian
         [manifest].compact
       end
 
-      def manifest(name, version, dependencies)
-        manifest = Manifest.new(self, name)
-        manifest.version = version
-        manifest.dependencies = dependencies
-        manifest
-      end
-
       def manifest_search_paths(name)
         @manifest_search_paths ||= { }
         @manifest_search_paths[name] ||= begin

@@ -395,13 +395,6 @@ module Librarian
           line(name).manifests
         end
 
-        def manifest(name, version, dependencies)
-          manifest = Manifest.new(self, name)
-          manifest.version = version
-          manifest.dependencies = dependencies
-          manifest
-        end
-
         def cache_path
           @cache_path ||= begin
             dir = Digest::MD5.hexdigest(uri)

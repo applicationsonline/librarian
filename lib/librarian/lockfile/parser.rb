@@ -82,11 +82,10 @@ module Librarian
           dependencies = manifest.dependencies.map do |d|
             Dependency.new(d.name, d.requirement, manifests[d.name].source)
           end
-          manifest.source.manifest(
-            manifest.name,
-            manifest.version,
-            dependencies
-          )
+          real = Manifest.new(manifest.source, manifest.name)
+          real.version = manifest.version
+          real.dependencies = manifest.dependencies
+          real
         end
         ManifestSet.sort(manifests)
       end
