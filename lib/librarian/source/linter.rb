@@ -49,6 +49,7 @@ module Librarian
 
         raise "instance must respond to #{missing.join(', ')}"
       end
+
     end
   end
 end
