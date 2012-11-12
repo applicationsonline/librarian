@@ -44,7 +44,7 @@ module Librarian
       end
 
       def lint_instance_responds_to!(*names)
-        missing = names - klass.public_instance_methods
+        missing = names - klass.public_instance_methods.map(&:to_sym)
         return if missing.empty?
 
         raise "instance must respond to #{missing.join(', ')}"
