@@ -5,6 +5,7 @@ require 'webmock'
 require 'librarian'
 require 'librarian/helpers'
 require 'librarian/chef'
+require 'librarian/source/linter'
 
 module Librarian
   module Chef
@@ -74,6 +75,12 @@ module Librarian
 
         let(:repo_path) { tmp_path.join("methods") }
         before { repo_path.mkpath }
+
+        describe "lint" do
+          it "lints" do
+            Librarian::Source::Linter.lint! described_class
+          end
+        end
 
         describe "class methods" do
 
