@@ -11,5 +11,4 @@ site 'http://community.opscode.com/api/v1'
 #   :git => 'https://github.com/fnichol/chef-rvm'
 
 # cookbook 'postgresql',
-#   :git => 'https://github.com/findsyou/cookbooks',
-#   :ref => 'postgresql-improvements'
+#   :git => 'https://github.com/phlipper/chef-postgresql'
