@@ -105,7 +105,7 @@ module Librarian
         def remote_branch_names
           remotes = remote_names.sort_by(&:length).reverse
 
-          command = %W(branch -r)
+          command = %W(branch -r --no-color)
           names = run!(command, :chdir => true).strip.lines.map(&:strip).to_a
           names.each{|n| n.gsub!(/\s*->.*$/, "")}
           names.reject!{|n| n =~ /\/HEAD$/}
