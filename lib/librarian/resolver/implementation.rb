@@ -14,12 +14,13 @@ module Librarian
         end
       end
 
-      attr_reader :resolver, :spec, :dependency_source_map
+      attr_accessor :resolver, :spec, :dependency_source_map
+      private :resolver=, :spec=, :dependency_source_map=
 
       def initialize(resolver, spec)
-        @resolver = resolver
-        @spec = spec
-        @dependency_source_map = Hash[spec.dependencies.map{|d| [d.name, d.source]}]
+        self.resolver = resolver
+        self.spec = spec
+        self.dependency_source_map = Hash[spec.dependencies.map{|d| [d.name, d.source]}]
         @level = 0
       end
 
