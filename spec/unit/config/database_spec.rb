@@ -4,17 +4,18 @@ require "yaml"
 
 require "fakefs/spec_helpers"
 
+require "support/method_patch_macro"
+
 require "librarian/config/database"
 
 describe Librarian::Config::Database do
   include FakeFS::SpecHelpers
+  include MethodPatchMacro
 
   # FakeFS seems to need this because Kernel#Pathname was changed in 1.9.3-p286.
   # It used to indicate the Pathname class by name, but now it references the
   # Pathname class directly by object. FakeFS relies on the old behavior.
-  def Pathname(path)
-    Pathname.new(path)
-  end
+  with_module_method(Kernel, :Pathname){|s| Pathname.new(s)}
 
   def write_yaml!(path, *yamlables)
     path = Pathname(path)
