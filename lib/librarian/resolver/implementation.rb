@@ -62,23 +62,21 @@ module Librarian
         related_dependencies = dependencies.select{|d| d.name == dependency.name}
 
         scope_resolving_dependency dependency do
-          scope_checking_manifests do
-            resolution = nil
-            dependency.manifests.each do |manifest|
-              break if resolution
+          resolution = nil
+          dependency.manifests.each do |manifest|
+            break if resolution
 
-              scope_checking_manifest dependency, manifest do
-                if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
-                  m = manifests.merge(dependency.name => manifest)
-                  a = manifest.dependencies.map{|d| sourced_dependency_for(d)}
-                  debug_schedule a
-                  q = queue + a
-                  resolution = recursive_resolve(dependencies.dup, m, q)
-                end
+            scope_checking_manifest dependency, manifest do
+              if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
+                m = manifests.merge(dependency.name => manifest)
+                a = manifest.dependencies.map{|d| sourced_dependency_for(d)}
+                debug_schedule a
+                q = queue + a
+                resolution = recursive_resolve(dependencies.dup, m, q)
               end
             end
-            resolution
           end
+          resolution
         end
       end
 
@@ -88,7 +86,9 @@ module Librarian
         debug { "Resolving #{dependency}" }
         resolution = nil
         scope do
-          resolution = yield
+          scope_checking_manifests do
+            resolution = yield
+          end
           if resolution
             debug { "Resolved #{dependency}" }
           else
