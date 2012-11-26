@@ -52,7 +52,7 @@ module Librarian
         queue = queue.dup
 
         if dependencies.empty?
-          queue.each do |dependency|
+          queue.reject{|d| manifests[d.name]}.each do |dependency|
             debug { "Scheduling #{dependency}" }
           end
         end
