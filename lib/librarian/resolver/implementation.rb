@@ -51,13 +51,11 @@ module Librarian
         manifests = manifests.dup
         queue = queue.dup
 
-        if dependencies.empty?
-          debug_schedule queue.reject{|d| manifests[d.name]}
-        end
-
         return nil if queue.any?{|d| m = manifests[d.name] ; m && !d.satisfied_by?(m)}
         queue.reject!{|d| manifests[d.name]}
         return [dependencies, manifests, queue] if queue.empty?
+
+        debug_schedule queue if dependencies.empty?
 
         dependency = queue.shift
         dependencies << dependency
