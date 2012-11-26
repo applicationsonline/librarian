@@ -33,25 +33,7 @@ module Librarian
         resolution ? resolution[1] : nil
       end
 
-      def default_source
-        @default_source ||= MultiSource.new(spec.sources)
-      end
-
-      def sourced_dependency_for(dependency)
-        return dependency if dependency.source
-
-        source = dependency_source_map[dependency.name] || default_source
-        Dependency.new(dependency.name, dependency.requirement, source)
-      end
-
-      def sourced_dependencies_for_manifest(manifest)
-        manifest.dependencies.map{|d| sourced_dependency_for(d)}
-      end
-
-      def sourced_dependencies_for_manifests(manifests)
-        manifests = manifests.values if manifests.kind_of?(Hash)
-        manifests.map{|m| sourced_dependencies_for_manifest(m)}.flatten(1)
-      end
+    private
 
       def recursive_resolve(dependencies, manifests, queue)
         dependencies = dependencies.dup
@@ -79,7 +61,25 @@ module Librarian
         end
       end
 
-    private
+      def default_source
+        @default_source ||= MultiSource.new(spec.sources)
+      end
+
+      def sourced_dependency_for(dependency)
+        return dependency if dependency.source
+
+        source = dependency_source_map[dependency.name] || default_source
+        Dependency.new(dependency.name, dependency.requirement, source)
+      end
+
+      def sourced_dependencies_for_manifest(manifest)
+        manifest.dependencies.map{|d| sourced_dependency_for(d)}
+      end
+
+      def sourced_dependencies_for_manifests(manifests)
+        manifests = manifests.values if manifests.kind_of?(Hash)
+        manifests.map{|m| sourced_dependencies_for_manifest(m)}.flatten(1)
+      end
 
       def resolving_dependency_map_find_manifests(dependency)
         scope_resolving_dependency dependency do
