@@ -70,7 +70,7 @@ module Librarian
               a = manifest.dependencies.map{|d| sourced_dependency_for(d)}
               debug_schedule a
               q = queue + a
-              recursive_resolve(dependencies.dup, m, q)
+              recursive_resolve(dependencies, m, q)
             end
           end
         end
