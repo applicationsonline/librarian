@@ -73,7 +73,7 @@ module Librarian
               scope_checking_manifest dependency, manifest do
                 if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
                   m = manifests.merge(dependency.name => manifest)
-                  a = manifest.dependencies.map { |d| sourced_dependency_for(d) }
+                  a = manifest.dependencies.map{|d| sourced_dependency_for(d)}
                   a.each do |d|
                     debug { "Scheduling #{d}" }
                   end
