@@ -61,22 +61,28 @@ module Librarian
         dependencies << dependency
         related_dependencies = dependencies.select{|d| d.name == dependency.name}
 
-        scope_resolving_dependency dependency do
-          map_find(dependency.manifests) do |manifest|
-            scope_checking_manifest dependency, manifest do
-              next if related_dependencies.any?{|d| !d.satisfied_by?(manifest)}
+        resolving_dependency_map_find_manifests(dependency) do |manifest|
+          next if related_dependencies.any?{|d| !d.satisfied_by?(manifest)}
 
-              m = manifests.merge(dependency.name => manifest)
-              a = manifest.dependencies.map{|d| sourced_dependency_for(d)}
-              debug_schedule a
-              q = queue + a
-              recursive_resolve(dependencies, m, q)
-            end
-          end
+          m = manifests.merge(dependency.name => manifest)
+          a = manifest.dependencies.map{|d| sourced_dependency_for(d)}
+          debug_schedule a
+          q = queue + a
+          recursive_resolve(dependencies, m, q)
         end
       end
 
     private
+
+      def resolving_dependency_map_find_manifests(dependency)
+        scope_resolving_dependency dependency do
+          map_find(dependency.manifests) do |manifest|
+            scope_checking_manifest dependency, manifest do
+              yield manifest
+            end
+          end
+        end
+      end
 
       def scope_resolving_dependency(dependency)
         debug { "Resolving #{dependency}" }
