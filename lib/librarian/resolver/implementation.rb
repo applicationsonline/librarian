@@ -17,13 +17,12 @@ module Librarian
         end
       end
 
-      attr_accessor :resolver, :spec, :dependency_source_map
-      private :resolver=, :spec=, :dependency_source_map=
+      attr_accessor :resolver, :spec
+      private :resolver=, :spec=
 
       def initialize(resolver, spec)
         self.resolver = resolver
         self.spec = spec
-        self.dependency_source_map = Hash[spec.dependencies.map{|d| [d.name, d.source]}]
         @level = 0
       end
 
@@ -63,6 +62,11 @@ module Librarian
 
       def default_source
         @default_source ||= MultiSource.new(spec.sources)
+      end
+
+      def dependency_source_map
+        @dependency_source_map ||=
+          Hash[spec.dependencies.map{|d| [d.name, d.source]}]
       end
 
       def sourced_dependency_for(dependency)
