@@ -10,7 +10,7 @@ module Librarian
           self.sources = sources
         end
         def manifests(name)
-          sources.reverse.map{|source| source.manifests(name)}.flatten(1)
+          sources.reverse.map{|source| source.manifests(name)}.flatten(1).compact
         end
         def to_s
           "(no source specified)"
@@ -63,48 +63,52 @@ module Librarian
 
         dependency = queue.shift
         dependencies << dependency
-        debug { "Resolving #{dependency}" }
-        resolution = nil
-        scope do
+        scope_resolving_dependency dependency do
           related_dependencies = dependencies.select{|d| d.name == dependency.name}
-          unless dependency.manifests && dependency.manifests.first
-            debug { "No known manifests" }
-          else
-            debug { "Checking manifests" }
-            scope do
-              dependency.manifests.each do |manifest|
-                break if resolution
+          debug { "Checking manifests" }
+          scope do
+            resolution = nil
+            dependency.manifests.each do |manifest|
+              break if resolution
 
-                debug { "Checking #{manifest}" }
-                scope do
-                  if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
-                    m = manifests.merge(dependency.name => manifest)
-                    a = manifest.dependencies.map { |d| sourced_dependency_for(d) }
-                    a.each do |d|
-                      debug { "Scheduling #{d}" }
-                    end
-                    q = queue + a
-                    resolution = recursive_resolve(dependencies.dup, m, q)
+              debug { "Checking #{manifest}" }
+              scope do
+                if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
+                  m = manifests.merge(dependency.name => manifest)
+                  a = manifest.dependencies.map { |d| sourced_dependency_for(d) }
+                  a.each do |d|
+                    debug { "Scheduling #{d}" }
                   end
-                  if resolution
-                    debug { "Resolved #{dependency} at #{manifest}" }
-                  else
-                    debug { "Backtracking from #{manifest}" }
-                  end
+                  q = queue + a
+                  resolution = recursive_resolve(dependencies.dup, m, q)
+                end
+                if resolution
+                  debug { "Resolved #{dependency} at #{manifest}" }
+                else
+                  debug { "Backtracking from #{manifest}" }
                 end
               end
             end
-            if resolution
-              debug { "Resolved #{dependency}" }
-            else
-              debug { "Failed to resolve #{dependency}" }
-            end
+            resolution
+          end
+        end
+      end
+
+    private
+
+      def scope_resolving_dependency(dependency)
+        debug { "Resolving #{dependency}" }
+        resolution = nil
+        scope do
+          resolution = yield
+          if resolution
+            debug { "Resolved #{dependency}" }
+          else
+            debug { "Failed to resolve #{dependency}" }
           end
         end
         resolution
       end
-
-    private
 
       def scope
         @level += 1
