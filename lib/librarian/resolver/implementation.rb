@@ -36,7 +36,7 @@ module Librarian
       end
 
       def default_source
-        MultiSource.new(spec.sources)
+        @default_source ||= MultiSource.new(spec.sources)
       end
 
       def sourced_dependency_for(dependency)
