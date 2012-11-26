@@ -70,8 +70,7 @@ module Librarian
             dependency.manifests.each do |manifest|
               break if resolution
 
-              debug { "Checking #{manifest}" }
-              scope do
+              scope_checking_manifest dependency, manifest do
                 if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
                   m = manifests.merge(dependency.name => manifest)
                   a = manifest.dependencies.map { |d| sourced_dependency_for(d) }
@@ -80,11 +79,6 @@ module Librarian
                   end
                   q = queue + a
                   resolution = recursive_resolve(dependencies.dup, m, q)
-                end
-                if resolution
-                  debug { "Resolved #{dependency} at #{manifest}" }
-                else
-                  debug { "Backtracking from #{manifest}" }
                 end
               end
             end
@@ -114,6 +108,20 @@ module Librarian
         scope do
           yield
         end
+      end
+
+      def scope_checking_manifest(dependency, manifest)
+        debug { "Checking #{manifest}" }
+        resolution = nil
+        scope do
+          resolution = yield
+          if resolution
+            debug { "Resolved #{dependency} at #{manifest}" }
+          else
+            debug { "Backtracking from #{manifest}" }
+          end
+        end
+        resolution
       end
 
       def scope
