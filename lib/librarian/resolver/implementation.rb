@@ -44,6 +44,10 @@ module Librarian
       end
 
       def recursive_resolve(dependencies, manifests, queue)
+        dependencies = dependencies.dup
+        manifests = manifests.dup
+        queue = queue.dup
+
         if dependencies.empty?
           queue.each do |dependency|
             debug { "Scheduling #{dependency}" }
