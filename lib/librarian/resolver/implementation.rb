@@ -52,9 +52,7 @@ module Librarian
         queue = queue.dup
 
         if dependencies.empty?
-          queue.reject{|d| manifests[d.name]}.each do |dependency|
-            debug { "Scheduling #{dependency}" }
-          end
+          debug_schedule queue.reject{|d| manifests[d.name]}
         end
 
         return nil if queue.any?{|d| m = manifests[d.name] ; m && !d.satisfied_by?(m)}
@@ -74,9 +72,7 @@ module Librarian
                 if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
                   m = manifests.merge(dependency.name => manifest)
                   a = manifest.dependencies.map{|d| sourced_dependency_for(d)}
-                  a.each do |d|
-                    debug { "Scheduling #{d}" }
-                  end
+                  debug_schedule a
                   q = queue + a
                   resolution = recursive_resolve(dependencies.dup, m, q)
                 end
@@ -122,6 +118,12 @@ module Librarian
           end
         end
         resolution
+      end
+
+      def debug_schedule(dependencies)
+        dependencies.each do |d|
+          debug { "Scheduling #{d}" }
+        end
       end
 
       def scope
