@@ -5,7 +5,7 @@ require 'webmock'
 require 'librarian'
 require 'librarian/helpers'
 require 'librarian/chef'
-require 'librarian/source/linter'
+require 'librarian/linter/source_linter'
 
 module Librarian
   module Chef
@@ -78,7 +78,7 @@ module Librarian
 
         describe "lint" do
           it "lints" do
-            Librarian::Source::Linter.lint! described_class
+            Librarian::Linter::SourceLinter.lint! described_class
           end
         end
 

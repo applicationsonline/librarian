@@ -1,6 +1,6 @@
 module Librarian
-  module Source
-    class Linter
+  module Linter
+    class SourceLinter
 
       class << self
         def lint!(klass)
