@@ -59,8 +59,9 @@ module Librarian
 
         dependency = queue.shift
         dependencies << dependency
+        related_dependencies = dependencies.select{|d| d.name == dependency.name}
+
         scope_resolving_dependency dependency do
-          related_dependencies = dependencies.select{|d| d.name == dependency.name}
           scope_checking_manifests do
             resolution = nil
             dependency.manifests.each do |manifest|
