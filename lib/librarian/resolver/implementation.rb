@@ -28,9 +28,7 @@ module Librarian
       end
 
       def resolve(dependencies, manifests = {})
-        dependencies += manifests.values.map { |m|
-          m.dependencies.map { |d| sourced_dependency_for(d) }
-        }.flatten(1)
+        dependencies += sourced_dependencies_for_manifests(manifests)
         resolution = recursive_resolve([], manifests, dependencies)
         resolution ? resolution[1] : nil
       end
@@ -44,6 +42,15 @@ module Librarian
 
         source = dependency_source_map[dependency.name] || default_source
         Dependency.new(dependency.name, dependency.requirement, source)
+      end
+
+      def sourced_dependencies_for_manifest(manifest)
+        manifest.dependencies.map{|d| sourced_dependency_for(d)}
+      end
+
+      def sourced_dependencies_for_manifests(manifests)
+        manifests = manifests.values if manifests.kind_of?(Hash)
+        manifests.map{|m| sourced_dependencies_for_manifest(m)}.flatten(1)
       end
 
       def recursive_resolve(dependencies, manifests, queue)
@@ -65,7 +72,7 @@ module Librarian
           next if related_dependencies.any?{|d| !d.satisfied_by?(manifest)}
 
           m = manifests.merge(dependency.name => manifest)
-          a = manifest.dependencies.map{|d| sourced_dependency_for(d)}
+          a = sourced_dependencies_for_manifest(manifest)
           debug_schedule a
           q = queue + a
           recursive_resolve(dependencies, m, q)
