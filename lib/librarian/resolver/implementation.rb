@@ -49,7 +49,7 @@ module Librarian
             debug { "Scheduling #{dependency}" }
           end
         end
-        failure = false
+        failure = queue.any?{|d| m = manifests[d.name] ; m && !d.satisfied_by?(m)}
         until failure || queue.empty?
           dependency = queue.shift
           dependencies << dependency
