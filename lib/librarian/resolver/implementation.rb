@@ -12,6 +12,9 @@ module Librarian
         def manifests(name)
           sources.reverse.map{|source| source.manifests(name)}.flatten(1)
         end
+        def to_s
+          "(no source specified)"
+        end
       end
 
       attr_accessor :resolver, :spec, :dependency_source_map
