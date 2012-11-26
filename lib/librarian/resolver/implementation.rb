@@ -65,8 +65,7 @@ module Librarian
         dependencies << dependency
         scope_resolving_dependency dependency do
           related_dependencies = dependencies.select{|d| d.name == dependency.name}
-          debug { "Checking manifests" }
-          scope do
+          scope_checking_manifests do
             resolution = nil
             dependency.manifests.each do |manifest|
               break if resolution
@@ -108,6 +107,13 @@ module Librarian
           end
         end
         resolution
+      end
+
+      def scope_checking_manifests
+        debug { "Checking manifests" }
+        scope do
+          yield
+        end
       end
 
       def scope
