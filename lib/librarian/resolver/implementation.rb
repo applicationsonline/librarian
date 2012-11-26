@@ -53,66 +53,52 @@ module Librarian
             debug { "Scheduling #{dependency}" }
           end
         end
-        failure = queue.any?{|d| m = manifests[d.name] ; m && !d.satisfied_by?(m)}
-        until failure || queue.empty?
-          dependency = queue.shift
-          dependencies << dependency
-          debug { "Resolving #{dependency}" }
-          scope do
-            if manifests.key?(dependency.name)
-              unless dependency.satisfied_by?(manifests[dependency.name])
-                debug { "Conflicts with #{manifests[dependency.name]}" }
-                failure = true
-              else
-                debug { "Accords with all prior constraints" }
-                # nothing left to do
-              end
-            else
-              debug { "No known prior constraints" }
-              resolution = nil
-              related_dependencies = dependencies.select{|d| d.name == dependency.name}
-              unless dependency.manifests && dependency.manifests.first
-                debug { "No known manifests" }
-              else
-                debug { "Checking manifests" }
-                scope do
-                  dependency.manifests.each do |manifest|
-                    break if resolution
 
-                    debug { "Checking #{manifest}" }
-                    scope do
-                      if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
-                        m = manifests.merge(dependency.name => manifest)
-                        a = manifest.dependencies.map { |d| sourced_dependency_for(d) }
-                        a.each do |d|
-                          debug { "Scheduling #{d}" }
-                        end
-                        q = queue + a
-                        resolution = recursive_resolve(dependencies.dup, m, q)
-                      end
-                      if resolution
-                        debug { "Resolved #{dependency} at #{manifest}" }
-                      else
-                        debug { "Backtracking from #{manifest}" }
-                      end
+        return nil if queue.any?{|d| m = manifests[d.name] ; m && !d.satisfied_by?(m)}
+        queue.reject!{|d| manifests[d.name]}
+        return [dependencies, manifests, queue] if queue.empty?
+
+        dependency = queue.shift
+        dependencies << dependency
+        debug { "Resolving #{dependency}" }
+        resolution = nil
+        scope do
+          related_dependencies = dependencies.select{|d| d.name == dependency.name}
+          unless dependency.manifests && dependency.manifests.first
+            debug { "No known manifests" }
+          else
+            debug { "Checking manifests" }
+            scope do
+              dependency.manifests.each do |manifest|
+                break if resolution
+
+                debug { "Checking #{manifest}" }
+                scope do
+                  if related_dependencies.all?{|d| d.satisfied_by?(manifest)}
+                    m = manifests.merge(dependency.name => manifest)
+                    a = manifest.dependencies.map { |d| sourced_dependency_for(d) }
+                    a.each do |d|
+                      debug { "Scheduling #{d}" }
                     end
+                    q = queue + a
+                    resolution = recursive_resolve(dependencies.dup, m, q)
+                  end
+                  if resolution
+                    debug { "Resolved #{dependency} at #{manifest}" }
+                  else
+                    debug { "Backtracking from #{manifest}" }
                   end
                 end
-                if resolution
-                  debug { "Resolved #{dependency}" }
-                else
-                  debug { "Failed to resolve #{dependency}" }
-                end
               end
-              unless resolution
-                failure = true
-              else
-                dependencies, manifests, queue = *resolution
-              end
+            end
+            if resolution
+              debug { "Resolved #{dependency}" }
+            else
+              debug { "Failed to resolve #{dependency}" }
             end
           end
         end
-        failure ? nil : [dependencies, manifests, queue]
+        resolution
       end
 
     private
