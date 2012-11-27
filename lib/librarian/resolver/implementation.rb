@@ -28,10 +28,22 @@ module Librarian
 
       def resolve(dependencies, manifests = {})
         dependencies += sourced_dependencies_for_manifests(manifests)
-        recursive_resolve([], manifests, dependencies)
+
+        queue = []
+        return unless enqueue_dependencies(queue, dependencies, [], manifests)
+        recursive_resolve([], manifests, queue)
       end
 
     private
+
+      def consistent_with_all?(dep, deps, mans)
+        deps.all?{|d| dep.consistent_with?(d)} &&
+          (m = mans[dep.name] ; !m || dep.satisfied_by?(m))
+      end
+
+      def inconsistent_with_any?(dep, deps, mans)
+        !consistent_with_all?(dep, deps, mans)
+      end
 
       def recursive_resolve(dependencies, manifests, queue)
         dependencies = dependencies.dup
@@ -40,12 +52,10 @@ module Librarian
 
         all_deps = dependencies + queue
         while (dependency = queue.first) && manifests[dependency.name]
-          return if !dependency.satisfied_by?(manifests[dependency.name])
+          return if inconsistent_with_any?(dependency, all_deps, manifests)
           dependencies << queue.shift
         end
         return manifests if queue.empty?
-
-        debug_schedule queue if dependencies.empty?
 
         dependency = queue.shift
         dependencies << dependency
@@ -56,10 +66,25 @@ module Librarian
 
           m = manifests.merge(dependency.name => manifest)
           a = sourced_dependencies_for_manifest(manifest)
-          debug_schedule a
-          q = queue + a
+
+          q = queue.dup
+          next unless enqueue_dependencies(q, a, dependencies, manifests)
           recursive_resolve(dependencies, m, q)
         end
+      end
+
+      # When using this method, you are required to check the return value.
+      # Returns +true+ if the enqueueables could all be enqueued.
+      # Returns +false+ if there was an inconsistency when trying to enqueue one
+      # or more of them.
+      # This modifies +queue+ but does not modify any other arguments.
+      def enqueue_dependencies(queue, enqueueables, dependencies, manifests)
+        enqueueables.each do |d|
+          return false if inconsistent_with_any?(d, dependencies + queue, manifests)
+          debug_schedule d
+          queue << d
+        end
+        true
       end
 
       def default_source
@@ -134,10 +159,8 @@ module Librarian
         resolution
       end
 
-      def debug_schedule(dependencies)
-        dependencies.each do |d|
-          debug { "Scheduling #{d}" }
-        end
+      def debug_schedule(dependency)
+        debug { "Scheduling #{dependency}" }
       end
 
       def map_find(enum)
