@@ -123,7 +123,7 @@ module Librarian
 
       let(:resolution) { resolver.resolve(spec) }
 
-      specify { resolution.should_not be_correct }
+      specify { resolution.should be_nil }
 
     end
 
@@ -151,7 +151,7 @@ module Librarian
 
       let(:resolution) { resolver.resolve(spec) }
 
-      specify { resolution.should_not be_correct }
+      specify { resolution.should be_nil }
 
     end
 

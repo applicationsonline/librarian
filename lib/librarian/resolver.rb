@@ -16,9 +16,11 @@ module Librarian
       implementation = Implementation.new(self, spec)
       partial_manifests_index = Hash[partial_manifests.map{|m| [m.name, m]}]
       manifests = implementation.resolve(spec.dependencies, partial_manifests_index)
-      enforce_consistency!(spec.dependencies, manifests) if manifests
-      manifests = sort(manifests) if manifests
-      Resolution.new(spec.dependencies, manifests)
+      if manifests
+        enforce_consistency!(spec.dependencies, manifests)
+        manifests = sort(manifests)
+        Resolution.new(spec.dependencies, manifests)
+      end
     end
 
     def enforce_consistency!(dependencies, manifests)
