@@ -26,6 +26,54 @@ module Librarian
         to_gem_requirement.to_s
       end
 
+      COMPATS_TABLE = {
+        %w(=  = ) => lambda{|s, o| s == o},
+        %w(=  !=) => lambda{|s, o| s != o},
+        %w(=  > ) => lambda{|s, o| s >  o},
+        %w(=  < ) => lambda{|s, o| s <  o},
+        %w(=  >=) => lambda{|s, o| s >= o},
+        %w(=  <=) => lambda{|s, o| s <= o},
+        %w(=  ~>) => lambda{|s, o| s >= o && s.release < o.bump},
+        %w(!= !=) => true,
+        %w(!= > ) => true,
+        %w(!= < ) => true,
+        %w(!= >=) => true,
+        %w(!= <=) => true,
+        %w(!= ~>) => true,
+        %w(>  > ) => true,
+        %w(>  < ) => lambda{|s, o| s < o},
+        %w(>  >=) => true,
+        %w(>  <=) => lambda{|s, o| s < o},
+        %w(>  ~>) => lambda{|s, o| s < o.bump},
+        %w(<  < ) => true,
+        %w(<  >=) => lambda{|s, o| s > o},
+        %w(<  <=) => true,
+        %w(<  ~>) => lambda{|s, o| s > o},
+        %w(>= >=) => true,
+        %w(>= <=) => lambda{|s, o| s <= o},
+        %w(>= ~>) => lambda{|s, o| s < o.bump},
+        %w(<= <=) => true,
+        %w(<= ~>) => lambda{|s, o| s >= o},
+        %w(~> ~>) => lambda{|s, o| s < o.bump && s.bump > o},
+      }
+
+      def consistent_with?(other)
+        sgreq, ogreq = to_gem_requirement, other.to_gem_requirement
+        sreqs, oreqs = sgreq.requirements, ogreq.requirements
+        sreqs.all? do |sreq|
+          oreqs.all? do |oreq|
+            sreq, oreq = oreq, sreq unless COMPATS_TABLE.include?([sreq.first, oreq.first])
+            r = COMPATS_TABLE[[sreq.first, oreq.first]]
+            r = r.call(sreq.last, oreq.last) if r.respond_to?(:call)
+            r
+          end
+        end
+      end
+
+      def inconsistent_with?(other)
+        !consistent_with?(other)
+      end
+
       protected
 
       attr_accessor :backing
@@ -75,6 +123,14 @@ module Librarian
       self.name         == other.name         &&
       self.requirement  == other.requirement  &&
       self.source       == other.source
+    end
+
+    def consistent_with?(other)
+      name != other.name || requirement.consistent_with?(other.requirement)
+    end
+
+    def inconsistent_with?(other)
+      !consistent_with?(other)
     end
 
   private
