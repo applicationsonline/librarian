@@ -28,8 +28,7 @@ module Librarian
 
       def resolve(dependencies, manifests = {})
         dependencies += sourced_dependencies_for_manifests(manifests)
-        resolution = recursive_resolve([], manifests, dependencies)
-        resolution ? resolution[1] : nil
+        recursive_resolve([], manifests, dependencies)
       end
 
     private
@@ -41,7 +40,7 @@ module Librarian
 
         return nil if queue.any?{|d| m = manifests[d.name] ; m && !d.satisfied_by?(m)}
         queue.reject!{|d| manifests[d.name]}
-        return [dependencies, manifests, queue] if queue.empty?
+        return manifests if queue.empty?
 
         debug_schedule queue if dependencies.empty?
 
