@@ -13,8 +13,7 @@ module Librarian
     end
 
     def resolve(spec, partial_manifests = [])
-      implementation = Implementation.new(self, spec)
-      manifests = implementation.resolve(partial_manifests)
+      manifests = implementation(spec).resolve(partial_manifests)
       if manifests
         enforce_consistency!(spec.dependencies, manifests)
         manifests = sort(manifests)
@@ -23,6 +22,10 @@ module Librarian
     end
 
   private
+
+    def implementation(spec)
+      Implementation.new(self, spec)
+    end
 
     def enforce_consistency!(dependencies, manifests)
       return if dependencies.all?{|d|
