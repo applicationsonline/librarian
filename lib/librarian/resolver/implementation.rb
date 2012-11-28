@@ -48,13 +48,7 @@ module Librarian
         queue = queue.dup
 
         return unless enqueue_dependencies(queue, addtl, dependencies, manifests)
-        addtl = nil
-
-        all_deps = dependencies + queue
-        while (dependency = queue.first) && manifests[dependency.name]
-          return if inconsistent_with_any?(dependency, all_deps, manifests)
-          dependencies << queue.shift
-        end
+        return unless shift_resolved_enqueued_dependencies(dependencies, manifests, queue)
         return manifests if queue.empty?
 
         dependency = queue.shift
@@ -81,6 +75,21 @@ module Librarian
           return false if inconsistent_with_any?(d, dependencies + queue, manifests)
           debug_schedule d
           queue << d
+        end
+        true
+      end
+
+      # When using this method, you are required to check the return value.
+      # Returns +true+ if the resolved enqueued dependencies at the front of the
+      # queue could all be moved to the resolved dependencies list.
+      # Returns +false+ if there was an inconsistency when trying to move one or
+      # more of them.
+      # This modifies +queue+ and +dependencies+.
+      def shift_resolved_enqueued_dependencies(dependencies, manifests, queue)
+        all_deps = dependencies + queue
+        while (dependency = queue.first) && manifests[dependency.name]
+          return false if inconsistent_with_any?(dependency, all_deps, manifests)
+          dependencies << queue.shift
         end
         true
       end
