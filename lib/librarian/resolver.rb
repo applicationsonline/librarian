@@ -23,6 +23,8 @@ module Librarian
       end
     end
 
+  private
+
     def enforce_consistency!(dependencies, manifests)
       return if dependencies.all?{|d|
         m = manifests[d.name]
@@ -69,8 +71,6 @@ module Librarian
     def sort(manifests)
       ManifestSet.sort(manifests)
     end
-
-  private
 
     def debug(*args, &block)
       environment.logger.debug(*args, &block)
