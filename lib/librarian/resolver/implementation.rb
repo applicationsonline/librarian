@@ -26,8 +26,9 @@ module Librarian
         @level = 0
       end
 
-      def resolve(dependencies, manifests = {})
-        addtl = dependencies + sourced_dependencies_for_manifests(manifests)
+      def resolve(manifests)
+        manifests = index_by(manifests, &:name) if manifests.kind_of?(Array)
+        addtl = spec.dependencies + sourced_dependencies_for_manifests(manifests)
         recursive_resolve([], manifests, [], addtl)
       end
 
@@ -176,6 +177,10 @@ module Librarian
           res.nil? or return res
         end
         nil
+      end
+
+      def index_by(enum)
+        Hash[enum.map{|obj| [yield(obj), obj]}]
       end
 
       def scope
