@@ -46,7 +46,7 @@ module Librarian
 
         dependency = queue.shift
         dependencies << dependency
-        related_dependencies = dependencies.select{|d| d.name == dependency.name}
+        related_dependencies = (dependencies + queue).select{|d| d.name == dependency.name}
 
         resolving_dependency_map_find_manifests(dependency) do |manifest|
           next if related_dependencies.any?{|d| !d.satisfied_by?(manifest)}
