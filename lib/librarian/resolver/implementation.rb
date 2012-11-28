@@ -27,11 +27,8 @@ module Librarian
       end
 
       def resolve(dependencies, manifests = {})
-        dependencies += sourced_dependencies_for_manifests(manifests)
-
-        queue = []
-        return unless enqueue_dependencies(queue, dependencies, [], manifests)
-        recursive_resolve([], manifests, queue)
+        addtl = dependencies + sourced_dependencies_for_manifests(manifests)
+        recursive_resolve([], manifests, [], addtl)
       end
 
     private
@@ -45,10 +42,13 @@ module Librarian
         !consistent_with_all?(dep, deps, mans)
       end
 
-      def recursive_resolve(dependencies, manifests, queue)
+      def recursive_resolve(dependencies, manifests, queue, addtl)
         dependencies = dependencies.dup
         manifests = manifests.dup
         queue = queue.dup
+
+        return unless enqueue_dependencies(queue, addtl, dependencies, manifests)
+        addtl = nil
 
         all_deps = dependencies + queue
         while (dependency = queue.first) && manifests[dependency.name]
@@ -67,9 +67,7 @@ module Librarian
           m = manifests.merge(dependency.name => manifest)
           a = sourced_dependencies_for_manifest(manifest)
 
-          q = queue.dup
-          next unless enqueue_dependencies(q, a, dependencies, manifests)
-          recursive_resolve(dependencies, m, q)
+          recursive_resolve(dependencies, m, queue, a)
         end
       end
 
