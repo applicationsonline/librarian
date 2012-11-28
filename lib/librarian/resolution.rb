@@ -25,7 +25,7 @@ module Librarian
     end
 
     def sources
-      manifests.map{|m| m.source}.uniq
+      manifests.map(&:source).uniq
     end
 
   private
