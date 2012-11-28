@@ -28,10 +28,9 @@ module Librarian
     end
 
     def enforce_consistency!(dependencies, manifests)
-      return if dependencies.all?{|d|
-        m = manifests[d.name]
-        m && d.satisfied_by?(m)
-      } && ManifestSet.new(manifests).consistent?
+      manifest_set = ManifestSet.new(manifests)
+      return if manifest_set.in_compliance_with?(dependencies)
+      return if manifest_set.consistent?
 
       debug { "Resolver Malfunctioned!" }
       errors = []
