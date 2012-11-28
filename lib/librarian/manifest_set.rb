@@ -43,7 +43,7 @@ module Librarian
     end
 
     def initialize(manifests)
-      self.index = Hash === manifests ? manifests.dup : Hash[manifests.map{|m| [m.name, m]}]
+      self.index = Hash === manifests ? manifests.dup : index_by(manifests, &:name)
     end
 
     def to_a
@@ -147,6 +147,10 @@ module Librarian
         names.concat index[name].dependencies.map(&:name)
       end
       deps.to_a
+    end
+
+    def index_by(enum)
+      Hash[enum.map{|obj| [yield(obj), obj]}]
     end
 
   end
