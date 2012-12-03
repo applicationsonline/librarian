@@ -35,12 +35,17 @@ module Librarian
     private
 
       def consistent_with_all?(dep, deps, mans)
-        deps.all?{|d| dep.consistent_with?(d)} &&
-          (m = mans[dep.name] ; !m || dep.satisfied_by?(m))
+        !find_inconsistency(dep, deps, mans)
       end
 
       def inconsistent_with_any?(dep, deps, mans)
-        !consistent_with_all?(dep, deps, mans)
+        !!find_inconsistency(dep, deps, mans)
+      end
+
+      def find_inconsistency(dep, deps, mans)
+        m = mans[dep.name]
+        dep.satisfied_by?(m) or return m if m
+        deps.find{|d| !dep.consistent_with?(d)}
       end
 
       def recursive_resolve(dependencies, manifests, queue, addtl)
