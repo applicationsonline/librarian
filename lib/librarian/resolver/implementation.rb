@@ -34,14 +34,6 @@ module Librarian
 
     private
 
-      def consistent_with_all?(dep, deps, mans)
-        !find_inconsistency(dep, deps, mans)
-      end
-
-      def inconsistent_with_any?(dep, deps, mans)
-        !!find_inconsistency(dep, deps, mans)
-      end
-
       def find_inconsistency(dep, deps, mans)
         m = mans[dep.name]
         dep.satisfied_by?(m) or return m if m
@@ -59,10 +51,10 @@ module Librarian
 
         dependency = queue.shift
         dependencies << dependency
-        related_dependencies = (dependencies + queue).select{|d| d.name == dependency.name}
+        all_deps = dependencies + queue
 
         resolving_dependency_map_find_manifests(dependency) do |manifest|
-          next if related_dependencies.any?{|d| !d.satisfied_by?(manifest)}
+          next unless check_manifest(manifest, all_deps)
 
           m = manifests.merge(dependency.name => manifest)
           a = sourced_dependencies_for_manifest(manifest)
@@ -78,7 +70,10 @@ module Librarian
       # This modifies +queue+ but does not modify any other arguments.
       def enqueue_dependencies(queue, enqueueables, dependencies, manifests)
         enqueueables.each do |d|
-          return false if inconsistent_with_any?(d, dependencies + queue, manifests)
+          if q = find_inconsistency(d, dependencies + queue, manifests)
+            debug_conflict d, q
+            return false
+          end
           debug_schedule d
           queue << d
         end
@@ -94,8 +89,24 @@ module Librarian
       def shift_resolved_enqueued_dependencies(dependencies, manifests, queue)
         all_deps = dependencies + queue
         while (dependency = queue.first) && manifests[dependency.name]
-          return false if inconsistent_with_any?(dependency, all_deps, manifests)
+          if q = find_inconsistency(dependency, all_deps, manifests)
+            debug_conflict dependency, q
+            return false
+          end
           dependencies << queue.shift
+        end
+        true
+      end
+
+      # When using this method, you are required to check the return value.
+      # Returns +true+ if the manifest satisfies all of the dependencies.
+      # Returns +false+ if there was a dependency that the manifest does not
+      # satisfy.
+      def check_manifest(manifest, all_deps)
+        related = all_deps.select{|d| d.name == manifest.name}
+        if q = related.find{|d| !d.satisfied_by?(manifest)}
+          debug_conflict manifest, q
+          return false
         end
         true
       end
@@ -174,6 +185,10 @@ module Librarian
 
       def debug_schedule(dependency)
         debug { "Scheduling #{dependency}" }
+      end
+
+      def debug_conflict(dependency, conflict)
+        debug { "Conflict between #{dependency} and #{conflict}" }
       end
 
       def map_find(enum)
