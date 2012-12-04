@@ -308,7 +308,7 @@ module Librarian
           end
 
           def http(uri)
-            environment.net_http_class.new(uri.host, uri.port)
+            environment.net_http_class(uri.host).new(uri.host, uri.port)
           end
 
           def http_get(uri)
