@@ -153,10 +153,22 @@ module Librarian
       end
     end
 
-    def net_http_class
-      @net_http_class ||= begin
-        p = http_proxy_uri
-        p ? Net::HTTP::Proxy(p.host, p.port, p.user, p.password) : Net::HTTP
+    def no_proxy? host
+      @no_proxy ||= (ENV['NO_PROXY'] || ENV['no_proxy'] || 'localhost, 127.0.0.1').split(/\s*,\s*/)
+      @no_proxy.each do |host_addr|
+        return true if host.match(Regexp.quote(host_addr)+'$')
+      end
+      return false
+    end
+
+    def net_http_class host 
+      if no_proxy? host
+        Net::HTTP
+      else
+        @net_http_class ||= begin
+          p = http_proxy_uri
+          p ? Net::HTTP::Proxy(p.host, p.port, p.user, p.password) : Net::HTTP
+        end
       end
     end
 
