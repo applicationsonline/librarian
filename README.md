@@ -136,6 +136,11 @@ we vendored it in our repository into the `cookbooks/` directory for us.
 The `:path =>` source won't be confused with the `:git =>` source's `:path =>`
 option.
 
+Also, there is shortcut for cookbooks hosted on GitHub, so we may write:
+
+    cookbook "rvm",
+      :github => "fnichol/chef-rvm"
+
 ### How to Use
 
 Install Librarian-Chef:
