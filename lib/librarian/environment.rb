@@ -153,7 +153,7 @@ module Librarian
       end
     end
 
-    def no_proxy? host
+    def no_proxy?(host)
       @no_proxy ||= (ENV['NO_PROXY'] || ENV['no_proxy'] || 'localhost, 127.0.0.1').split(/\s*,\s*/)
       @no_proxy.each do |host_addr|
         return true if host.match(Regexp.quote(host_addr)+'$')
@@ -161,8 +161,8 @@ module Librarian
       return false
     end
 
-    def net_http_class host 
-      if no_proxy? host
+    def net_http_class(host)
+      if no_proxy?(host)
         Net::HTTP
       else
         @net_http_class ||= begin
