@@ -154,7 +154,10 @@ module Librarian
     end
 
     def no_proxy?(host)
-      @no_proxy ||= (ENV['NO_PROXY'] || ENV['no_proxy'] || 'localhost, 127.0.0.1').split(/\s*,\s*/)
+      @no_proxy ||= begin
+        list = (ENV['NO_PROXY'] || ENV['no_proxy'] || 'localhost, 127.0.0.1')
+        list.split(/\s*,\s*/)
+      end
       @no_proxy.each do |host_addr|
         return true if host.match(Regexp.quote(host_addr)+'$')
       end
