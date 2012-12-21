@@ -158,10 +158,9 @@ module Librarian
         list = (ENV['NO_PROXY'] || ENV['no_proxy'] || 'localhost, 127.0.0.1')
         list.split(/\s*,\s*/)
       end
-      @no_proxy.each do |host_addr|
-        return true if host.match(Regexp.quote(host_addr)+'$')
+      @no_proxy.any? do |host_addr|
+        host.match(Regexp.quote(host_addr)+'$')
       end
-      return false
     end
 
     def net_http_class(host)
