@@ -49,32 +49,6 @@ module Librarian
       end
 
     end
-    describe "no_proxy?" do
-      context "sanity" do
-        with_env "no_proxy" => nil
-        it "should by true for localhost" do
-          env.no_proxy?('localhost').should be_true
-        end
-        it "should by true for 127.0.0.1" do
-          env.no_proxy?('127.0.0.1').should be_true
-        end
-        it "should be false for some host" do
-          env.no_proxy?('www.example.com').should be_false
-        end
-      end
-      context "with a proxy exception list" do
-        with_env "no_proxy" => "noproxy1.com, no.proxy.com"
-        it "should not proxy to host in list" do
-          env.no_proxy?("noproxy1.com").should be_true
-        end
-        it "should not proxy to subdomain from host in list" do
-          env.no_proxy?("subdomain.noproxy1.com").should be_true
-        end
-        it "should proxy to host not in list" do
-          env.no_proxy?("no.proxy.com.org").should be_false
-        end
-      end
-    end
 
     describe "#net_http_class" do
       let(:proxied_host) { "www.example.com" }
@@ -126,17 +100,73 @@ module Librarian
           actual_attributes.should == expected_attributes
         end
 
-        context "with an excluded host" do
-          with_env "no_proxy" => "no.proxy.com, noproxy.com"
+      end
+
+      context "with an excluded host" do
+        with_env  "http_proxy" => "admin:secret@example.com",
+                  "no_proxy" => "no.proxy.com, noproxy.com"
+
+        context "with an exact match" do
+          let(:proxied_host) { "noproxy.com" }
+
           it "should have the normal class" do
-            env.net_http_class("noproxy.com").should be Net::HTTP
+            env.net_http_class(proxied_host).should be Net::HTTP
           end
-          it "should have the normal class for a subdomain" do
-            env.net_http_class("www.noproxy.com").should be Net::HTTP
+
+          it "should not be marked as a proxy class" do
+            env.net_http_class(proxied_host).should_not be_proxy_class
+          end
+        end
+
+        context "with a subdomain match" do
+          let(:proxied_host) { "www.noproxy.com" }
+
+          it "should have the normal class" do
+            env.net_http_class(proxied_host).should be Net::HTTP
+          end
+
+          it "should not be marked as a proxy class" do
+            env.net_http_class(proxied_host).should_not be_proxy_class
+          end
+        end
+
+        context "with localhost" do
+          let(:proxied_host) { "localhost" }
+
+          it "should have the normal class" do
+            env.net_http_class(proxied_host).should be Net::HTTP
+          end
+
+          it "should not be marked as a proxy class" do
+            env.net_http_class(proxied_host).should_not be_proxy_class
+          end
+        end
+
+        context "with 127.0.0.1" do
+          let(:proxied_host) { "127.0.0.1" }
+
+          it "should have the normal class" do
+            env.net_http_class(proxied_host).should be Net::HTTP
+          end
+
+          it "should not be marked as a proxy class" do
+            env.net_http_class(proxied_host).should_not be_proxy_class
+          end
+        end
+
+        context "with a mismatch" do
+          let(:proxied_host) { "www.example.com" }
+
+          it "should have a subclass the normal class" do
+            env.net_http_class(proxied_host).should < Net::HTTP
+          end
+
+          it "should be marked as a proxy class" do
+            env.net_http_class(proxied_host).should be_proxy_class
           end
         end
       end
-      
+
     end
 
   end

@@ -153,16 +153,6 @@ module Librarian
       end
     end
 
-    def no_proxy?(host)
-      @no_proxy ||= begin
-        list = (ENV['NO_PROXY'] || ENV['no_proxy'] || 'localhost, 127.0.0.1')
-        list.split(/\s*,\s*/)
-      end
-      @no_proxy.any? do |host_addr|
-        host.match(Regexp.quote(host_addr)+'$')
-      end
-    end
-
     def net_http_class(host)
       return Net::HTTP if no_proxy?(host)
 
@@ -176,6 +166,16 @@ module Librarian
 
     def environment
       self
+    end
+
+    def no_proxy?(host)
+      @no_proxy ||= begin
+        list = ENV['NO_PROXY'] || ENV['no_proxy'] || ""
+        list.split(/\s*,\s*/) + %w(localhost 127.0.0.1)
+      end
+      @no_proxy.any? do |host_addr|
+        host.match(Regexp.quote(host_addr)+'$')
+      end
     end
 
   end
