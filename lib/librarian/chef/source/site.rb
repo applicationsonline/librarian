@@ -243,9 +243,6 @@ module Librarian
             debug { "Caching #{uri} to #{path}" }
 
             response = http_get(uri)
-            unless Net::HTTPSuccess === response
-              raise Error, "Could not get #{uri} because #{response.code} #{response.message}!"
-            end
 
             object = response.body
             case type
@@ -311,12 +308,21 @@ module Librarian
             environment.net_http_class(uri.host).new(uri.host, uri.port)
           end
 
-          def http_get(uri)
+          def http_get(uri, depth = 0)
             http = http(uri)
             request = Net::HTTP::Get.new(uri.path)
             response = http.start{|http| http.request(request)}
 
-            response
+            case response
+            when Net::HTTPSuccess
+              return response
+            when Net::HTTPRedirection
+              raise Error, "Could not get #{uri} because too many redirections!" if depth > 10
+              uri = URI.parse response['Location']
+              return http_get(uri, depth + 1)
+            else
+              raise Error, "Could not get #{uri} because #{response.code} #{response.message}!"
+            end
           end
 
         end
