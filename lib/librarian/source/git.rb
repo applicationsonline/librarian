@@ -13,18 +13,7 @@ module Librarian
       include Local
 
       lock_name 'GIT'
-
-      class << self
-
-        def from_spec_args(environment, uri, options)
-          recognized_options = [:ref, :path]
-          unrecognized_options = options.keys - recognized_options
-          unrecognized_options.empty? or raise Error, "unrecognized options: #{unrecognized_options.join(", ")}"
-
-          new(environment, uri, options)
-        end
-
-      end
+      spec_options [:ref, :path]
 
       DEFAULTS = {
         :ref => 'master'

@@ -344,18 +344,7 @@ module Librarian
         include Librarian::Source::BasicApi
 
         lock_name 'SITE'
-
-        class << self
-
-          def from_spec_args(environment, uri, options)
-            recognized_options = []
-            unrecognized_options = options.keys - recognized_options
-            unrecognized_options.empty? or raise Error, "unrecognized options: #{unrecognized_options.join(", ")}"
-
-            new(environment, uri, options)
-          end
-
-        end
+        spec_options []
 
         attr_accessor :environment, :uri
         private :environment=, :uri=

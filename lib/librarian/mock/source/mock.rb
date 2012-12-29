@@ -9,18 +9,7 @@ module Librarian
         include Librarian::Source::BasicApi
 
         lock_name 'MOCK'
-
-        class << self
-
-          def from_spec_args(environment, name, options)
-            recognized_options = []
-            unrecognized_options = options.keys - recognized_options
-            unrecognized_options.empty? or raise Error, "unrecognized options: #{unrecognized_options.join(", ")}"
-
-            new(environment, name, options)
-          end
-
-        end
+        spec_options []
 
         attr_accessor :environment
         private :environment=

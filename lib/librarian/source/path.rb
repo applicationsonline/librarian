@@ -8,18 +8,7 @@ module Librarian
       include Local
 
       lock_name 'PATH'
-
-      class << self
-
-        def from_spec_args(environment, path, options)
-          recognized_options = []
-          unrecognized_options = options.keys - recognized_options
-          unrecognized_options.empty? or raise Error, "unrecognized options: #{unrecognized_options.join(", ")}"
-
-          new(environment, path, options)
-        end
-
-      end
+      spec_options []
 
       attr_accessor :environment
       private :environment=
