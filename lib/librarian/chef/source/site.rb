@@ -8,6 +8,7 @@ require 'zlib'
 require 'securerandom'
 require 'archive/tar/minitar'
 
+require 'librarian/source/basic_api'
 require 'librarian/chef/manifest_reader'
 
 module Librarian
@@ -340,16 +341,14 @@ module Librarian
 
         end
 
+        include Librarian::Source::BasicApi
+
         class << self
 
           LOCK_NAME = 'SITE'
 
           def lock_name
             LOCK_NAME
-          end
-
-          def from_lock_options(environment, options)
-            new(environment, options[:remote], options.reject{|k, v| k == :remote})
           end
 
           def from_spec_args(environment, uri, options)

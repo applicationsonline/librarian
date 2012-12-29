@@ -2,13 +2,14 @@ require 'fileutils'
 require 'pathname'
 require 'digest'
 
+require 'librarian/source/basic_api'
 require 'librarian/source/git/repository'
 require 'librarian/source/local'
 
 module Librarian
   module Source
     class Git
-
+      include BasicApi
       include Local
 
       class << self
@@ -17,10 +18,6 @@ module Librarian
 
         def lock_name
           LOCK_NAME
-        end
-
-        def from_lock_options(environment, options)
-          new(environment, options[:remote], options.reject{|k, v| k == :remote})
         end
 
         def from_spec_args(environment, uri, options)
