@@ -76,9 +76,6 @@ module Librarian
     end
 
     def deep_strip!(names)
-      names = Array === names ? names.dup : names.to_a
-      assert_strings!(names)
-
       strippables = dependencies_of(names)
       shallow_strip!(strippables)
 
@@ -102,9 +99,6 @@ module Librarian
     end
 
     def deep_keep!(names)
-      names = Array === names ? names.dup : names.to_a
-      assert_strings!(names)
-
       keepables = dependencies_of(names)
       shallow_keep!(keepables)
 
