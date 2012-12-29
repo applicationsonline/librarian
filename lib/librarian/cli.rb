@@ -209,15 +209,14 @@ module Librarian
     end
 
     def config_scope(exclusive)
+      g, l = "global", "local"
       if exclusive
-        options["global"] ^ options["local"] or raise Error,
-          "must set either global or local"
+        options[g] ^ options[l] or raise Error, "must set either #{g} or #{l}"
       else
-        options["global"] && options["local"] and raise Error,
-          "cannot set both global and local"
+        options[g] && options[l] and raise Error, "cannot set both #{g} and #{l}"
       end
 
-      options["global"] ? :global : options["local"] ? :local : nil
+      options[g] ? :global : options[l] ? :local : nil
     end
 
   end
