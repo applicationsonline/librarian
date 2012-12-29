@@ -63,19 +63,11 @@ module CliMacro
   end
 
   def cli!(*args)
-    Dir.chdir(pwd) do
-      described_class.with_environment do |environment|
-        begin
-          @shell = FakeShell.new
-          @exit_status = nil
+    @shell = FakeShell.new
+    @exit_status = Dir.chdir(pwd) do
+      described_class.with_environment do
+        described_class.returning_status do
           described_class.start args, :shell => @shell
-          @exit_status = 0
-        rescue Librarian::Error => e
-          environment.ui.error e.message
-          environment.ui.debug e.backtrace.join("\n")
-          @exit_status = e.respond_to?(:status_code) ? e.status_code : 1
-        rescue Exception => e
-          @exit_status = 1
         end
       end
     end

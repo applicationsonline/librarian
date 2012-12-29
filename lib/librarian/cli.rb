@@ -23,18 +23,20 @@ module Librarian
 
     class << self
       def bin!
-        with_environment do |environment|
-          begin
-            start
-          rescue Librarian::Error => e
-            environment.ui.error e.message
-            environment.ui.debug e.backtrace.join("\n")
-            exit (e.respond_to?(:status_code) ? e.status_code : 1)
-          rescue Interrupt => e
-            environment.ui.error "\nQuitting..."
-            exit 1
-          end
-        end
+        status = with_environment { returning_status { start } }
+        exit status
+      end
+
+      def returning_status
+        yield
+        0
+      rescue Librarian::Error => e
+        environment.ui.error e.message
+        environment.ui.debug e.backtrace.join("\n")
+        e.respond_to?(:status_code) && e.status_code || 1
+      rescue Interrupt => e
+        environment.ui.error "\nQuitting..."
+        1
       end
 
       attr_accessor :environment
