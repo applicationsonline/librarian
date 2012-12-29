@@ -74,16 +74,13 @@ module Librarian
       if key
         raise Error, "cannot set both value and delete" if value && options["delete"]
         if options["delete"]
-          raise Error, "must set either global or local" unless options["global"] ^ options["local"]
-          scope = options["global"] ? :global : options["local"] ? :local : nil
+          scope = config_scope(true)
           environment.config_db[key, scope] = nil
         elsif value
-          raise Error, "must set either global or local" unless options["global"] ^ options["local"]
-          scope = options["global"] ? :global : options["local"] ? :local : nil
+          scope = config_scope(true)
           environment.config_db[key, scope] = value
         else
-          raise Error, "cannot set both global and local" if options["global"] && options["local"]
-          scope = options["global"] ? :global : options["local"] ? :local : nil
+          scope = config_scope(false)
           if value = environment.config_db[key, scope]
             prefix = scope ? "#{key} (#{scope})" : key
             say "#{prefix}: #{value}"
@@ -209,6 +206,18 @@ module Librarian
 
     def relative_path_to(path)
       environment.logger.relative_path_to(path)
+    end
+
+    def config_scope(exclusive)
+      if exclusive
+        options["global"] ^ options["local"] or raise Error,
+          "must set either global or local"
+      else
+        options["global"] && options["local"] and raise Error,
+          "cannot set both global and local"
+      end
+
+      options["global"] ? :global : options["local"] ? :local : nil
     end
 
   end
