@@ -65,6 +65,14 @@ module Librarian
       defined_version == fetched_version
     end
 
+    def latest
+      @latest ||= source.manifests(name).first
+    end
+
+    def outdated?
+      latest.version > version
+    end
+
     def dependencies
       defined_dependencies || fetched_dependencies
     end
