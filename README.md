@@ -1,4 +1,4 @@
-Librarian [![Build Status](https://secure.travis-ci.org/applicationsonline/librarian.png)](http://travis-ci.org/applicationsonline/librarian)
+Librarian [![Build Status](https://secure.travis-ci.org/applicationsonline/librarian.png)](http://travis-ci.org/applicationsonline/librarian) [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/applicationsonline/librarian)
 =========
 
 Librarian is a framework for writing bundlers, which are tools that resolve,
