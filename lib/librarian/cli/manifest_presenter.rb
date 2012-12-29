@@ -17,13 +17,11 @@ module Librarian
         full = options[:detailed]
         full = !names.empty? if full.nil?
 
-        if names.empty?
-          names = manifests.map(&:name).sort if names.empty?
-        else
-          missing_names = names.reject{|name| manifest(name)}
-          unless missing_names.empty?
-            raise Error, "not found: #{missing_names.map(&:inspect).join(', ')}"
-          end
+        names = manifests.map(&:name).sort if names.empty?
+
+        missing_names = names.reject{|name| manifest(name)}
+        unless missing_names.empty?
+          raise Error, "not found: #{missing_names.map(&:inspect).join(', ')}"
         end
 
         names.each do |name|
@@ -36,14 +34,15 @@ module Librarian
         full = options[:detailed]
 
         say "#{manifest.name} (#{manifest.version})" do
-          if full
-            say "source: #{manifest.source}"
-            unless manifest.dependencies.empty?
-              say "dependencies:" do
-                manifest.dependencies.sort_by(&:name).each do |dependency|
-                  say "#{dependency.name} (#{dependency.requirement})"
-                end
-              end
+          full or next
+
+          say "source: #{manifest.source}"
+
+          manifest.dependencies.empty? and next
+          say "dependencies:" do
+            deps = manifest.dependencies.sort_by(&:name)
+            deps.each do |dependency|
+              say "#{dependency.name} (#{dependency.requirement})"
             end
           end
         end
