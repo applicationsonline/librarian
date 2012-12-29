@@ -77,8 +77,7 @@ module Librarian
           end
 
           def version_uri_metadata(version_uri)
-            @version_uri_metadata ||= { }
-            @version_uri_metadata[version_uri.to_s] ||= begin
+            memo(__method__, version_uri.to_s) do
               cache_version_uri_metadata! version_uri
               parse_local_json(version_uri_metadata_cache_path(version_uri))
             end
@@ -90,8 +89,7 @@ module Librarian
           end
 
           def version_uri_manifest(version_uri)
-            @version_uri_manifest ||= { }
-            @version_uri_manifest[version_uri.to_s] ||= begin
+            memo(__method__, version_uri.to_s) do
               cache_version_uri_unpacked! version_uri
               unpacked_path = version_uri_unpacked_cache_path(version_uri)
               manifest_path = ManifestReader.manifest_path(unpacked_path)
@@ -107,8 +105,7 @@ module Librarian
           end
 
           def to_version_uri(version)
-            @to_version_uri ||= { }
-            @to_version_uri[version.to_s] ||= begin
+            memo(__method__, version.to_s) do
               cache_version! version
               version_cache_path(version).read
             end
@@ -127,15 +124,13 @@ module Librarian
           end
 
           def version_cache_path(version)
-            @version_cache_path ||= { }
-            @version_cache_path[version.to_s] ||= begin
+            memo(__method__, version.to_s) do
               cache_path.join("version").join(version.to_s)
             end
           end
 
           def version_uri_cache_path(version_uri)
-            @version_uri_cache_path ||= { }
-            @version_uri_cache_path[version_uri.to_s] ||= begin
+            memo(__method__, version_uri.to_s) do
               cache_path.join("version-uri").join(hexdigest(version_uri))
             end
           end
@@ -146,8 +141,7 @@ module Librarian
           end
 
           def version_uri_metadata_cache_path(version_uri)
-            @version_uri_metadata_cache_path ||= { }
-            @version_uri_metadata_cache_path[version_uri.to_s] ||= begin
+            memo(__method__, version_uri.to_s) do
               version_uri_cache_path(version_uri).join("metadata.json")
             end
           end
@@ -158,8 +152,7 @@ module Librarian
           end
 
           def version_uri_package_cache_path(version_uri)
-            @version_uri_package_cache_path ||= { }
-            @version_uri_package_cache_path[version_uri.to_s] ||= begin
+            memo(__method__, version_uri.to_s) do
               version_uri_cache_path(version_uri).join("package.tar.gz")
             end
           end
@@ -170,8 +163,7 @@ module Librarian
           end
 
           def version_uri_unpacked_cache_path(version_uri)
-            @version_uri_unpacked_cache_path ||= { }
-            @version_uri_unpacked_cache_path[version_uri.to_s] ||= begin
+            memo(__method__, version_uri.to_s) do
               version_uri_cache_path(version_uri).join("package")
             end
           end
@@ -337,6 +329,16 @@ module Librarian
                 raise Error, "Could not get #{uri} because #{response.code} #{response.message}!"
               end
             end
+          end
+
+          def memo(method, *path)
+            ivar = "@#{method}".to_sym
+            unless memo = instance_variable_get(ivar)
+              memo = instance_variable_set(ivar, { })
+            end
+
+            memo.key?(path) or memo[path] = yield
+            memo[path]
           end
 
         end
