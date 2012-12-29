@@ -308,20 +308,33 @@ module Librarian
             environment.net_http_class(uri.host).new(uri.host, uri.port)
           end
 
-          def http_get(uri, depth = 0)
-            http = http(uri)
-            request = Net::HTTP::Get.new(uri.path)
-            response = http.start{|http| http.request(request)}
+          def http_get(uri)
+            max_redirects = 10
+            redirects = []
 
-            case response
-            when Net::HTTPSuccess
-              return response
-            when Net::HTTPRedirection
-              raise Error, "Could not get #{uri} because too many redirections!" if depth > 10
-              uri = URI.parse response['Location']
-              return http_get(uri, depth + 1)
-            else
-              raise Error, "Could not get #{uri} because #{response.code} #{response.message}!"
+            loop do
+              debug { "Performing http-get for #{uri}" }
+              http = http(uri)
+              request = Net::HTTP::Get.new(uri.path)
+              response = http.start{|http| http.request(request)}
+
+              case response
+              when Net::HTTPSuccess
+                debug { "Responded with success" }
+                return response
+              when Net::HTTPRedirection
+                location = response["Location"]
+                debug { "Responded with redirect to #{uri}" }
+                redirects.size > max_redirects and raise Error,
+                  "Could not get #{uri} because too many redirects!"
+                redirects.include?(location) and raise Error,
+                  "Could not get #{uri} because redirect cycle!"
+                redirects << location
+                uri = URI.parse(location)
+                # continue the loop
+              else
+                raise Error, "Could not get #{uri} because #{response.code} #{response.message}!"
+              end
             end
           end
 

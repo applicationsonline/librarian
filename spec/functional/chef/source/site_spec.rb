@@ -200,6 +200,66 @@ module Librarian
 
         end
 
+        describe "following http redirects" do
+          let(:source) { described_class.new(env, api_url) }
+
+          def redirect_to(url)
+            {:status => 302, :headers => {"Location" => url}}
+          end
+
+          context "with a sequence of http redirects" do
+            before do
+              stub_request(:get, "#{api_url}/cookbooks/sample").
+                to_return redirect_to "#{api_url}/cookbooks/sample-1"
+              stub_request(:get, "#{api_url}/cookbooks/sample-1").
+                to_return redirect_to "#{api_url}/cookbooks/sample-2"
+              stub_request(:get, "#{api_url}/cookbooks/sample-2").
+                to_return(:body => JSON.dump(sample_index_data))
+            end
+
+            it "follows a sequence of redirects" do
+              manifest = source.manifests("sample").first
+              manifest.version.to_s.should == "0.6.5"
+            end
+          end
+
+          context "with too many http redirects" do
+            before do
+              stub_request(:get, "#{api_url}/cookbooks/sample").
+                to_return redirect_to "#{api_url}/cookbooks/sample-1"
+              (1 .. 11).each do |i|
+                stub_request(:get, "#{api_url}/cookbooks/sample-#{i}").
+                  to_return redirect_to "#{api_url}/cookbooks/sample-#{i + 1}"
+              end
+              stub_request(:get, "#{api_url}/cookbooks/sample-12").
+                to_return(:body => JSON.dump(sample_index_data))
+            end
+
+            it "raises, warning of too many redirects" do
+              expect { source.manifests("sample").first }.
+                to raise_error Librarian::Error, /because too many redirects!/
+            end
+          end
+
+          context "with a redirect cycle" do
+            before do
+              stub_request(:get, "#{api_url}/cookbooks/sample").
+                to_return redirect_to "#{api_url}/cookbooks/sample-1"
+              (1 .. 8).each do |i|
+                stub_request(:get, "#{api_url}/cookbooks/sample-#{i}").
+                  to_return redirect_to "#{api_url}/cookbooks/sample-#{i + 1}"
+              end
+              stub_request(:get, "#{api_url}/cookbooks/sample-9").
+                to_return redirect_to "#{api_url}/cookbooks/sample-6"
+            end
+
+            it "raises, warning of a redirect cycle" do
+              expect { source.manifests("sample").first }.
+                to raise_error Librarian::Error, /because redirect cycle!/
+            end
+          end
+        end
+
       end
     end
   end
