@@ -71,7 +71,7 @@ module Librarian
         dependencies
       end
 
-      def compile(sources_ast)
+      def compile_placeholder_manifests(sources_ast)
         manifests = {}
         sources_ast.each do |source_ast|
           source_type = source_ast[:type]
@@ -85,6 +85,11 @@ module Librarian
             )
           end
         end
+        manifests
+      end
+
+      def compile(sources_ast)
+        manifests = compile_placeholder_manifests(sources_ast)
         manifests = manifests.map do |name, manifest|
           dependencies = manifest.dependencies.map do |d|
             Dependency.new(d.name, d.requirement, manifests[d.name].source)
