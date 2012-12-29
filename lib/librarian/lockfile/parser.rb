@@ -22,6 +22,17 @@ module Librarian
 
       def parse(string)
         lines = string.lines.map{|l| l.sub(/\s+\z/, '')}.reject(&:empty?)
+        sources = extract_and_parse_sources(lines)
+        manifests = compile(sources)
+        manifests_index = Hash[manifests.map{|m| [m.name, m]}]
+        raise StandardError, "Expected DEPENDENCIES topic!" unless lines.shift == "DEPENDENCIES"
+        dependencies = extract_and_parse_dependencies(lines, manifests_index)
+        Resolution.new(dependencies, manifests)
+      end
+
+    private
+
+      def extract_and_parse_sources(lines)
         sources = []
         while source_type_names.include?(lines.first)
           source = {}
@@ -47,19 +58,18 @@ module Librarian
           source[:manifests] = manifests
           sources << source
         end
-        manifests = compile(sources)
-        manifests_index = Hash[manifests.map{|m| [m.name, m]}]
-        raise StandardError, "Expected DEPENDENCIES topic!" unless lines.shift == "DEPENDENCIES"
+        sources
+      end
+
+      def extract_and_parse_dependencies(lines, manifests_index)
         dependencies = []
         while lines.first =~ /^ {2}([\w-]+)(?: \((.*)\))?$/
           lines.shift
           name, requirement = $1, $2.split(/,\s*/)
           dependencies << Dependency.new(name, requirement, manifests_index[name].source)
         end
-        Resolution.new(dependencies, manifests)
+        dependencies
       end
-
-    private
 
       def compile(sources_ast)
         manifests = {}
