@@ -6,18 +6,20 @@ module Librarian
         base.extend ClassMethods
         class << base
           def lock_name(name)
-            sclass = (class << self ; self ; end)
-            sclass.module_exec do
-              remove_method(:lock_name)
-              define_method(:lock_name) { name }
-            end
+            def_sclass_prop(:lock_name, name)
           end
 
           def spec_options(keys)
-            sclass = (class << self ; self ; end)
+            def_sclass_prop(:spec_options, keys)
+          end
+
+        private
+
+          def def_sclass_prop(name, arg)
+            sclass = class << self ; self ; end
             sclass.module_exec do
-              remove_method(:spec_options)
-              define_method(:spec_options) { keys }
+              remove_method(name)
+              define_method(name) { arg }
             end
           end
         end
