@@ -62,10 +62,7 @@ module Librarian
         sreqs, oreqs = sgreq.requirements, ogreq.requirements
         sreqs.all? do |sreq|
           oreqs.all? do |oreq|
-            sreq, oreq = oreq, sreq unless COMPATS_TABLE.include?([sreq.first, oreq.first])
-            r = COMPATS_TABLE[[sreq.first, oreq.first]]
-            r = r.call(sreq.last, oreq.last) if r.respond_to?(:call)
-            r
+            compatible?(sreq, oreq)
           end
         end
       end
@@ -85,6 +82,13 @@ module Librarian
           arg = arg.backing if self.class === arg
           arg
         end
+      end
+
+      def compatible?(a, b)
+        a, b = b, a unless COMPATS_TABLE.include?([a.first, b.first])
+        r = COMPATS_TABLE[[a.first, b.first]]
+        r = r.call(a.last, b.last) if r.respond_to?(:call)
+        r
       end
     end
 
