@@ -7,13 +7,9 @@ module Librarian
       include BasicApi
       include Local
 
+      lock_name 'PATH'
+
       class << self
-
-        LOCK_NAME = 'PATH'
-
-        def lock_name
-          LOCK_NAME
-        end
 
         def from_spec_args(environment, path, options)
           recognized_options = []

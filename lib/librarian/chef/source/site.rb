@@ -343,13 +343,9 @@ module Librarian
 
         include Librarian::Source::BasicApi
 
+        lock_name 'SITE'
+
         class << self
-
-          LOCK_NAME = 'SITE'
-
-          def lock_name
-            LOCK_NAME
-          end
 
           def from_spec_args(environment, uri, options)
             recognized_options = []

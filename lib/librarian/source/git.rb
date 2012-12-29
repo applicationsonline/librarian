@@ -12,13 +12,9 @@ module Librarian
       include BasicApi
       include Local
 
+      lock_name 'GIT'
+
       class << self
-
-        LOCK_NAME = 'GIT'
-
-        def lock_name
-          LOCK_NAME
-        end
 
         def from_spec_args(environment, uri, options)
           recognized_options = [:ref, :path]

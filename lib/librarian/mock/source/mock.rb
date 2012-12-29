@@ -8,13 +8,9 @@ module Librarian
       class Mock
         include Librarian::Source::BasicApi
 
+        lock_name 'MOCK'
+
         class << self
-
-          LOCK_NAME = 'MOCK'
-
-          def lock_name
-            LOCK_NAME
-          end
 
           def from_spec_args(environment, name, options)
             recognized_options = []
