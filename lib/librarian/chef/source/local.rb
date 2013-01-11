@@ -41,7 +41,7 @@ module Librarian
         end
 
         def filter_path(path)
-          Dir.glob("#{path}/*").reject { |e| e =~ /\/cookbooks$/ }
+          Dir.glob("#{path}/*").reject { |e| e == environment.install_path.to_s }
         end
 
         def manifest_data(name)
