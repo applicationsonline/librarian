@@ -36,7 +36,12 @@ module Librarian
 
         def install_perform_step_copy!(found_path, install_path)
           debug { "Copying #{relative_path_to(found_path)} to #{relative_path_to(install_path)}" }
-          FileUtils.cp_r(found_path, install_path)
+          FileUtils.mkdir_p(install_path)
+          FileUtils.cp_r(filter_path(found_path), install_path)
+        end
+
+        def filter_path(path)
+          Dir.glob("#{path}/*").reject { |e| e =~ /\/cookbooks$/ }
         end
 
         def manifest_data(name)
