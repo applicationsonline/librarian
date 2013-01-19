@@ -197,10 +197,18 @@ module Librarian
         end
 
         def run_command_internal(command)
+          std = ""
+          err = ""
+          thread = nil
           Open3.popen3(*command) do |i, o, e, t|
-            raise StandardError, e.read unless (t ? t.value : $?).success?
-            o.read
+            std = o.read
+            err = e.read
+            thread = t
           end
+          
+          raise StandardError, err unless (thread ? thread.value : $?).success?
+
+          std
         end
 
         def debug(*args, &block)
