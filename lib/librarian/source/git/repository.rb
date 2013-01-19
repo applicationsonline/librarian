@@ -205,7 +205,7 @@ module Librarian
             err = e.read
             thread = t
           end
-          
+
           raise StandardError, err unless (thread ? thread.value : $?).success?
 
           std
