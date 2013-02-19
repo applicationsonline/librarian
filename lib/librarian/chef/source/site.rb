@@ -281,7 +281,7 @@ module Librarian
           end
 
           def hexdigest(bytes)
-            Digest::MD5.hexdigest(bytes)
+            Digest::MD5.hexdigest(bytes)[0..15]
           end
 
           def to_uri(uri)
@@ -404,7 +404,7 @@ module Librarian
 
         def cache_path
           @cache_path ||= begin
-            dir = Digest::MD5.hexdigest(uri)
+            dir = Digest::MD5.hexdigest(uri)[0..15]
             environment.cache_path.join("source/chef/site/#{dir}")
           end
         end

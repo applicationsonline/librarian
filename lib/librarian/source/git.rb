@@ -125,7 +125,7 @@ module Librarian
           path_part = "/#{path}" if path
           ref_part = "##{ref}"
           key_source = [uri_part, path_part, ref_part].join
-          Digest::MD5.hexdigest(key_source)
+          Digest::MD5.hexdigest(key_source)[0..15]
         end
       end
 
