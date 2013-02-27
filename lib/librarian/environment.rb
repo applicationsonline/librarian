@@ -93,12 +93,17 @@ module Librarian
       Resolver.new(self)
     end
 
+    def tmp_path
+      part = config_db["tmp"] || "tmp"
+      project_path.join(part)
+    end
+
     def cache_path
-      project_path.join("tmp/librarian/cache")
+      tmp_path.join("librarian/cache")
     end
 
     def scratch_path
-      project_path.join("tmp/librarian/scratch")
+      tmp_path.join("librarian/scratch")
     end
 
     def project_relative_path_to(path)
