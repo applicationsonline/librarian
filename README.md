@@ -395,7 +395,7 @@ License
 
 Written by Jay Feldblum.
 
-Copyright (c) 2011-2012 ApplicationsOnline, LLC.
+Copyright (c) 2011-2013 ApplicationsOnline, LLC.
 
 Released under the terms of the MIT License. For further information, please see
-the file `MIT-LICENSE`.
+the file `LICENSE.txt`.
