@@ -2,33 +2,33 @@
 $:.push File.expand_path("../lib", __FILE__)
 require "librarian/version"
 
-Gem::Specification.new do |s|
-  s.name        = "librarian"
-  s.version     = Librarian::VERSION
-  s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Jay Feldblum"]
-  s.email       = ["y_feldblum@yahoo.com"]
-  s.homepage    = ""
-  s.summary     = %q{Librarian}
-  s.description = %q{Librarian}
+Gem::Specification.new do |gem|
+  gem.name        = "librarian"
+  gem.version     = Librarian::VERSION
+  gem.platform    = Gem::Platform::RUBY
+  gem.authors     = ["Jay Feldblum"]
+  gem.email       = ["y_feldblum@yahoo.com"]
+  gem.homepage    = ""
+  gem.summary     = %q{Librarian}
+  gem.description = %q{Librarian}
 
-  s.rubyforge_project = "librarian"
+  gem.rubyforge_project = "librarian"
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  s.require_paths = ["lib"]
+  gem.files         = `git ls-files`.split("\n")
+  gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  gem.require_paths = ["lib"]
 
-  s.add_dependency "thor", "~> 0.15"
-  s.add_dependency "highline"
+  gem.add_dependency "thor", "~> 0.15"
+  gem.add_dependency "highline"
 
-  s.add_development_dependency "rake"
-  s.add_development_dependency "rspec"
-  s.add_development_dependency "json"
-  s.add_development_dependency "fakefs", "~> 0.4.2"
+  gem.add_development_dependency "rake"
+  gem.add_development_dependency "rspec"
+  gem.add_development_dependency "json"
+  gem.add_development_dependency "fakefs", "~> 0.4.2"
 
-  s.add_dependency "chef", ">= 0.10"
-  s.add_dependency "archive-tar-minitar", ">= 0.5.2"
+  gem.add_dependency "chef", ">= 0.10"
+  gem.add_dependency "archive-tar-minitar", ">= 0.5.2"
 
-  s.add_development_dependency "webmock"
+  gem.add_development_dependency "webmock"
 end
