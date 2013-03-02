@@ -64,6 +64,7 @@ module Librarian
     desc "version", "Displays the version."
     def version
       say "librarian-#{environment.version}"
+      say "librarian-#{environment.adapter_name}-#{environment.adapter_version}"
     end
 
     desc "config", "Show or edit the config."

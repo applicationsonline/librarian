@@ -10,6 +10,10 @@ module Librarian
         "chef"
       end
 
+      def adapter_version
+        version
+      end
+
       def install_path
         part = config_db["path"] || "cookbooks"
         project_path.join(part)

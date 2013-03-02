@@ -1,5 +1,6 @@
 require "librarian/environment"
 require "librarian/mock/dsl"
+require "librarian/mock/version"
 
 module Librarian
   module Mock
@@ -7,6 +8,10 @@ module Librarian
 
       def adapter_name
         "mock"
+      end
+
+      def adapter_version
+        VERSION
       end
 
       def install_path

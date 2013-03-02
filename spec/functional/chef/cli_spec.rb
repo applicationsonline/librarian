@@ -27,6 +27,7 @@ module Librarian
         it "should print the version" do
           stdout.should == strip_heredoc(<<-STDOUT)
             librarian-#{VERSION}
+            librarian-chef-#{VERSION}
           STDOUT
         end
       end

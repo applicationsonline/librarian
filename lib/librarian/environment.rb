@@ -12,6 +12,7 @@ require "librarian/specfile"
 require "librarian/resolver"
 require "librarian/dsl"
 require "librarian/source"
+require "librarian/version"
 
 module Librarian
   class Environment
