@@ -18,7 +18,7 @@ module Librarian
         @registry.merge!(options, &block)
         @registry
       end
-    end
 
+    end
   end
 end
