@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
+  s.add_development_dependency "json"
   s.add_development_dependency "fakefs", "~> 0.4.2"
 
   s.add_dependency "chef", ">= 0.10"
