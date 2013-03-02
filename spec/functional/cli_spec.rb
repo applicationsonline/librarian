@@ -1,13 +1,13 @@
 require "securerandom"
 
-require "support/cli_macro"
+require "librarian/rspec/support/cli_macro"
 
 require "librarian/mock/cli"
 
 module Librarian
   module Mock
     describe Cli do
-      include CliMacro
+      include Librarian::RSpec::Support::CliMacro
 
       describe "version" do
         before do

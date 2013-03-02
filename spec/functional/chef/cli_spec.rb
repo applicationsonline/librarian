@@ -1,13 +1,13 @@
 require "securerandom"
 
-require "support/cli_macro"
+require "librarian/rspec/support/cli_macro"
 
 require "librarian/chef/cli"
 
 module Librarian
   module Chef
     describe Cli do
-      include CliMacro
+      include Librarian::RSpec::Support::CliMacro
 
       describe "init" do
         before do
