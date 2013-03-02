@@ -1,7 +1,6 @@
 *.gem
 bin
 !bin/librarian-chef
-!bin/librarian-mock
 .bundle
 Gemfile.lock
 pkg/*
