@@ -1,6 +1,4 @@
 *.gem
-bin
-!bin/librarian-chef
 .bundle
 Gemfile.lock
 pkg/*
