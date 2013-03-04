@@ -313,6 +313,10 @@ Configuration affects how various commands operate.
   path, it is relative to the directory containing the `Cheffile`. The
   equivalent environment variable is `LIBRARIAN_CHEF_PATH`.
 
+* The `tmp` config sets the cache directory for librarian. If a relative
+  path, it is relative to the directory containing the `Cheffile`. The
+  equivalent environment variable is `LIBRARIAN_CHEF_TMP`.
+
 * The `install.strip-dot-git` config causes the `.git/` directory to be stripped
   out when installing cookbooks from a git source. This must be set to exactly
   "1" to cause this behavior. The equivalent environment variable is
