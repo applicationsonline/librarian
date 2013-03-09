@@ -26,6 +26,8 @@ describe Librarian::Source::Git::Repository do
     git_source_path.mkpath
     Dir.chdir(git_source_path) do
       `git init`
+      `git config user.name "Simba"`
+      `git config user.email "simba@savannah-pride.gov"`
 
       # master
       `touch butter.txt`
