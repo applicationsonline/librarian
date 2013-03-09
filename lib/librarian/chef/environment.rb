@@ -1,6 +1,7 @@
 require "librarian/environment"
 require "librarian/chef/dsl"
 require "librarian/chef/source"
+require "librarian/chef/version"
 
 module Librarian
   module Chef
@@ -11,7 +12,7 @@ module Librarian
       end
 
       def adapter_version
-        version
+        VERSION
       end
 
       def install_path
