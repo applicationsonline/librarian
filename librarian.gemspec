@@ -6,7 +6,6 @@ require "librarian/version"
 Gem::Specification.new do |gem|
   gem.name        = "librarian"
   gem.version     = Librarian::VERSION
-  gem.platform    = Gem::Platform::RUBY
   gem.authors     = ["Jay Feldblum"]
   gem.email       = ["y_feldblum@yahoo.com"]
   gem.summary     = %q{Librarian}
