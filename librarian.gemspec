@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "librarian/version"
 
 Gem::Specification.new do |gem|
-  gem.name        = "librarian"
-  gem.version     = Librarian::VERSION
-  gem.authors     = ["Jay Feldblum"]
-  gem.email       = ["y_feldblum@yahoo.com"]
-  gem.summary     = %q{Librarian}
-  gem.description = %q{Librarian}
-  gem.homepage    = ""
+  gem.name          = "librarian"
+  gem.version       = Librarian::VERSION
+  gem.authors       = ["Jay Feldblum"]
+  gem.email         = ["y_feldblum@yahoo.com"]
+  gem.summary       = %q{Librarian}
+  gem.description   = %q{Librarian}
+  gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
