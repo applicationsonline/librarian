@@ -9,9 +9,9 @@ Gem::Specification.new do |gem|
   gem.platform    = Gem::Platform::RUBY
   gem.authors     = ["Jay Feldblum"]
   gem.email       = ["y_feldblum@yahoo.com"]
-  gem.homepage    = ""
   gem.summary     = %q{Librarian}
   gem.description = %q{Librarian}
+  gem.homepage    = ""
 
   gem.rubyforge_project = "librarian"
 
