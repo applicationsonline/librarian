@@ -56,6 +56,8 @@ module Librarian
             sample_path.join("metadata.rb").open("wb") { |f| f.write(sample_metadata) }
             Dir.chdir(sample_path) do
               `git init`
+              `git config user.name "Simba"`
+              `git config user.email "simba@savannah-pride.gov"`
               `git add metadata.rb`
               `git commit -m "Initial commit."`
             end
@@ -68,6 +70,8 @@ module Librarian
             second_sample_path.join("metadata.rb").open("wb") { |f| f.write(second_sample_metadata) }
             Dir.chdir(cookbooks_path) do
               `git init`
+              `git config user.name "Simba"`
+              `git config user.email "simba@savannah-pride.gov"`
               `git add .`
               `git commit -m "Initial commit."`
             end
@@ -225,6 +229,8 @@ module Librarian
             sample_path.join("metadata.rb").open("wb") { |f| f.write(sample_metadata) }
             Dir.chdir(git_path) do
               `git init`
+              `git config user.name "Simba"`
+              `git config user.email "simba@savannah-pride.gov"`
               `git add .`
               `git commit -m "Initial commit."`
             end
@@ -309,6 +315,8 @@ module Librarian
             git_path.mkpath
             Dir.chdir(git_path) do
               `git init`
+              `git config user.name "Simba"`
+              `git config user.email "simba@savannah-pride.gov"`
               `touch not-a-metadata`
               `git add .`
               `git commit -m "Initial commit."`
@@ -366,6 +374,8 @@ module Librarian
 
             Dir.chdir(git_path) do
               `git init`
+              `git config user.name "Simba"`
+              `git config user.email "simba@savannah-pride.gov"`
               `git add metadata.rb`
               `git commit -m "Initial Commit."`
               `git checkout -b some-branch --quiet`
