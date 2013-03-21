@@ -1,3 +1,5 @@
+require "pathname"
+
 module Librarian
   class Specfile
 
@@ -6,7 +8,7 @@ module Librarian
 
     def initialize(environment, path)
       self.environment = environment
-      self.path = path
+      self.path = Pathname(path)
     end
 
     def read(precache_sources = [])
