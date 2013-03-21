@@ -1,4 +1,5 @@
 require "pathname"
+require "tmpdir"
 
 require "support/fakefs"
 
@@ -235,7 +236,7 @@ module Librarian
     end
 
     context "a pathname to a simple specfile" do
-      let(:pwd) { Pathname("/tmp") }
+      let(:pwd) { Pathname(Dir.tmpdir) }
       let(:specfile_path) { pwd + "Mockfile" }
       before { FileUtils.mkpath(pwd) }
 

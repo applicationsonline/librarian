@@ -1,5 +1,6 @@
 require "fileutils"
 require "pathname"
+require "tmpdir"
 require "yaml"
 
 require "support/fakefs"
@@ -18,7 +19,7 @@ describe Librarian::Config::Database do
   let(:adapter_name) { "gem" }
 
   let(:env) { { } }
-  let(:pwd) { Pathname("/tmp") }
+  let(:pwd) { Pathname(Dir.tmpdir) }
   let(:home) { Pathname("~").expand_path }
   let(:project_path) { nil }
   let(:specfile_name) { nil }
