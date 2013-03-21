@@ -1,6 +1,5 @@
 require "fakefs/safe"
 require "fakefs/spec_helpers"
-require "support/patch/fakefs"
 require "support/method_patch_macro"
 
 module Support
