@@ -1,0 +1,25 @@
+require "fakefs/safe"
+require "fakefs/spec_helpers"
+require "support/patch/fakefs"
+require "support/method_patch_macro"
+
+module Support
+  module FakeFS
+
+    def self.included(base)
+      base.module_exec do
+        include ::FakeFS::SpecHelpers
+      end
+
+      # Since ruby-1.9.3-p286, Kernel#Pathname was changed in a way that broke
+      # FakeFS's assumptions. It used to lookup the Pathname constant (which is
+      # where FakeFS hooks) and send it #new, but now it keeps a reference to
+      # the Pathname constant (breaking the FakeFS hook).
+      base.module_exec do
+        include MethodPatchMacro
+        with_module_method(Kernel, :Pathname){|s| Pathname.new(s)}
+      end
+    end
+
+  end
+end
