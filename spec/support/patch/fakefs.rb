@@ -1,11 +1,15 @@
 require "fakefs/safe"
 
 module FakeFS
-  class Pathname
+  if RUBY_VERSION >= "1.9.3"
 
-    # FakeFS doesn't do this. Odd! So we must.
-    def read(*args, &block)
-      File.read(to_s, *args, &block)
+    class Pathname
+
+      # FakeFS doesn't do this. Odd! So we must.
+      def read(*args, &block)
+        File.read(to_s, *args, &block)
+      end
+
     end
 
   end
