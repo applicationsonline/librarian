@@ -68,6 +68,8 @@ module Librarian
     end
 
     def run(specfile = nil, sources = [])
+      specfile, sources = nil, specfile if specfile.kind_of?(Array) && sources.empty?
+
       Target.new(self).tap do |target|
         target.precache_sources(sources)
         debug_named_source_cache("Pre-Cached Sources", target)
