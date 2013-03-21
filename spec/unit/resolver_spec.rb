@@ -1,9 +1,14 @@
+require "pathname"
+
+require "support/fakefs"
+
 require 'librarian/resolver'
 require 'librarian/spec_change_set'
 require 'librarian/mock'
 
 module Librarian
   describe Resolver do
+    include ::Support::FakeFS
 
     let(:env) { Mock::Environment.new }
     let(:resolver) { env.resolver }
@@ -225,6 +230,25 @@ module Librarian
         manifest = lock.manifests.find{|m| m.name == 'butter'}
         manifest.should_not be_nil
         manifest.source.name.should == 'source-2'
+      end
+
+    end
+
+    context "a pathname to a simple specfile" do
+      let(:pwd) { Pathname("/tmp") }
+      let(:specfile_path) { pwd + "Mockfile" }
+      before { FileUtils.mkpath(pwd) }
+
+      def write!(path, text)
+        Pathname(path).open("wb"){|f| f.write(text)}
+      end
+
+      it "loads the specfile with the __FILE__" do
+        write! specfile_path, "src __FILE__"
+        spec = env.dsl(specfile_path)
+        spec.sources.should have(1).item
+        source = spec.sources.first
+        source.name.should == specfile_path.to_s
       end
 
     end

@@ -1,4 +1,4 @@
-require 'librarian/specfile'
+require "pathname"
 
 module Librarian
   class Dsl
@@ -26,14 +26,14 @@ module Librarian
         specfile = Proc.new if block_given?
 
         case specfile
-        when Specfile
-          instance_eval(specfile.path.read, specfile.path.to_s, 1)
+        when Pathname
+          instance_eval(specfile.read, specfile.to_s, 1)
         when String
           instance_eval(specfile)
         when Proc
           instance_eval(&specfile)
         else
-          raise ArgumentError, "specfile must be a #{Specfile}, #{String}, or #{Proc} if no block is given (it was #{specfile.inspect})"
+          raise ArgumentError, "specfile must be a #{Pathname}, #{String}, or #{Proc} if no block is given (it was #{specfile.inspect})"
         end
       end
 
