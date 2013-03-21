@@ -74,17 +74,9 @@ module Librarian
         target.precache_sources(sources)
         debug_named_source_cache("Pre-Cached Sources", target)
 
+        specfile ||= Proc.new if block_given?
         receiver = Receiver.new(target)
-        if block_given?
-          receiver.run(&Proc.new)
-        else
-          case specfile
-          when Specfile, String, Proc
-            receiver.run(specfile)
-          else
-            raise ArgumentError, "specfile must be a #{Specfile}, #{String}, or #{Proc} if no block is given (it was #{specfile.inspect})"
-          end
-        end
+        receiver.run(specfile)
 
         debug_named_source_cache("Post-Cached Sources", target)
       end.to_spec
