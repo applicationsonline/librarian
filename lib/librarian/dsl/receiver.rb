@@ -27,18 +27,14 @@ module Librarian
 
         case specfile
         when Specfile
-          eval(specfile.path.read, instance_binding, specfile.path.to_s, 1)
+          instance_eval(specfile.path.read, specfile.path.to_s, 1)
         when String
-          eval(specfile, instance_binding)
+          instance_eval(specfile)
         when Proc
           instance_eval(&specfile)
         else
           raise ArgumentError, "specfile must be a #{Specfile}, #{String}, or #{Proc} if no block is given (it was #{specfile.inspect})"
         end
-      end
-
-      def instance_binding
-        binding
       end
 
     end
