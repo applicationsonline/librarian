@@ -4,7 +4,7 @@ require "support/with_env_macro"
 
 module Librarian
   describe Environment do
-    include WithEnvMacro
+    include ::Support::WithEnvMacro
 
     let(:env) { described_class.new }
 
