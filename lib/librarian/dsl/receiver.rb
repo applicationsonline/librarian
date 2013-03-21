@@ -27,7 +27,7 @@ module Librarian
 
         case specfile
         when Pathname
-          instance_eval(specfile.read, specfile.to_s, 1)
+          instance_eval(File.read(specfile), specfile.to_s, 1)
         when String
           instance_eval(specfile)
         when Proc
