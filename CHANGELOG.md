@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.0
+
+* Extract the chef adapter to its own gem.
+
 ## 0.0.26
 
 * \#112. Prevent the git source being confused in certain cases by colorized
