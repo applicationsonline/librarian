@@ -30,6 +30,12 @@ module Librarian
           self.name   == other.name
         end
 
+        alias :eql? :==
+
+        def hash
+          self.to_s.hash
+        end
+
         def to_spec_args
           [name, {}]
         end
