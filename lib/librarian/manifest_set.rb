@@ -138,6 +138,7 @@ module Librarian
         next if deps.include?(name)
 
         deps << name
+        raise(Error, "Unable to find module #{name}") if index[name].nil?
         names.concat index[name].dependencies.map(&:name)
       end
       deps.to_a
