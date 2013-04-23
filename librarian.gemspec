@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = Librarian::VERSION
   gem.authors       = ["Jay Feldblum"]
   gem.email         = ["y_feldblum@yahoo.com"]
-  gem.summary       = %q{Librarian}
-  gem.description   = %q{Librarian}
+  gem.summary       = %q{A Framework for Bundlers.}
+  gem.description   = %q{A Framework for Bundlers.}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
