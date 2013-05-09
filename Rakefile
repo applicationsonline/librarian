@@ -1,4 +1,5 @@
 require 'bundler'
+require 'rspec/core/rake_task'
 
 module Bundler
   class GemHelper
@@ -21,3 +22,9 @@ module Bundler
 end
 
 Bundler::GemHelper.install_tasks
+
+RSpec::Core::RakeTask.new('spec') do |s|
+  s.rspec_opts = "--color"
+end
+
+task :default => :spec

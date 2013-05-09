@@ -24,7 +24,7 @@ Ensure the gem dependencies are installed:
 
 Run the tests:
 
-    $ [bundle exec] rspec spec
+    $ [bundle exec] rake
 
 ### Installing locally
 
