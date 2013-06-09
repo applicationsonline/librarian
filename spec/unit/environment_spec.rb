@@ -165,6 +165,14 @@ module Librarian
             env.net_http_class(proxied_host).should be_proxy_class
           end
         end
+        context "home environment" do
+          it "should still find `~` || `HOME` without `ENV['HOME']` being set" do
+            ENV.delete("HOME")
+            expect { 
+              Librarian::Environment.new
+            }.to_not raise_error(ArgumentError)
+          end
+        end
       end
 
     end

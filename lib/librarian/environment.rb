@@ -1,6 +1,7 @@
 require "pathname"
 require 'net/http'
 require "uri"
+require "etc"
 
 require "librarian/support/abstract_method"
 
@@ -26,7 +27,7 @@ module Librarian
     def initialize(options = { })
       @pwd = options.fetch(:pwd) { Dir.pwd }
       @env = options.fetch(:env) { ENV.to_hash }
-      @home = options.fetch(:home) { File.expand_path("~") }
+      @home = options.fetch(:home) { set_home } 
       @project_path = options[:project_path]
       @specfile_name = options[:specfile_name]
     end
@@ -172,6 +173,14 @@ module Librarian
 
     def environment
       self
+    end
+
+    def user_logged_in
+      Etc.getlogin  
+    end
+
+    def set_home
+      File.expand_path(ENV["HOME"] || Dir.home(user_logged_in))
     end
 
     def no_proxy?(host)
