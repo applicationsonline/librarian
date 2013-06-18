@@ -166,8 +166,9 @@ module Librarian
           end
         end
         context "home environment" do
+          with_env "HOME" => nil
+
           it "should still find `~` || `HOME` without `ENV['HOME']` being set" do
-            ENV.delete("HOME")
             expect { 
               Librarian::Environment.new
             }.to_not raise_error(ArgumentError)
