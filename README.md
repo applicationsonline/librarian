@@ -22,7 +22,11 @@ Ensure the gem dependencies are installed:
 
     $ bundle
 
-Run the tests:
+Run the tests with the default rake task:
+
+    $ [bundle exec] rake
+    
+or directly with the rspec command:
 
     $ [bundle exec] rspec spec
 
