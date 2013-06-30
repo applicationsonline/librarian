@@ -8,7 +8,7 @@ module Librarian
     private
 
       def persist_resolution(resolution)
-        (resolution and resolution.correct?) or raise Error,
+        resolution && resolution.correct? or raise Error,
           "Could not resolve the dependencies."
 
         lockfile_text = lockfile.save(resolution)
