@@ -169,7 +169,7 @@ module Librarian
           with_env "HOME" => nil
 
           it "should still find `~` || `HOME` without `ENV['HOME']` being set" do
-            expect { 
+            expect {
               Librarian::Environment.new
             }.to_not raise_error(ArgumentError)
           end

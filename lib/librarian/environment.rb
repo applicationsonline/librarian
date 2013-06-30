@@ -27,7 +27,7 @@ module Librarian
     def initialize(options = { })
       @pwd = options.fetch(:pwd) { Dir.pwd }
       @env = options.fetch(:env) { ENV.to_hash }
-      @home = options.fetch(:home) { default_home } 
+      @home = options.fetch(:home) { default_home }
       @project_path = options[:project_path]
       @specfile_name = options[:specfile_name]
     end
@@ -176,7 +176,7 @@ module Librarian
     end
 
     def user_logged_in
-      Etc.getlogin  
+      Etc.getlogin
     end
 
     def default_home
