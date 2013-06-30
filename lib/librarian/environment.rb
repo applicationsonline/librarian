@@ -175,12 +175,8 @@ module Librarian
       self
     end
 
-    def user_logged_in
-      Etc.getlogin
-    end
-
     def default_home
-      File.expand_path(ENV["HOME"] || Etc.getpwnam(user_logged_in).dir)
+      File.expand_path(ENV["HOME"] || Etc.getpwnam(Etc.getlogin).dir)
     end
 
     def no_proxy?(host)
