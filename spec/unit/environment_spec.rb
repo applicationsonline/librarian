@@ -20,6 +20,29 @@ module Librarian
       specify { env.adapter_version.should be nil }
     end
 
+    describe "computing the home" do
+
+      context "with the HOME env var" do
+        with_env "HOME" => "/path/to/home"
+
+        it "finds the home" do
+          env.stub(:adapter_name).and_return("cat")
+          env.config_db.underlying_home.to_s.should == "/path/to/home"
+        end
+      end
+
+      context "without the HOME env var" do
+        let!(:real_home) { File.expand_path("~") }
+        with_env "HOME" => nil
+
+        it "finds the home" do
+          env.stub(:adapter_name).and_return("cat")
+          env.config_db.underlying_home.to_s.should == real_home
+        end
+      end
+
+    end
+
     describe "#http_proxy_uri" do
 
       context "sanity" do
@@ -177,15 +200,7 @@ module Librarian
             env.net_http_class(proxied_host).should be_proxy_class
           end
         end
-        context "home environment" do
-          with_env "HOME" => nil
 
-          it "should still find `~` || `HOME` without `ENV['HOME']` being set" do
-            expect {
-              Librarian::Environment.new
-            }.to_not raise_error(ArgumentError)
-          end
-        end
       end
 
     end
