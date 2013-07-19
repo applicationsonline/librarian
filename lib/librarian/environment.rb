@@ -81,6 +81,11 @@ module Librarian
       Helpers.camel_cased_to_dasherized(self.class.name.split("::")[-2])
     end
 
+    def adapter_version
+      implementation? or return
+      adapter_module::VERSION
+    end
+
     def lockfile_name
       config_db.lockfile_name
     end

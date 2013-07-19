@@ -13,5 +13,9 @@ module Librarian::Mock
       specify { env.adapter_name.should be == "mock" }
     end
 
+    describe "#adapter_version" do
+      specify { env.adapter_version.should be == Librarian::Mock::VERSION }
+    end
+
   end
 end

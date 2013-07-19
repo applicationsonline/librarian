@@ -16,6 +16,10 @@ module Librarian
       specify { env.adapter_name.should be nil }
     end
 
+    describe "#adapter_version" do
+      specify { env.adapter_version.should be nil }
+    end
+
     describe "#http_proxy_uri" do
 
       context "sanity" do
