@@ -167,12 +167,7 @@ module Librarian
     end
 
     def net_http_class(host)
-      return Net::HTTP if no_proxy?(host)
-
-      @net_http_class ||= begin
-        p = http_proxy_uri
-        p ? Net::HTTP::Proxy(p.host, p.port, p.user, p.password) : Net::HTTP
-      end
+      no_proxy?(host) ? Net::HTTP : net_http_default_class
     end
 
   private
@@ -199,6 +194,13 @@ module Librarian
     def no_proxy?(host)
       no_proxy_list.any? do |host_addr|
         host.end_with?(host_addr)
+      end
+    end
+
+    def net_http_default_class
+      @net_http_default_class ||= begin
+        p = http_proxy_uri
+        p ? Net::HTTP::Proxy(p.host, p.port, p.user, p.password) : Net::HTTP
       end
     end
 
