@@ -189,12 +189,15 @@ module Librarian
       File.expand_path(ENV["HOME"] || Etc.getpwnam(Etc.getlogin).dir)
     end
 
-    def no_proxy?(host)
-      @no_proxy ||= begin
+    def no_proxy_list
+      @no_proxy_list ||= begin
         list = ENV['NO_PROXY'] || ENV['no_proxy'] || ""
         list.split(/\s*,\s*/) + %w(localhost 127.0.0.1)
       end
-      @no_proxy.any? do |host_addr|
+    end
+
+    def no_proxy?(host)
+      no_proxy_list.any? do |host_addr|
         host.match(Regexp.quote(host_addr)+'$')
       end
     end
