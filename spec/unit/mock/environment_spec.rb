@@ -5,6 +5,10 @@ module Librarian::Mock
 
     let(:env) { described_class.new }
 
+    describe "#version" do
+      specify { env.version.should be == Librarian::VERSION }
+    end
+
     describe "#adapter_module" do
       specify { env.adapter_module.should be Librarian::Mock }
     end
