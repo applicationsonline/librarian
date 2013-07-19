@@ -1,4 +1,10 @@
 module Librarian
+
+  # PRIVATE
+  #
+  # Adapters must not rely on these methods since they will change.
+  #
+  # Adapters requiring similar methods ought to re-implement them.
   module Helpers
     extend self
 
@@ -19,4 +25,5 @@ module Librarian
     end
 
   end
+
 end
