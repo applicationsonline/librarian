@@ -6,10 +6,6 @@ module Librarian
   module Mock
     class Environment < Environment
 
-      def adapter_name
-        "mock"
-      end
-
       def adapter_version
         VERSION
       end
