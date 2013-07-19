@@ -198,7 +198,7 @@ module Librarian
 
     def no_proxy?(host)
       no_proxy_list.any? do |host_addr|
-        host.match(Regexp.quote(host_addr)+'$')
+        host.end_with?(host_addr)
       end
     end
 
