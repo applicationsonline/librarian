@@ -131,7 +131,7 @@ module Librarian
     end
 
     def dsl_class
-      self.class.name.split("::")[0 ... -1].inject(Object, &:const_get)::Dsl
+      adapter_module::Dsl
     end
 
     def version
