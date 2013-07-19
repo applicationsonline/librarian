@@ -71,8 +71,14 @@ module Librarian
       Specfile.new(self, specfile_path)
     end
 
+    def adapter_module
+      implementation? or return
+      self.class.name.split("::")[0 ... -1].inject(Object, &:const_get)
+    end
+
     def adapter_name
-      nil
+      implementation? or return
+      Helpers.camel_cased_to_dasherized(self.class.name.split("::")[-2])
     end
 
     def lockfile_name
@@ -173,6 +179,10 @@ module Librarian
 
     def environment
       self
+    end
+
+    def implementation?
+      self.class != ::Librarian
     end
 
     def default_home

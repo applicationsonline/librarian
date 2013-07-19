@@ -9,5 +9,14 @@ module Librarian
       string.gsub(/^[ \t]{#{indent}}/, '')
     end
 
+    # [active_support/inflector/methods]
+    def camel_cased_to_dasherized(camel_cased_word)
+      word = camel_cased_word.to_s.dup
+      word.gsub!(/([A-Z\d]+)([A-Z][a-z])/,'\1-\2')
+      word.gsub!(/([a-z\d])([A-Z])/,'\1-\2')
+      word.downcase!
+      word
+    end
+
   end
 end
