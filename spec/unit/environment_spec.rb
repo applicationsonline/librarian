@@ -8,6 +8,14 @@ module Librarian
 
     let(:env) { described_class.new }
 
+    describe "#adapter_module" do
+      specify { env.adapter_module.should be nil }
+    end
+
+    describe "#adapter_name" do
+      specify { env.adapter_name.should be nil }
+    end
+
     describe "#http_proxy_uri" do
 
       context "sanity" do

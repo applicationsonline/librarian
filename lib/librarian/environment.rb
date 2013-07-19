@@ -183,7 +183,7 @@ module Librarian
     end
 
     def implementation?
-      self.class != ::Librarian
+      self.class != ::Librarian::Environment
     end
 
     def default_home
