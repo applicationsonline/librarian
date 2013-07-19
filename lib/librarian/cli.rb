@@ -183,8 +183,9 @@ module Librarian
       debug { "Rubinius Version: #{Rubinius::VERSION}" } if defined?(Rubinius)
       debug { "JRuby Version: #{JRUBY_VERSION}" } if defined?(JRUBY_VERSION)
       debug { "Rubygems Version: #{Gem::VERSION}" }
-      debug { "Librarian Version: #{VERSION}" }
+      debug { "Librarian Version: #{environment.version}" }
       debug { "Librarian Adapter: #{environment.adapter_name}"}
+      debug { "Librarian Adapter Version: #{environment.adapter_version}" }
       debug { "Project: #{environment.project_path}" }
       debug { "Specfile: #{relative_path_to(environment.specfile_path)}" }
       debug { "Lockfile: #{relative_path_to(environment.lockfile_path)}" }
