@@ -4,7 +4,7 @@ require "librarian/action/install"
 module Librarian
   describe Action::Install do
 
-    let(:env) { mock(:specfile_name => "Specfile", :lockfile_name => "Specfile.lock") }
+    let(:env) { double(:specfile_name => "Specfile", :lockfile_name => "Specfile.lock") }
     let(:action) { described_class.new(env) }
 
     describe "#run" do
@@ -69,7 +69,7 @@ module Librarian
 
           let(:manifests) { 3.times.map{|i| mock_manifest(i)} }
           let(:sorted_manifests) { 4.times.map{|i| mock_manifest(i + 3)} }
-          let(:install_path) { mock }
+          let(:install_path) { double }
 
           before do
             env.stub(:install_path) { install_path }

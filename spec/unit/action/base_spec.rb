@@ -3,7 +3,7 @@ require "librarian/action/base"
 module Librarian
   describe Action::Base do
 
-    let(:env) { mock }
+    let(:env) { double }
     let(:action) { described_class.new(env) }
 
     subject { action }

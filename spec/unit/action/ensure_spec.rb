@@ -6,7 +6,7 @@ require "librarian/action/ensure"
 module Librarian
   describe Action::Ensure do
 
-    let(:env) { mock }
+    let(:env) { double }
     let(:action) { described_class.new(env) }
 
     before do
