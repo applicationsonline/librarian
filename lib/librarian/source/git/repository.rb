@@ -197,18 +197,13 @@ module Librarian
         end
 
         def run_command_internal(command)
-          std = ""
-          err = ""
-          thread = nil
-          Open3.popen3(*command) do |i, o, e, t|
-            std = o.read
-            err = e.read
-            thread = t
-          end
-
-          raise StandardError, err unless (thread ? thread.value : $?).success?
-
-          std
+          rescuing = proc{|err, &b| begin ; b.call ; rescue k ; end}
+          close = proc{|io| io.close unless io.closed? if io}
+          i, o, e = Open3.popen3(*command)
+          $?.success? or raise StandardError, e.read
+          o.read
+        ensure
+          [i, o, e].each{|io| rescuing.call(Errno::EBADF){|io| close[io]}}
         end
 
         def debug(*args, &block)
