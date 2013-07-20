@@ -22,42 +22,49 @@ describe Librarian::Source::Git::Repository do
   let(:tag) { "the-tag" }
   let(:atag) { "the-atag" }
 
+  def cmd!(command)
+    out, err, thread = "", "", nil
+    Open3.popen3(*command) do |i, o, e, t|
+      out = o.read
+      err = e.read
+      thread = t
+    end
+    raise StandardError, err unless (thread ? thread.value : $?).success?
+    out
+  end
+
+  def git!(command)
+    cmd!([described_class.bin] + command)
+  end
+
   before do
     git_source_path.mkpath
     Dir.chdir(git_source_path) do
-      `git init`
-      `git config user.name "Simba"`
-      `git config user.email "simba@savannah-pride.gov"`
+      git! %W[init]
+      git! %W[config user.name Simba]
+      git! %W[config user.email simba@savannah-pride.gov]
 
       # master
-      `touch butter.txt`
-      `git add butter.txt`
-      `git commit -m "Initial Commit"`
+      FileUtils.touch "butter.txt"
+      git! %W[add butter.txt]
+      git! %W[commit -m #{"Initial Commit"}]
 
       # branch
-      `git checkout -b #{branch} --quiet`
-      `touch jam.txt`
-      `git add jam.txt`
-      `git commit -m "Branch Commit"`
-      `git checkout master --quiet`
+      git! %W[checkout -b #{branch} --quiet]
+      FileUtils.touch "jam.txt"
+      git! %W[add jam.txt]
+      git! %W[commit -m #{"Branch Commit"}]
+      git! %W[checkout master --quiet]
 
-      # tag
-      `git checkout -b deletable --quiet`
-      `touch jelly.txt`
-      `git add jelly.txt`
-      `git commit -m "Tag Commit"`
-      `git tag #{tag}`
-      `git checkout master --quiet`
-      `git branch -D deletable`
-
-      # annotated tag
-      `git checkout -b deletable --quiet`
-      `touch jelly.txt`
-      `git add jelly.txt`
-      `git commit -m "Tag Commit"`
-      `git tag -am "Annotated Tag Commit" #{atag}`
-      `git checkout master --quiet`
-      `git branch -D deletable`
+      # tag/atag
+      git! %W[checkout -b deletable --quiet]
+      FileUtils.touch "jelly.txt"
+      git! %W[add jelly.txt]
+      git! %W[commit -m #{"Tag Commit"}]
+      git! %W[tag #{tag}]
+      git! %W[tag -am #{"Annotated Tag Commit"} #{atag}]
+      git! %W[checkout master --quiet]
+      git! %W[branch -D deletable]
     end
   end
 
@@ -74,6 +81,15 @@ describe Librarian::Source::Git::Repository do
 
     it "should not list any remote branches for it" do
       subject.remote_branch_names.should be_empty
+    end
+
+    it "should have divergent shas for master, branch, tag, and atag" do
+      revs = %W[ master #{branch} #{tag} #{atag} ]
+      rev_parse = proc{|rev| git!(%W[rev-parse #{rev} --quiet]).strip}
+      shas = Dir.chdir(git_source_path){revs.map(&rev_parse)}
+      shas.map(&:class).uniq.should be == [String]
+      shas.map(&:size).uniq.should be == [40]
+      shas.uniq.should be == shas
     end
   end
 
