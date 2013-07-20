@@ -2,6 +2,8 @@ require "fileutils"
 require "pathname"
 require "securerandom"
 
+require "rugged"
+
 require "librarian/source/git/repository"
 
 describe Librarian::Source::Git::Repository do
@@ -22,42 +24,81 @@ describe Librarian::Source::Git::Repository do
   let(:tag) { "the-tag" }
   let(:atag) { "the-atag" }
 
+  def cmd!(command)
+    out = ""
+    err = ""
+    thread = nil
+    Open3.popen3(*command) do |i, o, e, t|
+      out = o.read
+      err = e.read
+      thread = t
+    end
+
+    raise StandardError, err unless (thread ? thread.value : $?).success?
+
+    out
+  end
+
+  def git!(dir, command)
+    Dir.chdir(dir) { cmd!([described_class.bin] + command) }
+  end
+
+  def git_authorship(repo)
+    {
+      :name => repo.config["user.name"],
+      :email => repo.config["user.email"],
+      :time => Time.now,
+    }
+  end
+
+  def git_in_branch(repo, name, source)
+    repo.create_branch name, source
+    git! repo.workdir, %W[checkout #{name} --quiet]
+    yield
+  ensure
+    git! repo.workdir, %W[checkout #{source} --quiet]
+  end
+
+  def git_in_temp_branch(repo, source)
+    deletable = "deletable-#{SecureRandom.hex(16)}"
+    git_in_branch repo, deletable, source do
+      yield deletable
+    end
+  ensure
+    Rugged::Branch.lookup(repo, deletable).delete!
+  end
+
+  def git_add_and_commit_empty_file(repo, fn, options = { })
+    message = options[:message]
+    message << "\n" unless message.end_with?("\n")
+    FileUtils.touch File.join(repo.workdir, fn)
+    repo.index.add fn
+    repo.index.write
+    Rugged::Commit.create repo, {
+      :tree => repo.index.write_tree,
+      :message => message,
+      :author => git_authorship(repo),
+      :committer => git_authorship(repo),
+      :parents => repo.empty? ? [] : [repo.head.target].compact,
+      :update_ref => "HEAD",
+    }
+    nil
+  end
+
   before do
     git_source_path.mkpath
-    Dir.chdir(git_source_path) do
-      `git init`
-      `git config user.name "Simba"`
-      `git config user.email "simba@savannah-pride.gov"`
-
-      # master
-      `touch butter.txt`
-      `git add butter.txt`
-      `git commit -m "Initial Commit"`
-
-      # branch
-      `git checkout -b #{branch} --quiet`
-      `touch jam.txt`
-      `git add jam.txt`
-      `git commit -m "Branch Commit"`
-      `git checkout master --quiet`
-
-      # tag
-      `git checkout -b deletable --quiet`
-      `touch jelly.txt`
-      `git add jelly.txt`
-      `git commit -m "Tag Commit"`
-      `git tag #{tag}`
-      `git checkout master --quiet`
-      `git branch -D deletable`
-
-      # annotated tag
-      `git checkout -b deletable --quiet`
-      `touch jelly.txt`
-      `git add jelly.txt`
-      `git commit -m "Tag Commit"`
-      `git tag -am "Annotated Tag Commit" #{atag}`
-      `git checkout master --quiet`
-      `git branch -D deletable`
+    repo = Rugged::Repository.init_at(git_source_path.to_s)
+    repo.config["user.name"] = "Simba"
+    repo.config["user.email"] = "simba@savannah-pride.gov"
+    git_add_and_commit_empty_file repo, "butter.txt", :message => "Initial Commit"
+    git_in_branch repo, branch, "master" do
+      git_add_and_commit_empty_file repo, "jam.txt", :message => "Branch Commit"
+    end
+    git_in_temp_branch repo, "master" do |deletable|
+      git_add_and_commit_empty_file repo, "jelly.txt", :message => "Tag Commit"
+      Rugged::Tag.create repo, :name => tag, :target => deletable
+      Rugged::Tag.create repo, :name => atag, :target => deletable,
+        :message => "Annotated Tag Object Commit", :tagger => git_authorship(repo)
     end
   end
 
@@ -74,6 +115,14 @@ describe Librarian::Source::Git::Repository do
 
     it "should not list any remote branches for it" do
       subject.remote_branch_names.should be_empty
+    end
+
+    it "should have divergent shas for master, branch, tag, and atag" do
+      revs = %W[ master #{branch} #{tag} #{atag} ]
+      shas = revs.map{|r| git!(git_source_path, %W[ rev-parse #{r} --quiet]).strip}
+      shas.map(&:class).uniq.should be == [String]
+      shas.map(&:size).uniq.should be == [40]
+      shas.uniq.should be == shas
     end
   end
 

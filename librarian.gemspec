@@ -24,4 +24,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "json"
   gem.add_development_dependency "fakefs", "~> 0.4.2"
+  gem.add_development_dependency "rugged", "~> 0.19.0"
 end
