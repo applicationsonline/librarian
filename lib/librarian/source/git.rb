@@ -2,6 +2,7 @@ require 'fileutils'
 require 'pathname'
 require 'digest'
 
+require 'librarian/error'
 require 'librarian/source/basic_api'
 require 'librarian/source/git/repository'
 require 'librarian/source/local'
@@ -79,6 +80,7 @@ module Librarian
           repository.path.rmtree if repository.path.exist?
           repository.path.mkpath
           repository.clone!(uri)
+          raise Error, "failed to clone #{uri}" unless repository.git?
         end
         repository.reset_hard!
         repository.clean!
