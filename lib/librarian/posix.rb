@@ -49,11 +49,21 @@ module Librarian
 
       if defined?(JRuby) # built with jruby-1.7.4 in mind
 
-        def run!(command)
+        def run!(command, options = { })
           out, err = nil, nil
-          IO.popen3(*command) do |i, o, e|
-            i.close
-            out, err = o.read, e.read
+          chdir = options[:chdir].to_s if options[:chdir]
+          env = options[:env] || { }
+          old_env = Hash[env.keys.map{|k| [k, ENV[k]]}]
+          begin
+            ENV.update env
+            Dir.chdir(chdir || Dir.pwd) do
+              IO.popen3(*command) do |i, o, e|
+                i.close
+                out, err = o.read, e.read
+              end
+            end
+          ensure
+            ENV.update old_env
           end
           $?.success? or CommandFailure.raise! command, $?, err
           out
@@ -63,13 +73,15 @@ module Librarian
 
         if RUBY_VERSION < "1.9"
 
-          def run!(command)
+          def run!(command, options = { })
             i, o, e = IO.pipe, IO.pipe, IO.pipe
             pid = fork do
               $stdin.reopen i[0]
               $stdout.reopen o[1]
               $stderr.reopen e[1]
               [i[1], i[0], o[0], e[0]].each &:close
+              ENV.update options[:env] || { }
+              Dir.chdir options[:chdir].to_s if options[:chdir]
               exec *command
             end
             [i[0], i[1], o[1], e[1]].each &:close
@@ -82,10 +94,12 @@ module Librarian
 
         else
 
-          def run!(command)
+          def run!(command, options = { })
             i, o, e = IO.pipe, IO.pipe, IO.pipe
             opts = {:in => i[0], :out => o[1], :err => e[1]}
+            opts[:chdir] = options[:chdir].to_s if options[:chdir]
             command = command.dup
+            command.unshift options[:env] || { }
             command.push opts
             pid = Process.spawn(*command)
             [i[0], i[1], o[1], e[1]].each &:close
