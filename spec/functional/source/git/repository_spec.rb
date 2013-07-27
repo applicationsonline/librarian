@@ -68,7 +68,7 @@ describe Librarian::Source::Git::Repository do
   end
 
   describe ".git_version" do
-    specify { described_class.git_version.should_not be_empty }
+    specify { described_class.git_version.should =~ /^\d+(\.\d+)+$/ }
   end
 
   context "the original" do

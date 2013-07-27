@@ -20,7 +20,7 @@ module Librarian
 
           def git_version
             command = %W[#{bin} version --silent]
-            Posix.run!(command).strip
+            Posix.run!(command).strip =~ /([.\d]+)$/ && $1
           end
         end
 
