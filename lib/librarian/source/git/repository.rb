@@ -1,5 +1,3 @@
-require 'open3'
-
 require "librarian/posix"
 
 module Librarian
@@ -180,13 +178,7 @@ module Librarian
         end
 
         def run_command_internal(command)
-          rescuing = proc{|err, &b| begin ; b.call ; rescue k ; end}
-          close = proc{|io| io.close unless io.closed? if io}
-          i, o, e = Open3.popen3(*command)
-          $?.success? or raise StandardError, e.read
-          o.read
-        ensure
-          [i, o, e].each{|io| rescuing.call(Errno::EBADF){|io| close[io]}}
+          Posix.run! command
         end
 
         def debug(*args, &block)

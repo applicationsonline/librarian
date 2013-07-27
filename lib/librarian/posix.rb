@@ -1,3 +1,5 @@
+require "open3"
+
 module Librarian
   module Posix
 
@@ -23,6 +25,34 @@ module Librarian
 
       def which!(cmd)
         which(cmd) or raise Error, "cannot find #{cmd}"
+      end
+
+    end
+
+    class CommandFailure < StandardError
+      class << self
+        def raise!(command, status, message)
+          ex = new(message)
+          ex.command = command
+          ex.status = status
+          ex.set_backtrace caller
+          raise ex
+        end
+      end
+
+      attr_accessor :command, :status
+    end
+
+    class << self
+
+      def run!(command)
+        rescuing = proc{|err, &b| begin ; b.call ; rescue k ; end}
+        close = proc{|io| io.close unless io.closed? if io}
+        i, o, e = Open3.popen3(*command)
+        $?.success? or CommandFailure.raise command, $?, e.read
+        o.read
+      ensure
+        [i, o, e].each{|io| rescuing.call(Errno::EBADF){|io| close[io]}}
       end
 
     end

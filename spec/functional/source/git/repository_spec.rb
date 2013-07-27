@@ -1,7 +1,8 @@
 require "fileutils"
-require 'open3'
 require "pathname"
 require "securerandom"
+
+require "librarian/posix"
 
 require "librarian/source/git/repository"
 
@@ -24,13 +25,7 @@ describe Librarian::Source::Git::Repository do
   let(:atag) { "the-atag" }
 
   def cmd!(command)
-    rescuing = proc{|err, &b| begin ; b.call ; rescue k ; end}
-    close = proc{|io| io.close unless io.closed? if io}
-    i, o, e = Open3.popen3(*command)
-    $?.success? or raise StandardError, e.read
-    o.read
-  ensure
-    [i, o, e].each{|io| rescuing.call(Errno::EBADF){|io| close[io]}}
+    Librarian::Posix.run! command
   end
 
   def git!(command)
