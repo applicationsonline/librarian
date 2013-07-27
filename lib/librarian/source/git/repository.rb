@@ -117,33 +117,15 @@ module Librarian
           chdir = path.to_s if chdir == true
 
           silent = options.delete(:silent)
+          pwd = chdir || Dir.pwd
+          git_dir = File.join(path, ".git") if path
+          env = {"GIT_DIR" => git_dir}
 
           command = [bin]
           command.concat(args)
 
-          maybe_within(chdir) do
-            logging_command(command, :silent => silent) do
-              run_command_internal(command)
-            end
-          end
-        end
-
-        def maybe_within(path)
-          git_dir = File.join(path, ".git") if path
-          if path
-            Dir.chdir(path) { with_env_var("GIT_DIR", git_dir) { yield } }
-          else
-            yield
-          end
-        end
-
-        def with_env_var(name, value)
-          original_value = ENV[name]
-          begin
-            ENV[name] = value
-            yield
-          ensure
-            ENV[name] = original_value
+          logging_command(command, :silent => silent, :pwd => pwd) do
+            Posix.run!(command, :chdir => chdir, :env => env)
           end
         end
 
@@ -151,10 +133,6 @@ module Librarian
           silent = options.delete(:silent)
 
           pwd = Dir.pwd
-
-          unless silent
-            debug { "Running `#{command.join(' ')}` in #{relative_path_to(pwd)}" }
-          end
 
           out = yield
 
@@ -169,10 +147,6 @@ module Librarian
           end
 
           out
-        end
-
-        def run_command_internal(command)
-          Posix.run! command
         end
 
         def debug(*args, &block)
