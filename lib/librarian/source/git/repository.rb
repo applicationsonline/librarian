@@ -17,6 +17,11 @@ module Librarian
           def bin
             @bin ||= Posix.which!("git")
           end
+
+          def git_version
+            command = %W[#{bin} version --silent]
+            Posix.run!(command).strip
+          end
         end
 
         attr_accessor :environment, :path
@@ -33,17 +38,6 @@ module Librarian
 
         def default_remote
           "origin"
-        end
-
-        def version(options = { })
-          version!(options).strip
-        end
-
-        def version!(options = { })
-          silent = options.delete(:silent)
-
-          command = %w(--version)
-          run!(command, :silent => silent)
         end
 
         def clone!(repository_url)

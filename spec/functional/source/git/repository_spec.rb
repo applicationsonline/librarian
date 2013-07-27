@@ -63,6 +63,14 @@ describe Librarian::Source::Git::Repository do
     end
   end
 
+  describe ".bin" do
+    specify { described_class.bin.should_not be_empty }
+  end
+
+  describe ".git_version" do
+    specify { described_class.git_version.should_not be_empty }
+  end
+
   context "the original" do
     subject { described_class.new(env, git_source_path) }
 
