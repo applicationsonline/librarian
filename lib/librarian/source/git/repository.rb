@@ -1,5 +1,7 @@
 require 'open3'
 
+require "librarian/posix"
+
 module Librarian
   module Source
     class Git
@@ -15,27 +17,7 @@ module Librarian
           end
 
           def bin
-            @bin ||= which("git") or raise Error, "cannot find git"
-          end
-
-          private
-
-          # Cross-platform way of finding an executable in the $PATH.
-          #
-          #   which('ruby') #=> /usr/bin/ruby
-          #
-          # From:
-          #   https://github.com/defunkt/hub/commit/353031307e704d860826fc756ff0070be5e1b430#L2R173
-          def which(cmd)
-            exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
-            ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-              path = File.expand_path(path)
-              exts.each do |ext|
-                exe = File.join(path, cmd + ext)
-                return exe if File.file?(exe) && File.executable?(exe)
-              end
-            end
-            nil
+            @bin ||= Posix.which!("git")
           end
         end
 
