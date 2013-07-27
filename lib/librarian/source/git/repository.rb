@@ -155,8 +155,9 @@ module Librarian
         end
 
         def maybe_within(path)
+          git_dir = File.join(path, ".git") if path
           if path
-            Dir.chdir(path) { with_env_var("GIT_DIR", nil) { yield } }
+            Dir.chdir(path) { with_env_var("GIT_DIR", git_dir) { yield } }
           else
             yield
           end
