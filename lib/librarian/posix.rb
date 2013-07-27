@@ -1,5 +1,7 @@
 require "open3"
 
+require "librarian/error"
+
 module Librarian
   module Posix
 
@@ -29,7 +31,7 @@ module Librarian
 
     end
 
-    class CommandFailure < StandardError
+    class CommandFailure < Error
       class << self
         def raise!(command, status, message)
           ex = new(message)
@@ -45,14 +47,57 @@ module Librarian
 
     class << self
 
-      def run!(command)
-        rescuing = proc{|err, &b| begin ; b.call ; rescue k ; end}
-        close = proc{|io| io.close unless io.closed? if io}
-        i, o, e = Open3.popen3(*command)
-        $?.success? or CommandFailure.raise command, $?, e.read
-        o.read
-      ensure
-        [i, o, e].each{|io| rescuing.call(Errno::EBADF){|io| close[io]}}
+      if defined?(JRuby) # built with jruby-1.7.4 in mind
+
+        def run!(command)
+          out, err = nil, nil
+          IO.popen3(*command) do |i, o, e|
+            i.close
+            out, err = o.read, e.read
+          end
+          $?.success? or CommandFailure.raise! command, $?, err
+          out
+        end
+
+      else
+
+        if RUBY_VERSION < "1.9"
+
+          def run!(command)
+            i, o, e = IO.pipe, IO.pipe, IO.pipe
+            pid = fork do
+              $stdin.reopen i[0]
+              $stdout.reopen o[1]
+              $stderr.reopen e[1]
+              [i[1], i[0], o[0], e[0]].each &:close
+              exec *command
+            end
+            [i[0], i[1], o[1], e[1]].each &:close
+            Process.waitpid pid
+            $?.success? or CommandFailure.raise! command, $?, e[0].read
+            o[0].read
+          ensure
+            [i, o, e].flatten(1).each{|io| io.close unless io.closed?}
+          end
+
+        else
+
+          def run!(command)
+            i, o, e = IO.pipe, IO.pipe, IO.pipe
+            opts = {:in => i[0], :out => o[1], :err => e[1]}
+            command = command.dup
+            command.push opts
+            pid = Process.spawn(*command)
+            [i[0], i[1], o[1], e[1]].each &:close
+            Process.waitpid pid
+            $?.success? or CommandFailure.raise! command, $?, e[0].read
+            o[0].read
+          ensure
+            [i, o, e].flatten(1).each{|io| io.close unless io.closed?}
+          end
+
+        end
+
       end
 
     end

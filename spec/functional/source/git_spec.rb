@@ -22,7 +22,8 @@ describe Librarian::Source::Git do
     let(:source) { described_class.new(env, remote, {}) }
 
     it "fails when caching" do
-      expect { source.cache! }.to raise_error Librarian::Error, /failed to clone/
+      expect { source.cache! }.to raise_error Librarian::Error,
+        /^fatal: repository .+ does not exist$/ # from git
     end
   end
 
