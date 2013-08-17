@@ -10,6 +10,8 @@
 * \#127. Support Rubinius and JRuby, including when shelling out to system
   commands.
 
+* \#144. Allow running the test suite with a simple `rake`. Thanks @nickhammond.
+
 ## 0.1.0
 
 * Extract the chef adapter to its own gem.
