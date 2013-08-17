@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.1.1
+
+* \#147. Handle the case where HOME is not in the environment. Thanks @bradleyd.
+
+* \#140. Properly handle the failure to clone a git repository. Avoid wiping out
+  the host project's changes.
+
+* \#127. Support Rubinius and JRuby, including when shelling out to system
+  commands.
+
 ## 0.1.0
 
 * Extract the chef adapter to its own gem.
