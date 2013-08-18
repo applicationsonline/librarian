@@ -26,6 +26,10 @@ module Librarian
         to_gem_requirement.to_s
       end
 
+      def inspect
+        "#<#{self.class} #{to_s}>"
+      end
+
       COMPATS_TABLE = {
         %w(=  = ) => lambda{|s, o| s == o},
         %w(=  !=) => lambda{|s, o| s != o},

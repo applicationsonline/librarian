@@ -174,6 +174,10 @@ module Librarian
       no_proxy?(host) ? Net::HTTP : net_http_default_class
     end
 
+    def inspect
+      "#<#{self.class}:0x#{__id__.to_s(16)}>"
+    end
+
   private
 
     def environment

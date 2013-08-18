@@ -24,6 +24,10 @@ module Librarian
         to_gem_version.to_s
       end
 
+      def inspect
+        "#<#{self.class} #{to_s}>"
+      end
+
       private
 
       def initialize_normalize_args(args)
