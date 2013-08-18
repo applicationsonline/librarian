@@ -144,7 +144,9 @@ module Librarian
   private
 
     def assert_name_valid!(name)
-      raise ArgumentError, "name (#{name.inspect}) must be sensible" unless name =~ /\A\S(?:.*\S)?\z/
+      name =~ /\A\S(?:.*\S)?\z/ and return
+
+      raise ArgumentError, "name (#{name.inspect}) must be sensible"
     end
 
   end
