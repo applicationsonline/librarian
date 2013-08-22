@@ -1,45 +1,9 @@
 require 'rubygems'
 
+require 'librarian/manifest_version'
+
 module Librarian
   class Manifest
-
-    class Version
-      include Comparable
-
-      def initialize(*args)
-        args = initialize_normalize_args(args)
-
-        self.backing = Gem::Version.new(*args)
-      end
-
-      def to_gem_version
-        backing
-      end
-
-      def <=>(other)
-        to_gem_version <=> other.to_gem_version
-      end
-
-      def to_s
-        to_gem_version.to_s
-      end
-
-      def inspect
-        "#<#{self.class} #{to_s}>"
-      end
-
-      private
-
-      def initialize_normalize_args(args)
-        args.map do |arg|
-          arg = [arg] if self.class === arg
-          arg
-        end
-      end
-
-      attr_accessor :backing
-    end
-
     attr_accessor :source, :name, :extra
     private :source=, :name=, :extra=
 
@@ -126,7 +90,7 @@ module Librarian
     end
 
     def _normalize_version(version)
-      Version.new(version)
+      environment.adapter_manifest_version.new(version)
     end
 
     def _normalize_dependencies(dependencies)
