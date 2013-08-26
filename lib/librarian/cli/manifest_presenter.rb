@@ -66,11 +66,7 @@ module Librarian
 
       def say(string)
         cli.say "  " * scope_level << string
-        if block_given?
-          scope do
-            yield
-          end
-        end
+        scope { yield } if block_given?
       end
 
       def scope

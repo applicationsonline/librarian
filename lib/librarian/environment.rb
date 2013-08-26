@@ -29,7 +29,6 @@ module Librarian
       @env = options.fetch(:env) { ENV.to_hash }
       @home = options.fetch(:home) { default_home }
       @project_path = options[:project_path]
-      @specfile_name = options[:specfile_name]
     end
 
     def logger
@@ -71,8 +70,19 @@ module Librarian
       Specfile.new(self, specfile_path)
     end
 
+    def adapter_module
+      implementation? or return
+      self.class.name.split("::")[0 ... -1].inject(Object, &:const_get)
+    end
+
     def adapter_name
-      nil
+      implementation? or return
+      Helpers.camel_cased_to_dasherized(self.class.name.split("::")[-2])
+    end
+
+    def adapter_version
+      implementation? or return
+      adapter_module::VERSION
     end
 
     def lockfile_name
@@ -125,7 +135,7 @@ module Librarian
     end
 
     def dsl_class
-      self.class.name.split("::")[0 ... -1].inject(Object, &:const_get)::Dsl
+      adapter_module::Dsl
     end
 
     def version
@@ -161,12 +171,11 @@ module Librarian
     end
 
     def net_http_class(host)
-      return Net::HTTP if no_proxy?(host)
+      no_proxy?(host) ? Net::HTTP : net_http_default_class
+    end
 
-      @net_http_class ||= begin
-        p = http_proxy_uri
-        p ? Net::HTTP::Proxy(p.host, p.port, p.user, p.password) : Net::HTTP
-      end
+    def inspect
+      "#<#{self.class}:0x#{__id__.to_s(16)}>"
     end
 
   private
@@ -175,17 +184,31 @@ module Librarian
       self
     end
 
+    def implementation?
+      self.class != ::Librarian::Environment
+    end
+
     def default_home
       File.expand_path(ENV["HOME"] || Etc.getpwnam(Etc.getlogin).dir)
     end
 
-    def no_proxy?(host)
-      @no_proxy ||= begin
+    def no_proxy_list
+      @no_proxy_list ||= begin
         list = ENV['NO_PROXY'] || ENV['no_proxy'] || ""
         list.split(/\s*,\s*/) + %w(localhost 127.0.0.1)
       end
-      @no_proxy.any? do |host_addr|
-        host.match(Regexp.quote(host_addr)+'$')
+    end
+
+    def no_proxy?(host)
+      no_proxy_list.any? do |host_addr|
+        host.end_with?(host_addr)
+      end
+    end
+
+    def net_http_default_class
+      @net_http_default_class ||= begin
+        p = http_proxy_uri
+        p ? Net::HTTP::Proxy(p.host, p.port, p.user, p.password) : Net::HTTP
       end
     end
 

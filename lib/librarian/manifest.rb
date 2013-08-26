@@ -24,6 +24,10 @@ module Librarian
         to_gem_version.to_s
       end
 
+      def inspect
+        "#<#{self.class} #{to_s}>"
+      end
+
       private
 
       def initialize_normalize_args(args)
@@ -133,7 +137,9 @@ module Librarian
     end
 
     def assert_name_valid!(name)
-      raise ArgumentError, "name (#{name.inspect}) must be sensible" unless name =~ /\A\S(?:.*\S)?\z/
+      name =~ /\A\S(?:.*\S)?\z/ and return
+
+      raise ArgumentError, "name (#{name.inspect}) must be sensible"
     end
 
   end

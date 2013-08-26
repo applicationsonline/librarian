@@ -1,4 +1,4 @@
-require 'open3'
+require "librarian/posix"
 
 module Librarian
   module Source
@@ -15,27 +15,12 @@ module Librarian
           end
 
           def bin
-            @bin ||= which("git") or raise Error, "cannot find git"
+            @bin ||= Posix.which!("git")
           end
 
-          private
-
-          # Cross-platform way of finding an executable in the $PATH.
-          #
-          #   which('ruby') #=> /usr/bin/ruby
-          #
-          # From:
-          #   https://github.com/defunkt/hub/commit/353031307e704d860826fc756ff0070be5e1b430#L2R173
-          def which(cmd)
-            exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
-            ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-              path = File.expand_path(path)
-              exts.each do |ext|
-                exe = File.join(path, cmd + ext)
-                return exe if File.file?(exe) && File.executable?(exe)
-              end
-            end
-            nil
+          def git_version
+            command = %W[#{bin} version --silent]
+            Posix.run!(command).strip =~ /([.\d]+)$/ && $1
           end
         end
 
@@ -53,17 +38,6 @@ module Librarian
 
         def default_remote
           "origin"
-        end
-
-        def version(options = { })
-          version!(options).strip
-        end
-
-        def version!(options = { })
-          silent = options.delete(:silent)
-
-          command = %w(--version)
-          run!(command, :silent => silent)
         end
 
         def clone!(repository_url)
@@ -143,32 +117,15 @@ module Librarian
           chdir = path.to_s if chdir == true
 
           silent = options.delete(:silent)
+          pwd = chdir || Dir.pwd
+          git_dir = File.join(path, ".git") if path
+          env = {"GIT_DIR" => git_dir}
 
           command = [bin]
           command.concat(args)
 
-          maybe_within(chdir) do
-            logging_command(command, :silent => silent) do
-              run_command_internal(command)
-            end
-          end
-        end
-
-        def maybe_within(path)
-          if path
-            Dir.chdir(path) { with_env_var("GIT_DIR", nil) { yield } }
-          else
-            yield
-          end
-        end
-
-        def with_env_var(name, value)
-          original_value = ENV[name]
-          begin
-            ENV[name] = value
-            yield
-          ensure
-            ENV[name] = original_value
+          logging_command(command, :silent => silent, :pwd => pwd) do
+            Posix.run!(command, :chdir => chdir, :env => env)
           end
         end
 
@@ -176,10 +133,6 @@ module Librarian
           silent = options.delete(:silent)
 
           pwd = Dir.pwd
-
-          unless silent
-            debug { "Running `#{command.join(' ')}` in #{relative_path_to(pwd)}" }
-          end
 
           out = yield
 
@@ -194,21 +147,6 @@ module Librarian
           end
 
           out
-        end
-
-        def run_command_internal(command)
-          std = ""
-          err = ""
-          thread = nil
-          Open3.popen3(*command) do |i, o, e, t|
-            std = o.read
-            err = e.read
-            thread = t
-          end
-
-          raise StandardError, err unless (thread ? thread.value : $?).success?
-
-          std
         end
 
         def debug(*args, &block)

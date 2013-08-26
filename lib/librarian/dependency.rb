@@ -26,6 +26,10 @@ module Librarian
         to_gem_requirement.to_s
       end
 
+      def inspect
+        "#<#{self.class} #{to_s}>"
+      end
+
       COMPATS_TABLE = {
         %w(=  = ) => lambda{|s, o| s == o},
         %w(=  !=) => lambda{|s, o| s != o},
@@ -140,7 +144,9 @@ module Librarian
   private
 
     def assert_name_valid!(name)
-      raise ArgumentError, "name (#{name.inspect}) must be sensible" unless name =~ /\A\S(?:.*\S)?\z/
+      name =~ /\A\S(?:.*\S)?\z/ and return
+
+      raise ArgumentError, "name (#{name.inspect}) must be sensible"
     end
 
   end

@@ -2,6 +2,19 @@ require "fakefs/safe"
 require "fakefs/spec_helpers"
 require "support/method_patch_macro"
 
+if defined?(Rubinius)
+  module Rubinius
+    class CodeLoader
+      class << self
+        alias_method :require_fakefs_original, :require
+        def require(s)
+          ::FakeFS.without { require_fakefs_original(s) }
+        end
+      end
+    end
+  end
+end
+
 module Support
   module FakeFS
 

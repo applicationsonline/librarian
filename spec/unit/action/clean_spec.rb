@@ -3,7 +3,7 @@ require "librarian/action/clean"
 module Librarian
   describe Action::Clean do
 
-    let(:env) { mock }
+    let(:env) { double }
     let(:action) { described_class.new(env) }
 
     before do
@@ -68,7 +68,7 @@ module Librarian
             end
 
             it "should try to clear the install path" do
-              children = [mock, mock, mock]
+              children = [double, double, double]
               children.each do |child|
                 child.stub(:file?) { false }
               end
@@ -80,7 +80,7 @@ module Librarian
             end
 
             it "should only try to clear out directories from the install path, not files" do
-              children = [mock(:file? => false), mock(:file? => true), mock(:file? => true)]
+              children = [double(:file? => false), double(:file? => true), double(:file? => true)]
               env.stub_chain(:install_path, :children) { children }
 
               children.select(&:file?).each do |child|
