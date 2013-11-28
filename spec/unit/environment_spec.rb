@@ -9,15 +9,15 @@ module Librarian
     let(:env) { described_class.new }
 
     describe "#adapter_module" do
-      specify { env.adapter_module.should be nil }
+      specify { expect(env.adapter_module).to be nil }
     end
 
     describe "#adapter_name" do
-      specify { env.adapter_name.should be nil }
+      specify { expect(env.adapter_name).to be nil }
     end
 
     describe "#adapter_version" do
-      specify { env.adapter_version.should be nil }
+      specify { expect(env.adapter_version).to be nil }
     end
 
     describe "computing the home" do
@@ -27,7 +27,7 @@ module Librarian
 
         it "finds the home" do
           env.stub(:adapter_name).and_return("cat")
-          env.config_db.underlying_home.to_s.should == "/path/to/home"
+          expect(env.config_db.underlying_home.to_s).to eq "/path/to/home"
         end
       end
 
@@ -37,7 +37,7 @@ module Librarian
 
         it "finds the home" do
           env.stub(:adapter_name).and_return("cat")
-          env.config_db.underlying_home.to_s.should == real_home
+          expect(env.config_db.underlying_home.to_s).to eq real_home
         end
       end
 
@@ -49,7 +49,7 @@ module Librarian
         with_env  "http_proxy" => nil
 
         it "should have a nil http proxy uri" do
-          env.http_proxy_uri.should be_nil
+          expect(env.http_proxy_uri).to be_nil
         end
       end
 
@@ -57,19 +57,19 @@ module Librarian
         with_env  "http_proxy" => "admin:secret@example.com"
 
         it "should have the expcted http proxy uri" do
-          env.http_proxy_uri.should == URI("http://admin:secret@example.com")
+          expect(env.http_proxy_uri).to eq URI("http://admin:secret@example.com")
         end
 
         it "should have the expected host" do
-          env.http_proxy_uri.host.should == "example.com"
+          expect(env.http_proxy_uri.host).to eq "example.com"
         end
 
         it "should have the expected user" do
-          env.http_proxy_uri.user.should == "admin"
+          expect(env.http_proxy_uri.user).to eq "admin"
         end
 
         it "should have the expected password" do
-          env.http_proxy_uri.password.should == "secret"
+          expect(env.http_proxy_uri.password).to eq "secret"
         end
       end
 
@@ -79,7 +79,7 @@ module Librarian
                   "http_proxy_pass" => "secret"
 
         it "should have the expcted http proxy uri" do
-          env.http_proxy_uri.should == URI("http://admin:secret@example.com")
+          expect(env.http_proxy_uri).to eq URI("http://admin:secret@example.com")
         end
       end
 
@@ -91,11 +91,11 @@ module Librarian
         with_env  "http_proxy" => nil
 
         it "should have the normal class" do
-          env.net_http_class(proxied_host).should be Net::HTTP
+          expect(env.net_http_class(proxied_host)).to be Net::HTTP
         end
 
         it "should not be marked as a proxy class" do
-          env.net_http_class(proxied_host).should_not be_proxy_class
+          expect(env.net_http_class(proxied_host)).to_not be_proxy_class
         end
       end
 
@@ -103,18 +103,18 @@ module Librarian
         with_env  "http_proxy" => "admin:secret@example.com"
 
         it "should not by marked as a proxy class for localhost" do
-          env.net_http_class('localhost').should_not be_proxy_class
+          expect(env.net_http_class('localhost')).to_not be_proxy_class
         end
         it "should not have the normal class" do
-          env.net_http_class(proxied_host).should_not be Net::HTTP
+          expect(env.net_http_class(proxied_host)).to_not be Net::HTTP
         end
 
         it "should have a subclass the normal class" do
-          env.net_http_class(proxied_host).should < Net::HTTP
+          expect(env.net_http_class(proxied_host)).to be < Net::HTTP
         end
 
         it "should be marked as a proxy class" do
-          env.net_http_class(proxied_host).should be_proxy_class
+          expect(env.net_http_class(proxied_host)).to be_proxy_class
         end
 
         it "should have the expected proxy attributes" do
@@ -132,7 +132,7 @@ module Librarian
             "pass" => http.proxy_pass,
           }
 
-          actual_attributes.should == expected_attributes
+          expect(actual_attributes).to eq expected_attributes
         end
 
       end
@@ -145,11 +145,11 @@ module Librarian
           let(:proxied_host) { "noproxy.com" }
 
           it "should have the normal class" do
-            env.net_http_class(proxied_host).should be Net::HTTP
+            expect(env.net_http_class(proxied_host)).to be Net::HTTP
           end
 
           it "should not be marked as a proxy class" do
-            env.net_http_class(proxied_host).should_not be_proxy_class
+            expect(env.net_http_class(proxied_host)).to_not be_proxy_class
           end
         end
 
@@ -157,11 +157,11 @@ module Librarian
           let(:proxied_host) { "www.noproxy.com" }
 
           it "should have the normal class" do
-            env.net_http_class(proxied_host).should be Net::HTTP
+            expect(env.net_http_class(proxied_host)).to be Net::HTTP
           end
 
           it "should not be marked as a proxy class" do
-            env.net_http_class(proxied_host).should_not be_proxy_class
+            expect(env.net_http_class(proxied_host)).to_not be_proxy_class
           end
         end
 
@@ -169,11 +169,11 @@ module Librarian
           let(:proxied_host) { "localhost" }
 
           it "should have the normal class" do
-            env.net_http_class(proxied_host).should be Net::HTTP
+            expect(env.net_http_class(proxied_host)).to be Net::HTTP
           end
 
           it "should not be marked as a proxy class" do
-            env.net_http_class(proxied_host).should_not be_proxy_class
+            expect(env.net_http_class(proxied_host)).to_not be_proxy_class
           end
         end
 
@@ -181,11 +181,11 @@ module Librarian
           let(:proxied_host) { "127.0.0.1" }
 
           it "should have the normal class" do
-            env.net_http_class(proxied_host).should be Net::HTTP
+            expect(env.net_http_class(proxied_host)).to be Net::HTTP
           end
 
           it "should not be marked as a proxy class" do
-            env.net_http_class(proxied_host).should_not be_proxy_class
+            expect(env.net_http_class(proxied_host)).to_not be_proxy_class
           end
         end
 
@@ -193,11 +193,11 @@ module Librarian
           let(:proxied_host) { "www.example.com" }
 
           it "should have a subclass the normal class" do
-            env.net_http_class(proxied_host).should < Net::HTTP
+            expect(env.net_http_class(proxied_host)).to be < Net::HTTP
           end
 
           it "should be marked as a proxy class" do
-            env.net_http_class(proxied_host).should be_proxy_class
+            expect(env.net_http_class(proxied_host)).to be_proxy_class
           end
         end
 

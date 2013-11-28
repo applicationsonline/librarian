@@ -39,7 +39,7 @@ module Librarian
 
       context "just saving" do
         it "should return the lockfile text" do
-          lockfile_text.should_not be_nil
+          expect(lockfile_text).to_not be_nil
         end
       end
 
@@ -47,7 +47,7 @@ module Librarian
         let(:reloaded_resolution) { lockfile.load(lockfile_text) }
 
         it "should have the expected manifests" do
-          reloaded_resolution.manifests.count.should == resolution.manifests.count
+          expect(reloaded_resolution.manifests.count).to eq resolution.manifests.count
         end
       end
 
@@ -56,7 +56,7 @@ module Librarian
         let(:bounced_lockfile_text) { lockfile.save(bounced_resolution) }
 
         it "should return the same lockfile text after bouncing as before bouncing" do
-          bounced_lockfile_text.should == lockfile_text
+          expect(bounced_lockfile_text).to eq lockfile_text
         end
       end
     end

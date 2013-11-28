@@ -64,35 +64,35 @@ describe Librarian::Source::Git::Repository do
   end
 
   describe ".bin" do
-    specify { described_class.bin.should_not be_empty }
+    specify { expect(described_class.bin).to_not be_empty }
   end
 
   describe ".git_version" do
-    specify { described_class.git_version.should =~ /^\d+(\.\d+)+$/ }
+    specify { expect(described_class.git_version).to match( /^\d+(\.\d+)+$/ ) }
   end
 
   context "the original" do
     subject { described_class.new(env, git_source_path) }
 
     it "should recognize it" do
-      subject.should be_git
+      expect(subject).to be_git
     end
 
     it "should not list any remotes for it" do
-      subject.remote_names.should be_empty
+      expect(subject.remote_names).to be_empty
     end
 
     it "should not list any remote branches for it" do
-      subject.remote_branch_names.should be_empty
+      expect(subject.remote_branch_names).to be_empty
     end
 
     it "should have divergent shas for master, branch, tag, and atag" do
       revs = %W[ master #{branch} #{tag} #{atag} ]
       rev_parse = proc{|rev| git!(%W[rev-parse #{rev} --quiet]).strip}
       shas = Dir.chdir(git_source_path){revs.map(&rev_parse)}
-      shas.map(&:class).uniq.should be == [String]
-      shas.map(&:size).uniq.should be == [40]
-      shas.uniq.should be == shas
+      expect(shas.map(&:class).uniq).to eq ([String])
+      expect(shas.map(&:size).uniq).to eq ([40])
+      expect(shas.uniq).to eq shas
     end
   end
 
@@ -106,23 +106,23 @@ describe Librarian::Source::Git::Repository do
     let(:atag_sha) { subject.hash_from("origin", atag) }
 
     it "should recognize it" do
-      subject.should be_git
+      expect(subject).to be_git
     end
 
     it "should have a single remote for it" do
-      subject.should have(1).remote_names
+      expect(subject).to have(1).remote_names
     end
 
     it "should have a remote with the expected name" do
-      subject.remote_names.first.should == "origin"
+      expect(subject.remote_names.first).to eq "origin"
     end
 
     it "should have the remote branch" do
-      subject.remote_branch_names["origin"].should include branch
+      expect(subject.remote_branch_names["origin"]).to include branch
     end
 
     it "should be checked out on the master" do
-      subject.should be_checked_out(master_sha)
+      expect(subject).to be_checked_out(master_sha)
     end
 
     context "checking out the branch" do
@@ -131,11 +131,11 @@ describe Librarian::Source::Git::Repository do
       end
 
       it "should be checked out on the branch" do
-        subject.should be_checked_out(branch_sha)
+        expect(subject).to be_checked_out(branch_sha)
       end
 
       it "should not be checked out on the master" do
-        subject.should_not be_checked_out(master_sha)
+        expect(subject).to_not be_checked_out(master_sha)
       end
     end
 
@@ -145,11 +145,11 @@ describe Librarian::Source::Git::Repository do
       end
 
       it "should be checked out on the tag" do
-        subject.should be_checked_out(tag_sha)
+        expect(subject).to be_checked_out(tag_sha)
       end
 
       it "should not be checked out on the master" do
-        subject.should_not be_checked_out(master_sha)
+        expect(subject).to_not be_checked_out(master_sha)
       end
     end
 
@@ -159,11 +159,11 @@ describe Librarian::Source::Git::Repository do
       end
 
       it "should be checked out on the annotated tag" do
-        subject.should be_checked_out(atag_sha)
+        expect(subject).to be_checked_out(atag_sha)
       end
 
       it "should not be checked out on the master" do
-        subject.should_not be_checked_out(master_sha)
+        expect(subject).to_not be_checked_out(master_sha)
       end
     end
   end

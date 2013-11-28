@@ -22,11 +22,11 @@ module Librarian
       end
 
       it "should give an empty list of dependencies" do
-        resolution.dependencies.should be_empty
+        expect(resolution.dependencies).to be_empty
       end
 
       it "should give an empty list of manifests" do
-        resolution.manifests.should be_empty
+        expect(resolution.manifests).to be_empty
       end
     end
 
@@ -45,56 +45,56 @@ module Librarian
       end
 
       it "should give a list of one dependency" do
-        resolution.should have(1).dependencies
+        expect(resolution).to have(1).dependencies
       end
 
       it "should give a dependency with the expected name" do
         dependency = resolution.dependencies.first
 
-        dependency.name.should == "jelly"
+        expect(dependency.name).to eq "jelly"
       end
 
       it "should give a dependency with the expected requirement" do
         dependency = resolution.dependencies.first
 
         # Note: it must be this order because this order is lexicographically sorted.
-        dependency.requirement.to_s.should == "!= 1.2.6, ~> 1.1"
+        expect(dependency.requirement.to_s).to eq "!= 1.2.6, ~> 1.1"
       end
 
       it "should give a dependency wth the expected source" do
         dependency = resolution.dependencies.first
         source = dependency.source
 
-        source.name.should == "source-a"
+        expect(source.name).to eq "source-a"
       end
 
       it "should give a list of one manifest" do
-        resolution.should have(1).manifests
+        expect(resolution).to have(1).manifests
       end
 
       it "should give a manifest with the expected name" do
         manifest = resolution.manifests.first
 
-        manifest.name.should == "jelly"
+        expect(manifest.name).to eq "jelly"
       end
 
       it "should give a manifest with the expected version" do
         manifest = resolution.manifests.first
 
-        manifest.version.to_s.should == "1.3.5"
+        expect(manifest.version.to_s).to eq "1.3.5"
       end
 
       it "should give a manifest with no dependencies" do
         manifest = resolution.manifests.first
 
-        manifest.dependencies.should be_empty
+        expect(manifest.dependencies).to be_empty
       end
 
       it "should give a manifest with the expected source" do
         manifest = resolution.manifests.first
         source = manifest.source
 
-        source.name.should == "source-a"
+        expect(source.name).to eq "source-a"
       end
 
       it "should give the dependency and the manifest the same source instance" do
@@ -104,7 +104,7 @@ module Librarian
         dependency_source = dependency.source
         manifest_source = manifest.source
 
-        manifest_source.should be dependency_source
+        expect(manifest_source).to be dependency_source
       end
     end
 
@@ -125,36 +125,36 @@ module Librarian
       end
 
       it "should give a list of one dependency" do
-        resolution.should have(1).dependencies
+        expect(resolution).to have(1).dependencies
       end
 
       it "should have the expected dependency" do
         dependency = resolution.dependencies.first
 
-        dependency.name.should == "jelly"
+        expect(dependency.name).to eq "jelly"
       end
 
       it "should give a list of all the manifests" do
-        resolution.should have(2).manifests
+        expect(resolution).to have(2).manifests
       end
 
       it "should include all the expected manifests" do
         manifests = ManifestSet.new(resolution.manifests)
 
-        manifests.to_hash.keys.should =~ %w(butter jelly)
+        expect(manifests.to_hash.keys).to match_array( %w(butter jelly) )
       end
 
       it "should have an internally consistent set of manifests" do
         manifests = ManifestSet.new(resolution.manifests)
 
-        manifests.should be_consistent
+        expect(manifests).to be_consistent
       end
 
       it "should have an externally consistent set of manifests" do
         dependencies = resolution.dependencies
         manifests = ManifestSet.new(resolution.manifests)
 
-        manifests.should be_in_compliance_with dependencies
+        expect(manifests).to be_in_compliance_with dependencies
       end
     end
 

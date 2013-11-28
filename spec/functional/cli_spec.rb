@@ -15,7 +15,7 @@ module Librarian
         end
 
         it "should print the version" do
-          stdout.should == strip_heredoc(<<-STDOUT)
+          expect(stdout).to eq strip_heredoc(<<-STDOUT)
             librarian-#{Librarian::VERSION}
             librarian-mock-#{Librarian::Mock::VERSION}
           STDOUT

@@ -52,19 +52,19 @@ describe Librarian::Config::Database do
     end
 
     it "should have the key globally" do
-      database.global[key].should == value
+      expect(database.global[key]).to eq value
     end
 
     it "should not have the key in the env" do
-      database.env[key].should be_nil
+      expect(database.env[key]).to be_nil
     end
 
     it "should not have the key locally" do
-      database.local[key].should be_nil
+      expect(database.local[key]).to be_nil
     end
 
     it "should have the key generally" do
-      database[key].should == value
+      expect(database[key]).to eq value
     end
   end
 
@@ -78,25 +78,25 @@ describe Librarian::Config::Database do
     end
 
     it "should have the key globally" do
-      database.global[key].should == value
+      expect(database.global[key]).to eq value
     end
 
     it "should not have the key in the env" do
-      database.env[key].should be_nil
+      expect(database.env[key]).to be_nil
     end
 
     it "should not have the key locally" do
-      database.local[key].should be_nil
+      expect(database.local[key]).to be_nil
     end
 
     it "should have the key generally" do
-      database[key].should == value
+      expect(database[key]).to eq value
     end
 
     it "should persist the key" do
       data = YAML.load_file(global)
 
-      data.should == {raw_key => value}
+      expect(data).to eq ({raw_key => value})
     end
   end
 
@@ -111,23 +111,23 @@ describe Librarian::Config::Database do
     end
 
     it "should not have the key globally" do
-      database.global[key].should be_nil
+      expect(database.global[key]).to be_nil
     end
 
     it "should not have the key in the env" do
-      database.env[key].should be_nil
+      expect(database.env[key]).to be_nil
     end
 
     it "should not have the key locally" do
-      database.local[key].should be_nil
+      expect(database.local[key]).to be_nil
     end
 
     it "should not have the key generally" do
-      database[key].should be_nil
+      expect(database[key]).to be_nil
     end
 
     it "should unpersist the key" do
-      File.should_not exist global
+      expect(File).to_not exist global
     end
   end
 
@@ -140,19 +140,19 @@ describe Librarian::Config::Database do
     let(:env) { {raw_key => value} }
 
     it "should not have the key globally" do
-      database.global[key].should be_nil
+      expect(database.global[key]).to be_nil
     end
 
     it "should have the key in the env" do
-      database.env[key].should == value
+      expect(database.env[key]).to eq value
     end
 
     it "should not have the key locally" do
-      database.local[key].should be_nil
+      expect(database.local[key]).to be_nil
     end
 
     it "should have the key generally" do
-      database[key].should == value
+      expect(database[key]).to eq value
     end
   end
 
@@ -166,19 +166,19 @@ describe Librarian::Config::Database do
     end
 
     it "should not have the key globally" do
-      database.global[key].should be_nil
+      expect(database.global[key]).to be_nil
     end
 
     it "should not have the key in the env" do
-      database.env[key].should be_nil
+      expect(database.env[key]).to be_nil
     end
 
     it "should have the key locally" do
-      database.local[key].should == value
+      expect(database.local[key]).to eq value
     end
 
     it "should have the key generally" do
-      database[key].should == value
+      expect(database[key]).to eq value
     end
   end
 
@@ -192,25 +192,25 @@ describe Librarian::Config::Database do
     end
 
     it "should not have the key globally" do
-      database.global[key].should be_nil
+      expect(database.global[key]).to be_nil
     end
 
     it "should not have the key in the env" do
-      database.env[key].should be_nil
+      expect(database.env[key]).to be_nil
     end
 
     it "should have the key locally" do
-      database.local[key].should == value
+      expect(database.local[key]).to eq value
     end
 
     it "should have the key generally" do
-      database[key].should == value
+      expect(database[key]).to eq value
     end
 
     it "should persist the key" do
       data = YAML.load_file(local)
 
-      data.should == {raw_key => value}
+      expect(data).to eq ({raw_key => value})
     end
   end
 
@@ -225,23 +225,23 @@ describe Librarian::Config::Database do
     end
 
     it "should not have the key globally" do
-      database.global[key].should be_nil
+      expect(database.global[key]).to be_nil
     end
 
     it "should not have the key in the env" do
-      database.env[key].should be_nil
+      expect(database.env[key]).to be_nil
     end
 
     it "should not have the key locally" do
-      database.local[key].should be_nil
+      expect(database.local[key]).to be_nil
     end
 
     it "should not have the key generally" do
-      database[key].should be_nil
+      expect(database[key]).to be_nil
     end
 
     it "should unpersist the key" do
-      File.should_not exist local
+      expect(File).to_not exist local
     end
   end
 
@@ -272,7 +272,7 @@ describe Librarian::Config::Database do
   context "project_path" do
     context "by default" do
       it "should give the default project path" do
-        database.project_path.should == Pathname("/tmp")
+        expect(database.project_path).to eq Pathname("/tmp")
       end
     end
 
@@ -280,7 +280,7 @@ describe Librarian::Config::Database do
       let(:env) { {"LIBRARIAN_GEM_GEMFILE" => "/non/sense/path/to/Sillyfile"} }
 
       it "should give the project path from the env-set specfile" do
-        database.project_path.should == Pathname("/non/sense/path/to")
+        expect(database.project_path).to eq Pathname("/non/sense/path/to")
       end
     end
   end
@@ -288,7 +288,7 @@ describe Librarian::Config::Database do
   context "specfile_path" do
     context "by default" do
       it "should give the default specfile path" do
-        database.specfile_path.should == specfile
+        expect(database.specfile_path).to eq specfile
       end
     end
 
@@ -296,7 +296,7 @@ describe Librarian::Config::Database do
       let(:env) { {"LIBRARIAN_GEM_GEMFILE" => "/non/sense/path/to/Sillyfile"} }
 
       it "should give the given specfile path" do
-        database.specfile_path.should == Pathname("/non/sense/path/to/Sillyfile")
+        expect(database.specfile_path).to eq Pathname("/non/sense/path/to/Sillyfile")
       end
     end
 
@@ -304,7 +304,7 @@ describe Librarian::Config::Database do
       let(:project_path) { "/non/sense/path/to" }
 
       it "should give the assigned specfile path" do
-        database.specfile_path.should == Pathname("/non/sense/path/to/Gemfile")
+        expect(database.specfile_path).to eq Pathname("/non/sense/path/to/Gemfile")
       end
     end
 
@@ -312,7 +312,7 @@ describe Librarian::Config::Database do
       let(:specfile_name) { "Sillyfile" }
 
       it "should give the assigned specfile path" do
-        database.specfile_path.should == Pathname("/tmp/Sillyfile")
+        expect(database.specfile_path).to eq Pathname("/tmp/Sillyfile")
       end
     end
   end

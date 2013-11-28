@@ -11,7 +11,7 @@ module Librarian
     it { should respond_to :environment }
 
     it "should have the environment that was assigned to it" do
-      action.environment.should be env
+      expect(action.environment).to be env
     end
 
   end
