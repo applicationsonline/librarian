@@ -33,7 +33,7 @@ module Librarian
 
       let(:resolution) { resolver.resolve(spec) }
 
-      specify { resolution.should be_correct }
+      specify { expect(resolution).to be_correct }
 
     end
 
@@ -63,7 +63,7 @@ module Librarian
 
       let(:resolution) { resolver.resolve(spec) }
 
-      specify { resolution.should be_correct }
+      specify { expect(resolution).to be_correct }
 
     end
 
@@ -94,16 +94,16 @@ module Librarian
       end
 
       it "should have the expected number of sources" do
-        spec.should have(2).sources
+        expect(spec).to have(2).sources
       end
 
       let(:resolution) { resolver.resolve(spec) }
 
-      specify { resolution.should be_correct }
+      specify { expect(resolution).to be_correct }
 
       it "should have the manifest from the final source with a matching manifest" do
         manifest = resolution.manifests.find{|m| m.name == "butter"}
-        manifest.source.name.should == "source-2"
+        expect(manifest.source.name).to eq "source-2"
       end
 
     end
@@ -129,7 +129,7 @@ module Librarian
 
       let(:resolution) { resolver.resolve(spec) }
 
-      specify { resolution.should be_nil }
+      specify { expect(resolution).to be_nil }
 
     end
 
@@ -157,7 +157,7 @@ module Librarian
 
       let(:resolution) { resolver.resolve(spec) }
 
-      specify { resolution.should be_nil }
+      specify { expect(resolution).to be_nil }
 
     end
 
@@ -179,10 +179,10 @@ module Librarian
           dep 'jam'
         end
         first_resolution = resolver.resolve(first_spec)
-        first_resolution.should be_correct
+        expect(first_resolution).to be_correct
         first_manifests = first_resolution.manifests
         first_manifests_index = Hash[first_manifests.map{|m| [m.name, m]}]
-        first_manifests_index['butter'].version.to_s.should == '1.1'
+        expect(first_manifests_index['butter'].version.to_s).to eq '1.1'
 
         second_spec = env.dsl do
           src 'source-1'
@@ -191,10 +191,10 @@ module Librarian
         end
         locked_manifests = ManifestSet.deep_strip(first_manifests, ['butter'])
         second_resolution =resolver.resolve(second_spec, locked_manifests)
-        second_resolution.should be_correct
+        expect(second_resolution).to be_correct
         second_manifests = second_resolution.manifests
         second_manifests_index = Hash[second_manifests.map{|m| [m.name, m]}]
-        second_manifests_index['butter'].version.to_s.should == '1.0'
+        expect(second_manifests_index['butter'].version.to_s).to eq '1.0'
       end
 
     end
@@ -215,22 +215,22 @@ module Librarian
           dep 'butter'
         end
         lock = resolver.resolve(spec)
-        lock.should be_correct
+        expect(lock).to be_correct
 
         spec = env.dsl do
           src 'source-1'
           dep 'butter', :src => 'source-2'
         end
         changes = SpecChangeSet.new(env, spec, lock)
-        changes.should_not be_same
+        expect(changes).to_not be_same
         manifests = ManifestSet.new(changes.analyze).to_hash
-        manifests.should_not have_key('butter')
+        expect(manifests).to_not have_key('butter')
         lock = resolver.resolve(spec, changes.analyze)
-        lock.should be_correct
-        lock.manifests.map{|m| m.name}.should include('butter')
+        expect(lock).to be_correct
+        expect(lock.manifests.map{|m| m.name}).to include('butter')
         manifest = lock.manifests.find{|m| m.name == 'butter'}
-        manifest.should_not be_nil
-        manifest.source.name.should == 'source-2'
+        expect(manifest).to_not be_nil
+        expect(manifest.source.name).to eq 'source-2'
       end
 
     end
@@ -247,9 +247,9 @@ module Librarian
       it "loads the specfile with the __FILE__" do
         write! specfile_path, "src __FILE__"
         spec = env.dsl(specfile_path)
-        spec.sources.should have(1).item
+        expect(spec.sources).to have(1).item
         source = spec.sources.first
-        source.name.should == specfile_path.to_s
+        expect(source.name).to eq specfile_path.to_s
       end
 
     end

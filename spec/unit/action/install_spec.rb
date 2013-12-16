@@ -82,13 +82,13 @@ module Librarian
           end
 
           it "should sort and install the manifests" do
-            ManifestSet.should_receive(:sort).with(manifests).exactly(:once).ordered { sorted_manifests }
+            expect(ManifestSet).to receive(:sort).with(manifests).exactly(:once).ordered { sorted_manifests }
 
             install_path.stub(:exist?) { false }
-            install_path.should_receive(:mkpath).exactly(:once).ordered
+            expect(install_path).to receive(:mkpath).exactly(:once).ordered
 
             sorted_manifests.each do |manifest|
-              manifest.should_receive(:install!).exactly(:once).ordered
+              expect(manifest).to receive(:install!).exactly(:once).ordered
             end
           end
 
@@ -97,8 +97,8 @@ module Librarian
             action.stub(:install_manifests)
 
             install_path.stub(:exist?) { true }
-            install_path.should_receive(:rmtree)
-            install_path.should_receive(:mkpath)
+            expect(install_path).to receive(:rmtree)
+            expect(install_path).to receive(:mkpath)
           end
 
         end

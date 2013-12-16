@@ -30,7 +30,7 @@ module Librarian
             end
 
             it "should not try to clear the cache path" do
-              env.cache_path.should_receive(:rmtree).never
+              expect(env.cache_path).to receive(:rmtree).never
             end
           end
 
@@ -40,7 +40,7 @@ module Librarian
             end
 
             it "should try to clear the cache path" do
-              env.cache_path.should_receive(:rmtree).exactly(:once)
+              expect(env.cache_path).to receive(:rmtree).exactly(:once)
             end
           end
 
@@ -58,7 +58,7 @@ module Librarian
             end
 
             it "should not try to clear the install path" do
-              env.install_path.should_receive(:children).never
+              expect(env.install_path).to receive(:children).never
             end
           end
 
@@ -75,7 +75,7 @@ module Librarian
               env.stub_chain(:install_path, :children) { children }
 
               children.each do |child|
-                child.should_receive(:rmtree).exactly(:once)
+                expect(child).to receive(:rmtree).exactly(:once)
               end
             end
 
@@ -84,10 +84,10 @@ module Librarian
               env.stub_chain(:install_path, :children) { children }
 
               children.select(&:file?).each do |child|
-                child.should_receive(:rmtree).never
+                expect(child).to receive(:rmtree).never
               end
               children.reject(&:file?).each do |child|
-                child.should_receive(:rmtree).exactly(:once)
+                expect(child).to receive(:rmtree).exactly(:once)
               end
             end
           end

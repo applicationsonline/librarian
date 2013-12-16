@@ -6,19 +6,19 @@ module Librarian::Mock
     let(:env) { described_class.new }
 
     describe "#version" do
-      specify { env.version.should be == Librarian::VERSION }
+      specify { expect(env.version).to eq Librarian::VERSION }
     end
 
     describe "#adapter_module" do
-      specify { env.adapter_module.should be Librarian::Mock }
+      specify { expect(env.adapter_module).to eq Librarian::Mock }
     end
 
     describe "#adapter_name" do
-      specify { env.adapter_name.should be == "mock" }
+      specify { expect(env.adapter_name).to eq "mock" }
     end
 
     describe "#adapter_version" do
-      specify { env.adapter_version.should be == Librarian::Mock::VERSION }
+      specify { expect(env.adapter_version).to eq Librarian::Mock::VERSION }
     end
 
   end
