@@ -15,11 +15,11 @@ module Librarian
         let(:set) { described_class.new(array) }
 
         it "should give back the array" do
-          set.to_a.should =~ array
+          expect(set.to_a).to match_array( array )
         end
 
         it "should give back the hash" do
-          set.to_hash.should == hash
+          expect(set.to_hash).to eq hash
         end
       end
 
@@ -27,11 +27,11 @@ module Librarian
         let(:set) { described_class.new(hash) }
 
         it "should give back the array" do
-          set.to_a.should =~ array
+          expect(set.to_a).to match_array( array )
         end
 
         it "should give back the hash" do
-          set.to_hash.should == hash
+          expect(set.to_hash).to eq hash
         end
       end
     end
@@ -48,19 +48,19 @@ module Librarian
       it "should not do anything when given no names" do
         set.shallow_strip!([])
 
-        set.to_a.should =~ [jelly, butter, jam]
+        expect(set.to_a).to match_array( [jelly, butter, jam] )
       end
 
       it "should remove only the named elements" do
         set.shallow_strip!(["butter", "jam"])
 
-        set.to_a.should =~ [jelly]
+        expect(set.to_a).to match_array( [jelly] )
       end
 
       it "should allow removing all the elements" do
         set.shallow_strip!(["jelly", "butter", "jam"])
 
-        set.to_a.should =~ []
+        expect(set.to_a).to match_array( [] )
       end
     end
 
@@ -76,19 +76,19 @@ module Librarian
       it "should empty the set when given no names" do
         set.shallow_keep!([])
 
-        set.to_a.should =~ []
+        expect(set.to_a).to match_array( [] )
       end
 
       it "should keep only the named elements" do
         set.shallow_keep!(["butter", "jam"])
 
-        set.to_a.should =~ [butter, jam]
+        expect(set.to_a).to match_array( [butter, jam] )
       end
 
       it "should allow keeping all the elements" do
         set.shallow_keep!(["jelly", "butter", "jam"])
 
-        set.to_a.should =~ [jelly, butter, jam]
+        expect(set.to_a).to match_array( [jelly, butter, jam] )
       end
     end
 
@@ -117,31 +117,31 @@ module Librarian
       it "should not do anything when given no names" do
         set.deep_strip!([])
 
-        set.to_a.should =~ [a, b, c, d, e, f, g, h]
+        expect(set.to_a).to match_array( [a, b, c, d, e, f, g, h] )
       end
 
       it "should remove just the named elements if they have no dependencies" do
         set.deep_strip!(["c", "h"])
 
-        set.to_a.should =~ [a, b, d, e, f, g]
+        expect(set.to_a).to match_array( [a, b, d, e, f, g] )
       end
 
       it "should remove the named elements and all their dependencies" do
         set.deep_strip!(["b"])
 
-        set.to_a.should =~ [a, e, f, g, h]
+        expect(set.to_a).to match_array( [a, e, f, g, h] )
       end
 
       it "should remove an entire tree of dependencies" do
         set.deep_strip!(["e"])
 
-        set.to_a.should =~ [a, b, c, d]
+        expect(set.to_a).to match_array( [a, b, c, d] )
       end
 
       it "should allow removing all the elements" do
         set.deep_strip!(["a", "e"])
 
-        set.to_a.should =~ []
+        expect(set.to_a).to match_array( [] )
       end
     end
 
@@ -170,31 +170,31 @@ module Librarian
       it "should remove all the elements when given no names" do
         set.deep_keep!([])
 
-        set.to_a.should =~ []
+        expect(set.to_a).to match_array( [] )
       end
 
       it "should keep just the named elements if they have no dependencies" do
         set.deep_keep!(["c", "h"])
 
-        set.to_a.should =~ [c, h]
+        expect(set.to_a).to match_array( [c, h] )
       end
 
       it "should keep the named elements and all their dependencies" do
         set.deep_keep!(["b"])
 
-        set.to_a.should =~ [b, c, d]
+        expect(set.to_a).to match_array( [b, c, d] )
       end
 
       it "should keep an entire tree of dependencies" do
         set.deep_keep!(["e"])
 
-        set.to_a.should =~ [e, f, g, h]
+        expect(set.to_a).to match_array( [e, f, g, h] )
       end
 
       it "should allow keeping all the elements" do
         set.deep_keep!(["a", "e"])
 
-        set.to_a.should =~ [a, b, c, d, e, f, g, h]
+        expect(set.to_a).to match_array( [a, b, c, d, e, f, g, h] )
       end
     end
 

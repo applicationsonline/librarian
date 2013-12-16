@@ -23,18 +23,18 @@ module Librarian
           dep 'jam'
         end
         lock = resolver.resolve(spec)
-        lock.should be_correct
+        expect(lock).to be_correct
 
         spec = env.dsl do
           src 'source-1'
           dep 'jam'
         end
         changes = described_class.new(env, spec, lock)
-        changes.should_not be_same
+        expect(changes).to_not be_same
 
         manifests = ManifestSet.new(changes.analyze).to_hash
-        manifests.should have_key('jam')
-        manifests.should_not have_key('butter')
+        expect(manifests).to have_key('jam')
+        expect(manifests).to_not have_key('butter')
       end
 
     end
@@ -53,7 +53,7 @@ module Librarian
           dep 'jam'
         end
         lock = resolver.resolve(spec)
-        lock.should be_correct
+        expect(lock).to be_correct
 
         spec = env.dsl do
           src 'source-1'
@@ -61,10 +61,10 @@ module Librarian
           dep 'jam'
         end
         changes = described_class.new(env, spec, lock)
-        changes.should_not be_same
+        expect(changes).to_not be_same
         manifests = ManifestSet.new(changes.analyze).to_hash
-        manifests.should have_key('jam')
-        manifests.should_not have_key('butter')
+        expect(manifests).to have_key('jam')
+        expect(manifests).to_not have_key('butter')
       end
 
     end
@@ -87,7 +87,7 @@ module Librarian
             dep 'jam', '= 1.1'
           end
           lock = resolver.resolve(spec)
-          lock.should be_correct
+          expect(lock).to be_correct
 
           spec = env.dsl do
             src 'source-1'
@@ -95,10 +95,10 @@ module Librarian
             dep 'jam', '>= 1.0'
           end
           changes = described_class.new(env, spec, lock)
-          changes.should_not be_same
+          expect(changes).to_not be_same
           manifests = ManifestSet.new(changes.analyze).to_hash
-          manifests.should have_key('butter')
-          manifests.should have_key('jam')
+          expect(manifests).to have_key('butter')
+          expect(manifests).to have_key('jam')
         end
 
       end
@@ -119,7 +119,7 @@ module Librarian
             dep 'jam', '= 1.0'
           end
           lock = resolver.resolve(spec)
-          lock.should be_correct
+          expect(lock).to be_correct
 
           spec = env.dsl do
             src 'source-1'
@@ -127,10 +127,10 @@ module Librarian
             dep 'jam', '>= 1.1'
           end
           changes = described_class.new(env, spec, lock)
-          changes.should_not be_same
+          expect(changes).to_not be_same
           manifests = ManifestSet.new(changes.analyze).to_hash
-          manifests.should have_key('butter')
-          manifests.should_not have_key('jam')
+          expect(manifests).to have_key('butter')
+          expect(manifests).to_not have_key('jam')
         end
 
       end
@@ -152,16 +152,16 @@ module Librarian
           dep 'butter'
         end
         lock = resolver.resolve(spec)
-        lock.should be_correct
+        expect(lock).to be_correct
 
         spec = env.dsl do
           src 'source-1'
           dep 'butter', :src => 'source-2'
         end
         changes = described_class.new(env, spec, lock)
-        changes.should_not be_same
+        expect(changes).to_not be_same
         manifests = ManifestSet.new(changes.analyze).to_hash
-        manifests.should_not have_key('butter')
+        expect(manifests).to_not have_key('butter')
       end
     end
 

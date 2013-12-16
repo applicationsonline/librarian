@@ -26,10 +26,10 @@ module Librarian
             dep 'dependency-1',
               :src => 'source-1'
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-1'
-          spec.sources.should be_empty
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-1'
+          expect(spec.sources).to be_empty
         end
 
         it "should run with a shortcut source" do
@@ -37,10 +37,10 @@ module Librarian
             dep 'dependency-1',
               :source => :a
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-a'
-          spec.sources.should be_empty
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-a'
+          expect(spec.sources).to be_empty
         end
 
         it "should run with a block hash source" do
@@ -49,10 +49,10 @@ module Librarian
               dep 'dependency-1'
             end
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-1'
-          spec.sources.should be_empty
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-1'
+          expect(spec.sources).to be_empty
         end
 
         it "should run with a block named source" do
@@ -61,10 +61,10 @@ module Librarian
               dep 'dependency-1'
             end
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-1'
-          spec.sources.should be_empty
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-1'
+          expect(spec.sources).to be_empty
         end
 
         it "should run with a default hash source" do
@@ -72,11 +72,11 @@ module Librarian
             source :src => 'source-1'
             dep 'dependency-1'
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-1'
-          spec.sources.should_not be_empty
-          spec.dependencies.first.source.should == spec.sources.first
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-1'
+          expect(spec.sources).to_not be_empty
+          expect(spec.dependencies.first.source).to eq spec.sources.first
         end
 
         it "should run with a default named source" do
@@ -84,11 +84,11 @@ module Librarian
             src 'source-1'
             dep 'dependency-1'
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-1'
-          spec.sources.should_not be_empty
-          spec.dependencies.first.source.should == spec.sources.first
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-1'
+          expect(spec.sources).to_not be_empty
+          expect(spec.dependencies.first.source).to eq spec.sources.first
         end
 
         it "should run with a default shortcut source" do
@@ -96,11 +96,11 @@ module Librarian
             source :a
             dep 'dependency-1'
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-a'
-          spec.sources.should_not be_empty
-          spec.dependencies.first.source.should == spec.sources.first
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-a'
+          expect(spec.sources).to_not be_empty
+          expect(spec.dependencies.first.source).to eq spec.sources.first
         end
 
         it "should run with a shortcut source hash definition" do
@@ -108,10 +108,10 @@ module Librarian
             source :b, :src => 'source-b'
             dep 'dependency-1', :source => :b
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-b'
-          spec.sources.should be_empty
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-b'
+          expect(spec.sources).to be_empty
         end
 
         it "should run with a shortcut source block definition" do
@@ -119,10 +119,10 @@ module Librarian
             source :b, proc { src 'source-b' }
             dep 'dependency-1', :source => :b
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-b'
-          spec.sources.should be_empty
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-b'
+          expect(spec.sources).to be_empty
         end
 
         it "should run with a default shortcut source hash definition" do
@@ -131,11 +131,11 @@ module Librarian
             source :b
             dep 'dependency-1'
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-b'
-          spec.sources.should_not be_empty
-          spec.sources.first.name.should == 'source-b'
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-b'
+          expect(spec.sources).to_not be_empty
+          expect(spec.sources.first.name).to eq 'source-b'
         end
 
         it "should run with a default shortcut source block definition" do
@@ -144,11 +144,11 @@ module Librarian
             source :b
             dep 'dependency-1'
           end
-          spec.dependencies.should_not be_empty
-          spec.dependencies.first.name.should == 'dependency-1'
-          spec.dependencies.first.source.name.should == 'source-b'
-          spec.sources.should_not be_empty
-          spec.sources.first.name.should == 'source-b'
+          expect(spec.dependencies).to_not be_empty
+          expect(spec.dependencies.first.name).to eq 'dependency-1'
+          expect(spec.dependencies.first.source.name).to eq 'source-b'
+          expect(spec.sources).to_not be_empty
+          expect(spec.sources.first.name).to eq 'source-b'
         end
 
       end

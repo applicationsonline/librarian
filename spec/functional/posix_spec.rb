@@ -14,19 +14,19 @@ describe Librarian::Posix do
 
     it "returns the stdout" do
       res = described_class.run!(%w[echo hello there]).strip
-      res.should be == "hello there"
+      expect(res).to eq "hello there"
     end
 
     it "changes directory" do
       tmp_path.mkpath
       res = described_class.run!(%w[pwd], :chdir => tmp_path).strip
-      res.should be == tmp_path.to_s
+      expect(res).to eq tmp_path.to_s
     end
 
     it "reads the env" do
       res = described_class.run!(%w[env], :env => {"KOALA" => "BEAR"})
       line = res.lines.find{|l| l.start_with?("KOALA=")}.strip
-      line.should be == "KOALA=BEAR"
+      expect(line).to eq "KOALA=BEAR"
     end
 
   end
