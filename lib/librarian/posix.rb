@@ -65,7 +65,7 @@ module Librarian
           ensure
             ENV.update old_env
           end
-          $?.success? or CommandFailure.raise! command, $?, err
+          ($?.value == 0) or CommandFailure.raise! command, $?.value, err
           out
         end
 
