@@ -1,3 +1,5 @@
+require "pathname"
+
 require "librarian/posix"
 
 module Librarian
