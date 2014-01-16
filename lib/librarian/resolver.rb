@@ -14,11 +14,10 @@ module Librarian
 
     def resolve(spec, partial_manifests = [])
       manifests = implementation(spec).resolve(partial_manifests)
-      if manifests
-        enforce_consistency!(spec.dependencies, manifests)
-        manifests = sort(manifests)
-        Resolution.new(spec.dependencies, manifests)
-      end
+      manifests or return
+      enforce_consistency!(spec.dependencies, manifests)
+      manifests = sort(manifests)
+      Resolution.new(spec.dependencies, manifests)
     end
 
   private
