@@ -34,12 +34,6 @@ module Librarian
 
     private
 
-      def find_inconsistency(dep, deps, mans)
-        m = mans[dep.name]
-        dep.satisfied_by?(m) or return m if m
-        deps.find{|d| !dep.consistent_with?(d)}
-      end
-
       def recursive_resolve(dependencies, manifests, queue, addtl)
         dependencies = dependencies.dup
         manifests = manifests.dup
@@ -61,6 +55,12 @@ module Librarian
 
           recursive_resolve(dependencies, m, queue, a)
         end
+      end
+
+      def find_inconsistency(dep, deps, mans)
+        m = mans[dep.name]
+        dep.satisfied_by?(m) or return m if m
+        deps.find{|d| !dep.consistent_with?(d)}
       end
 
       # When using this method, you are required to check the return value.
