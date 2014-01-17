@@ -17,6 +17,16 @@ module Librarian
         end
       end
 
+      class State
+        attr_accessor :manifests, :dependencies, :queue
+        private :manifests=, :dependencies=, :queue=
+        def initialize(manifests, dependencies, queue)
+          self.manifests = manifests
+          self.dependencies = dependencies # resolved
+          self.queue = queue # scheduled
+        end
+      end
+
       attr_accessor :resolver, :spec
       private :resolver=, :spec=
 
@@ -28,56 +38,36 @@ module Librarian
 
       def resolve(manifests)
         manifests = index_by(manifests, &:name) if manifests.kind_of?(Array)
-        addtl = spec.dependencies + sourced_dependencies_for_manifests(manifests)
-        recursive_resolve([], manifests, [], addtl)
+        queue = spec.dependencies + sourced_dependencies_for_manifests(manifests)
+        state = State.new(manifests.dup, [], queue)
+        recursive_resolve(state)
       end
 
     private
 
-      def recursive_resolve(dependencies, manifests, queue, addtl)
-        dependencies = dependencies.dup
-        manifests = manifests.dup
-        queue = queue.dup
+      def recursive_resolve(state)
+        shift_resolved_enqueued_dependencies(state) or return
+        state.queue.empty? and return state.manifests
 
-        return unless enqueue_dependencies(queue, addtl, dependencies, manifests)
-        return unless shift_resolved_enqueued_dependencies(dependencies, manifests, queue)
-        return manifests if queue.empty?
-
-        dependency = queue.shift
-        dependencies << dependency
-        all_deps = dependencies + queue
+        state.dependencies << state.queue.shift
+        dependency = state.dependencies.last
 
         resolving_dependency_map_find_manifests(dependency) do |manifest|
-          next unless check_manifest(manifest, all_deps)
+          check_manifest(state, manifest) or next
 
-          m = manifests.merge(dependency.name => manifest)
+          m = state.manifests.merge(dependency.name => manifest)
           a = sourced_dependencies_for_manifest(manifest)
+          s = State.new(m, state.dependencies.dup, state.queue + a)
 
-          recursive_resolve(dependencies, m, queue, a)
+          recursive_resolve(s)
         end
       end
 
-      def find_inconsistency(dep, deps, mans)
-        m = mans[dep.name]
-        dep.satisfied_by?(m) or return m if m
-        deps.find{|d| !dep.consistent_with?(d)}
-      end
-
-      # When using this method, you are required to check the return value.
-      # Returns +true+ if the enqueueables could all be enqueued.
-      # Returns +false+ if there was an inconsistency when trying to enqueue one
-      # or more of them.
-      # This modifies +queue+ but does not modify any other arguments.
-      def enqueue_dependencies(queue, enqueueables, dependencies, manifests)
-        enqueueables.each do |d|
-          if q = find_inconsistency(d, dependencies + queue, manifests)
-            debug_conflict d, q
-            return false
-          end
-          debug_schedule d
-          queue << d
-        end
-        true
+      def find_inconsistency(state, dependency)
+        m = state.manifests[dependency.name]
+        dependency.satisfied_by?(m) or return m if m
+        violation = lambda{|d| !dependency.consistent_with?(d)}
+        state.dependencies.find(&violation) || state.queue.find(&violation)
       end
 
       # When using this method, you are required to check the return value.
@@ -86,14 +76,13 @@ module Librarian
       # Returns +false+ if there was an inconsistency when trying to move one or
       # more of them.
       # This modifies +queue+ and +dependencies+.
-      def shift_resolved_enqueued_dependencies(dependencies, manifests, queue)
-        all_deps = dependencies + queue
-        while (dependency = queue.first) && manifests[dependency.name]
-          if q = find_inconsistency(dependency, all_deps, manifests)
-            debug_conflict dependency, q
+      def shift_resolved_enqueued_dependencies(state)
+        while (d = state.queue.first) && state.manifests[d.name]
+          if q = find_inconsistency(state, d)
+            debug_conflict d, q
             return false
           end
-          dependencies << queue.shift
+          state.dependencies << state.queue.shift
         end
         true
       end
@@ -102,9 +91,9 @@ module Librarian
       # Returns +true+ if the manifest satisfies all of the dependencies.
       # Returns +false+ if there was a dependency that the manifest does not
       # satisfy.
-      def check_manifest(manifest, all_deps)
-        related = all_deps.select{|d| d.name == manifest.name}
-        if q = related.find{|d| !d.satisfied_by?(manifest)}
+      def check_manifest(state, manifest)
+        violation = lambda{|d| d.name == manifest.name && !d.satisfied_by?(manifest)}
+        if q = state.dependencies.find(&violation) || state.queue.find(&violation)
           debug_conflict manifest, q
           return false
         end
