@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["y_feldblum@yahoo.com"]
   gem.summary       = %q{A Framework for Bundlers.}
   gem.description   = %q{A Framework for Bundlers.}
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/applicationsonline/librarian"
   gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($/)
