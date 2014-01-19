@@ -5,4 +5,4 @@ gemspec
 
 gem "fakefs"
 
-gem "rubysl", platforms: %w[rbx]
+gem "rubysl", :platforms => %w[rbx]
