@@ -1,3 +1,4 @@
+require 'librarian/error'
 require 'librarian/resolver/implementation'
 require 'librarian/manifest_set'
 require 'librarian/resolution'
@@ -5,17 +6,24 @@ require 'librarian/resolution'
 module Librarian
   class Resolver
 
-    attr_accessor :environment
-    private :environment=
+    attr_accessor :environment, :cyclic
+    private :environment=, :cyclic=
 
-    def initialize(environment)
+    # Options:
+    #   cyclic: truthy if the resolver should permit cyclic resolutions
+    def initialize(environment, options = { })
+      unrecognized_options = options.keys - [:cyclic]
+      unrecognized_options.empty? or raise Error,
+        "unrecognized options: #{unrecognized_options.join(", ")}"
       self.environment = environment
+      self.cyclic = !!options[:cyclic]
     end
 
     def resolve(spec, partial_manifests = [])
       manifests = implementation(spec).resolve(partial_manifests)
       manifests or return
       enforce_consistency!(spec.dependencies, manifests)
+      enforce_acyclicity!(manifests) unless cyclic
       manifests = sort(manifests)
       Resolution.new(spec.dependencies, manifests)
     end
@@ -23,7 +31,7 @@ module Librarian
   private
 
     def implementation(spec)
-      Implementation.new(self, spec)
+      Implementation.new(self, spec, cyclic: cyclic)
     end
 
     def enforce_consistency!(dependencies, manifests)
@@ -65,6 +73,12 @@ module Librarian
           end
         end
       end
+      raise Error, "Resolver Malfunctioned!"
+    end
+
+    def enforce_acyclicity!(manifests)
+      ManifestSet.cyclic?(manifests) or return
+      debug { "Resolver Malfunctioned!" }
       raise Error, "Resolver Malfunctioned!"
     end
 

@@ -1,3 +1,6 @@
+require 'set'
+
+require 'librarian/algorithms'
 require 'librarian/dependency'
 
 module Librarian
@@ -27,12 +30,16 @@ module Librarian
         end
       end
 
-      attr_accessor :resolver, :spec
-      private :resolver=, :spec=
+      attr_accessor :resolver, :spec, :cyclic
+      private :resolver=, :spec=, :cyclic=
 
-      def initialize(resolver, spec)
+      def initialize(resolver, spec, options = { })
+        unrecognized_options = options.keys - [:cyclic]
+        unrecognized_options.empty? or raise Error,
+          "unrecognized options: #{unrecognized_options.join(", ")}"
         self.resolver = resolver
         self.spec = spec
+        self.cyclic = !!options[:cyclic]
         @level = 0
       end
 
@@ -54,6 +61,7 @@ module Librarian
 
         resolving_dependency_map_find_manifests(dependency) do |manifest|
           check_manifest(state, manifest) or next
+          check_manifest_for_cycles(state, manifest) or next unless cyclic
 
           m = state.manifests.merge(dependency.name => manifest)
           a = sourced_dependencies_for_manifest(manifest)
@@ -95,6 +103,20 @@ module Librarian
         violation = lambda{|d| d.name == manifest.name && !d.satisfied_by?(manifest)}
         if q = state.dependencies.find(&violation) || state.queue.find(&violation)
           debug_conflict manifest, q
+          return false
+        end
+        true
+      end
+
+      # When using this method, you are required to check the return value.
+      # Returns +true+ if the manifest does not introduce a cycle.
+      # Returns +false+ if the manifest introduces a cycle.
+      def check_manifest_for_cycles(state, manifest)
+        manifests = state.manifests.merge(manifest.name => manifest)
+        known = manifests.keys
+        graph = Hash[manifests.map{|n, m| [n, m.dependencies.map(&:name) & known]}]
+        if Algorithms::AdjacencyListDirectedGraph.cyclic?(graph)
+          debug_cycle manifest
           return false
         end
         true
@@ -178,6 +200,10 @@ module Librarian
 
       def debug_conflict(dependency, conflict)
         debug { "Conflict between #{dependency} and #{conflict}" }
+      end
+
+      def debug_cycle(manifest)
+        debug { "Cycle with #{manifest}" }
       end
 
       def map_find(enum)

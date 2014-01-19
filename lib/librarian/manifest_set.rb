@@ -1,16 +1,7 @@
-require 'set'
-require 'tsort'
+require "librarian/algorithms"
 
 module Librarian
   class ManifestSet
-
-    class GraphHash < Hash
-      include TSort
-      alias tsort_each_node each_key
-      def tsort_each_child(node, &block)
-        self[node].each(&block)
-      end
-    end
 
     class << self
       def shallow_strip(manifests, names)
@@ -25,10 +16,15 @@ module Librarian
       def deep_keep(manifests, names)
         new(manifests).deep_keep!(names).send(method_for(manifests))
       end
+      def cyclic?(manifests)
+        manifests = Hash[manifests.map{|m| [m.name, m]}] if Array === manifests
+        manifest_pairs = Hash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
+        adj_algs.cyclic?(manifest_pairs)
+      end
       def sort(manifests)
         manifests = Hash[manifests.map{|m| [m.name, m]}] if Array === manifests
-        manifest_pairs = GraphHash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
-        manifest_names = manifest_pairs.tsort
+        manifest_pairs = Hash[manifests.map{|k, m| [k, m.dependencies.map{|d| d.name}]}]
+        manifest_names = adj_algs.tsort_cyclic(manifest_pairs)
         manifest_names.map{|n| manifests[n]}
       end
     private
@@ -39,6 +35,9 @@ module Librarian
         when Array
           :to_a
         end
+      end
+      def adj_algs
+        Algorithms::AdjacencyListDirectedGraph
       end
     end
 

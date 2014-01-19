@@ -161,6 +161,47 @@ module Librarian
 
     end
 
+    context "a specfile with cyclic constraints" do
+
+      before do
+        env.registry :clear => true do
+          source 'source-1' do
+            spec 'butter', '1.0' do
+              dependency 'jam', '2.0'
+            end
+            spec 'jam', '2.0' do
+              dependency 'butter', '1.0'
+            end
+          end
+        end
+      end
+
+      let(:spec) do
+        env.dsl do
+          src 'source-1'
+          dep 'butter'
+        end
+      end
+
+      let(:resolution) { resolver.resolve(spec) }
+
+      context "when cyclic resolutions are forbidden" do
+        let(:resolver) { env.resolver(cyclic: false) }
+
+        specify { expect(resolution).to be_nil }
+      end
+
+      context "when cyclic resolutions are permitted" do
+        let(:resolver) { env.resolver(cyclic: true) }
+
+        it "should have all the manifests" do
+          manifest_names = resolution.manifests.map(&:name).sort
+          expect(manifest_names).to be == %w[butter jam]
+        end
+      end
+
+    end
+
     context "updating" do
 
       it "should not work" do

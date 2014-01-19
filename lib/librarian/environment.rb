@@ -101,8 +101,18 @@ module Librarian
       Lockfile.new(self, nil)
     end
 
-    def resolver
-      Resolver.new(self)
+    def resolver(options = { })
+      Resolver.new(self, resolver_options.merge(options))
+    end
+
+    def resolver_options
+      {
+        cyclic: resolver_permit_cyclic_reslutions?,
+      }
+    end
+
+    def resolver_permit_cyclic_reslutions?
+      false
     end
 
     def tmp_path
