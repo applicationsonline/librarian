@@ -47,25 +47,34 @@ module Librarian
 
     class << self
 
-      if defined?(JRuby) # built with jruby-1.7.4 in mind
+      if defined?(JRuby) # built with jruby-1.7.9 in mind
+
+        def rescuing(*klasses)
+          begin
+            yield
+          rescue *klasses
+          end
+        end
 
         def run!(command, options = { })
           out, err = nil, nil
           chdir = options[:chdir].to_s if options[:chdir]
           env = options[:env] || { }
           old_env = Hash[env.keys.map{|k| [k, ENV[k]]}]
+          out, err, wait = nil, nil, nil
           begin
             ENV.update env
             Dir.chdir(chdir || Dir.pwd) do
-              IO.popen3(*command) do |i, o, e|
-                i.close
-                out, err = o.read, e.read
+              IO.popen3(*command) do |i, o, e, w|
+                rescuing(Errno::EBADF){ i.close } # jruby/1.9 can raise EBADF
+                out, err, wait = o.read, e.read, w
               end
             end
           ensure
             ENV.update old_env
           end
-          $?.success? or CommandFailure.raise! command, $?, err
+          s = wait ? wait.value : $? # wait is 1.9+-only
+          s.success? or CommandFailure.raise! command, s, err
           out
         end
 
