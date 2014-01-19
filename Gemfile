@@ -4,3 +4,5 @@ source "http://rubygems.org"
 gemspec
 
 gem "fakefs"
+
+gem "rubysl", platforms: %w[rbx]
