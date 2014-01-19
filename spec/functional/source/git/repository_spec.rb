@@ -90,8 +90,8 @@ describe Librarian::Source::Git::Repository do
       revs = %W[ master #{branch} #{tag} #{atag} ]
       rev_parse = proc{|rev| git!(%W[rev-parse #{rev} --quiet]).strip}
       shas = Dir.chdir(git_source_path){revs.map(&rev_parse)}
-      expect(shas.map(&:class).uniq).to eq ([String])
-      expect(shas.map(&:size).uniq).to eq ([40])
+      expect(shas.map(&:class).uniq).to eq [String]
+      expect(shas.map(&:size).uniq).to eq [40]
       expect(shas.uniq).to eq shas
     end
   end
