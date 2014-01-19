@@ -96,7 +96,7 @@ describe Librarian::Config::Database do
     it "should persist the key" do
       data = YAML.load_file(global)
 
-      expect(data).to eq ({raw_key => value})
+      expect(data).to eq({raw_key => value})
     end
   end
 
@@ -210,7 +210,7 @@ describe Librarian::Config::Database do
     it "should persist the key" do
       data = YAML.load_file(local)
 
-      expect(data).to eq ({raw_key => value})
+      expect(data).to eq({raw_key => value})
     end
   end
 
