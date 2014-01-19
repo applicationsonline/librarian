@@ -107,7 +107,7 @@ module Librarian
 
     def resolver_options
       {
-        cyclic: resolver_permit_cyclic_reslutions?,
+        :cyclic => resolver_permit_cyclic_reslutions?,
       }
     end
 

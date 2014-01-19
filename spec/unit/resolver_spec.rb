@@ -186,13 +186,13 @@ module Librarian
       let(:resolution) { resolver.resolve(spec) }
 
       context "when cyclic resolutions are forbidden" do
-        let(:resolver) { env.resolver(cyclic: false) }
+        let(:resolver) { env.resolver(:cyclic => false) }
 
         specify { expect(resolution).to be_nil }
       end
 
       context "when cyclic resolutions are permitted" do
-        let(:resolver) { env.resolver(cyclic: true) }
+        let(:resolver) { env.resolver(:cyclic => true) }
 
         it "should have all the manifests" do
           manifest_names = resolution.manifests.map(&:name).sort

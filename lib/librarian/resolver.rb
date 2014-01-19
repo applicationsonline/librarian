@@ -31,7 +31,7 @@ module Librarian
   private
 
     def implementation(spec)
-      Implementation.new(self, spec, cyclic: cyclic)
+      Implementation.new(self, spec, :cyclic => cyclic)
     end
 
     def enforce_consistency!(dependencies, manifests)
