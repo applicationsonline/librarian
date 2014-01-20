@@ -14,6 +14,7 @@ require "librarian/resolver"
 require "librarian/dsl"
 require "librarian/source"
 require "librarian/version"
+require "librarian/environment/runtime_cache"
 
 module Librarian
   class Environment
@@ -21,6 +22,7 @@ module Librarian
     include Support::AbstractMethod
 
     attr_accessor :ui
+    attr_reader :runtime_cache
 
     abstract_method :specfile_name, :dsl_class, :install_path
 
@@ -29,6 +31,7 @@ module Librarian
       @env = options.fetch(:env) { ENV.to_hash }
       @home = options.fetch(:home) { default_home }
       @project_path = options[:project_path]
+      @runtime_cache = RuntimeCache.new
     end
 
     def logger
