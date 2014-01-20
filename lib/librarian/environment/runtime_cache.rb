@@ -16,8 +16,8 @@ module Librarian
         data[combined_key(keyspace, key)]
       end
 
-      def put(keyspace, key, value)
-        data[combined_key(keyspace, key)] = value
+      def put(keyspace, key, value = nil)
+        data[combined_key(keyspace, key)] = block_given? ? yield : value
       end
 
       def delete(keyspace, key)

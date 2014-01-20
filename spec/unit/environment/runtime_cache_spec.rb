@@ -18,7 +18,7 @@ module Librarian
       end
 
       context "after put" do
-        before { rtc.put(*key, 6) }
+        before { rtc.put(*key){6} }
 
         specify { expect(triple(key){9}).to eql([true, 6, 6]) }
         specify { expect(triple(key_x){9}).to eql([false, nil, 9]) }
@@ -26,7 +26,7 @@ module Librarian
       end
 
       context "after put then delete" do
-        before { rtc.put(*key, 6) }
+        before { rtc.put(*key){6} }
         before { rtc.delete *key }
 
         specify { expect(triple(key){9}).to eql([false, nil, 9]) }
