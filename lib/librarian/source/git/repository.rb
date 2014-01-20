@@ -26,12 +26,13 @@ module Librarian
           end
         end
 
-        attr_accessor :environment, :path
-        private :environment=, :path=
+        attr_accessor :environment, :path, :git_ops_history
+        private :environment=, :path=, :git_ops_history=
 
         def initialize(environment, path)
           self.environment = environment
           self.path = Pathname.new(path)
+          self.git_ops_history = []
         end
 
         def git?
@@ -137,6 +138,8 @@ module Librarian
           pwd = Dir.pwd
 
           out = yield
+
+          git_ops_history << command + [{:pwd => pwd}]
 
           unless silent
             if out.size > 0

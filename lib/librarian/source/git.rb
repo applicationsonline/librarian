@@ -96,6 +96,11 @@ module Librarian
         end
       end
 
+      # For tests
+      def git_ops_count
+        repository.git_ops_history.size
+      end
+
     private
 
       attr_accessor :repository_cached
