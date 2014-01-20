@@ -3,6 +3,7 @@ require "securerandom"
 
 require "librarian/error"
 require "librarian/source/git"
+require "librarian/mock/environment"
 
 describe Librarian::Source::Git do
 
@@ -13,12 +14,11 @@ describe Librarian::Source::Git do
   end
   let(:tmp_path) { project_path + "tmp/spec/functional/source/git" }
   after { tmp_path.rmtree if tmp_path && tmp_path.exist? }
-  let(:cache_path) { tmp_path + "cache" }
+  let(:env_project_path) { tmp_path + "project" }
 
   context "when the remote is bad" do
     let(:remote) { tmp_path.join(SecureRandom.hex(8)).to_s }
-    let(:logger) { double(:debug => nil, :info => nil) }
-    let(:env) { double(:ui => nil, :logger => logger, :cache_path => cache_path) }
+    let(:env) { Librarian::Mock::Environment.new(:project_path => env_project_path) }
     let(:source) { described_class.new(env, remote, {}) }
 
     it "fails when caching" do
