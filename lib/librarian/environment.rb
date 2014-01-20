@@ -3,6 +3,7 @@ require 'net/http'
 require "uri"
 require "etc"
 
+require "librarian/helpers"
 require "librarian/support/abstract_method"
 
 require "librarian/error"
