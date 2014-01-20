@@ -125,6 +125,36 @@ describe Librarian::Source::Git::Repository do
       expect(subject).to be_checked_out(master_sha)
     end
 
+    context "checking for commits" do
+      it "has the master commit" do
+        expect(subject).to have_commit(master_sha)
+      end
+
+      it "has the branch commit" do
+        expect(subject).to have_commit(branch_sha)
+      end
+
+      it "has the tag commit" do
+        expect(subject).to have_commit(tag_sha)
+      end
+
+      it "has the atag commit" do
+        expect(subject).to have_commit(atag_sha)
+      end
+
+      it "does not have a made-up commit" do
+        expect(subject).to_not have_commit(SecureRandom.hex(20))
+      end
+
+      it "does not have a tree commit" do
+        master_tree_sha = Dir.chdir(git_source_path) do
+          git!(%W[log -1 --no-color --format=tformat:%T master]).strip
+        end
+        expect(master_tree_sha).to match(/\A[0-9a-f]{40}\z/) # sanity
+        expect(subject).to_not have_commit(master_tree_sha)
+      end
+    end
+
     context "checking out the branch" do
       before do
         subject.checkout! branch

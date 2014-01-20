@@ -70,6 +70,13 @@ module Librarian
           run!(command, :chdir => true)
         end
 
+        def has_commit?(sha)
+          command = %W(log -1 --no-color --format=tformat:%H #{sha})
+          run!(command, :chdir => true).strip == sha
+        rescue Posix::CommandFailure => e
+          false
+        end
+
         def checked_out?(sha)
           current_commit_hash == sha
         end
@@ -152,6 +159,24 @@ module Librarian
           end
 
           out
+
+        rescue Posix::CommandFailure => e
+
+          git_ops_history << command + [{:pwd => pwd}]
+
+          status, stderr = e.status, e.message
+          unless silent
+            debug { "    --- Exited with #{status}" }
+            if stderr.size > 0
+              stderr.lines.each do |line|
+                debug { "    --> #{line}" }
+              end
+            else
+              debug { "    --- No output" }
+            end
+          end
+
+          raise e
         end
 
         def debug(*args, &block)
