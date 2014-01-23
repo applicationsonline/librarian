@@ -88,6 +88,89 @@ describe Librarian::Source::Git do
       end
     end
 
+    context "when caching twice from different sources" do
+      let(:other_source) { described_class.new(env, remote, {}) }
+      before { other_source.cache! }
+
+      it "has the expected sha" do
+        expect{source.cache!}.to change{source.sha}.from(nil).to(sha)
+      end
+
+      it "records the history" do
+        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(10)
+      end
+    end
+
+    context "when caching twice from different sources, second time with sha" do
+      let(:other_source) { described_class.new(env, remote, {}) }
+      before { other_source.cache! }
+
+      let(:source) { described_class.new(env, remote, {:sha => sha}) }
+
+      it "has the expected sha" do
+        expect{source.cache!}.to_not change{source.sha}
+      end
+
+      it "records the history" do
+        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(3)
+      end
+    end
+
+    context "when caching twice from different environments" do
+      let(:other_source) { described_class.new(new_env, remote, {}) }
+      before { other_source.cache! }
+
+      it "has the expected sha" do
+        expect{source.cache!}.to change{source.sha}.from(nil).to(sha)
+      end
+
+      it "records the history" do
+        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(10)
+      end
+    end
+
+    context "when caching twice from different environments, second time with sha" do
+      let(:other_source) { described_class.new(new_env, remote, {}) }
+      before { other_source.cache! }
+
+      let(:source) { described_class.new(env, remote, {:sha => sha}) }
+
+      it "has the expected sha" do
+        expect{source.cache!}.to_not change{source.sha}
+      end
+
+      it "records the history" do
+        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(3)
+      end
+    end
+
+    context "when the sha is missing from a cached repo" do
+      let(:other_source) { described_class.new(new_env, remote, {}) }
+      before { other_source.cache! }
+
+      before do
+        Dir.chdir(git_source_path) do
+          FileUtils.touch "jam.txt"
+          git! %w[add jam.txt]
+          git! %W[commit -m #{"Some Jam"}]
+        end
+      end
+
+      let(:source) { described_class.new(env, remote, {:sha => sha}) }
+
+      it "has a new remote sha" do
+        expect(sha).to_not eq(other_source.sha)
+      end
+
+      it "has the expected sha" do
+        expect{source.cache!}.to_not change{source.sha}
+      end
+
+      it "records the history" do
+        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(8)
+      end
+    end
+
   end
 
 end
