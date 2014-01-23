@@ -27,9 +27,13 @@ describe Librarian::Source::Git do
     cmd!([Librarian::Source::Git::Repository.bin] + command)
   end
 
+  def new_env
+    Librarian::Mock::Environment.new(:project_path => env_project_path)
+  end
+
   context "when the remote is bad" do
     let(:remote) { tmp_path.join(SecureRandom.hex(8)).to_s }
-    let(:env) { Librarian::Mock::Environment.new(:project_path => env_project_path) }
+    let(:env) { new_env }
     let(:source) { described_class.new(env, remote, {}) }
 
     it "fails when caching" do
@@ -41,7 +45,7 @@ describe Librarian::Source::Git do
   context "when the remote has a repo" do
     let(:remote) { tmp_path.join(SecureRandom.hex(8)).to_s }
     let(:git_source_path) { Pathname.new(remote) }
-    let(:env) { Librarian::Mock::Environment.new(:project_path => env_project_path) }
+    let(:env) { new_env }
     let(:source) { described_class.new(env, remote, {}) }
 
     before do
