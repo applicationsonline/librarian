@@ -4,6 +4,44 @@ module Librarian
   class Environment
     class RuntimeCache
 
+      class KeyspaceCache
+
+        class << self
+          private
+
+          def delegate_to_backing_cache(*methods)
+            methods.each do |method|
+              define_method "#{method}" do |*args, &block|
+                runtime_cache.public_send(method, keyspace, *args, &block)
+              end
+            end
+          end
+        end
+
+        attr_reader :runtime_cache, :keyspace
+
+        def initialize(runtime_cache, keyspace)
+          self.runtime_cache = runtime_cache
+          self.keyspace = keyspace
+        end
+
+        delegate_to_backing_cache *[
+          :include?,
+          :get,
+          :put,
+          :delete,
+          :memo,
+          :once,
+          :[],
+          :[]=,
+        ]
+
+        private
+
+        attr_writer :runtime_cache, :keyspace
+
+      end
+
       def initialize
         self.data = {}
       end
@@ -39,6 +77,10 @@ module Librarian
 
       def []=(keyspace, key, value)
         put(keyspace, key, value)
+      end
+
+      def keyspace(keyspace)
+        KeyspaceScopedCache.new(self, keyspace)
       end
 
       private
