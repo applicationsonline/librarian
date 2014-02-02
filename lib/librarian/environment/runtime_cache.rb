@@ -29,6 +29,18 @@ module Librarian
         get(keyspace, key)
       end
 
+      def once(keyspace, key)
+        memo(keyspace, key) { yield ; nil }
+      end
+
+      def [](keyspace, key)
+        get(keyspace, key)
+      end
+
+      def []=(keyspace, key, value)
+        put(keyspace, key, value)
+      end
+
       private
 
       attr_accessor :data
