@@ -12,7 +12,8 @@ module Librarian
           def delegate_to_backing_cache(*methods)
             methods.each do |method|
               define_method "#{method}" do |*args, &block|
-                runtime_cache.public_send(method, keyspace, *args, &block)
+                # TODO: When we drop ruby-1.8.7 support, use #public_send.
+                runtime_cache.send(method, keyspace, *args, &block)
               end
             end
           end
