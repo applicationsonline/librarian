@@ -97,7 +97,7 @@ describe Librarian::Source::Git do
       end
 
       it "records the history" do
-        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(3)
+        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(1)
       end
     end
 
@@ -112,7 +112,7 @@ describe Librarian::Source::Git do
       end
 
       it "records the history" do
-        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(4)
+        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(1)
       end
     end
 
@@ -140,7 +140,7 @@ describe Librarian::Source::Git do
       end
 
       it "records the history" do
-        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(4)
+        expect{source.cache!}.to change{source.git_ops_count}.from(0).to(3)
       end
     end
 

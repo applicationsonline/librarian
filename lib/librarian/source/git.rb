@@ -83,18 +83,15 @@ module Librarian
           raise Error, "failed to clone #{uri}" unless repository.git?
         end
 
-        repository.reset_hard!
-        repository.clean!
+        repository_clean_once!
 
-        remote = repository.default_remote
-
-        if sha
-          fetch(remote) unless repository.has_commit?(sha)
-        else
-          self.sha = fetch_hash(remote)
+        unless sha
+          repository_update_once!
+          self.sha = fetch_sha_memo
         end
 
         unless repository.checked_out?(sha)
+          repository_update_once! unless repository.has_commit?(sha)
           repository.checkout!(sha)
           raise Error, "failed to checkout #{sha}" unless repository.checked_out?(sha)
         end
@@ -130,14 +127,25 @@ module Librarian
         @filesystem_path ||= path ? repository.path.join(path) : repository.path
       end
 
-      def fetch(remote)
-        repository.fetch!(remote)
-        repository.fetch!(remote, :tags => true)
+      def repository_clean_once!
+        remote = repository.default_remote
+        runtime_cache.once ['repository-clean', uri, ref].to_s do
+          repository.reset_hard!
+          repository.clean!
+        end
       end
 
-      def fetch_hash(remote)
-        runtime_cache.memo(['sha', uri, remote, ref].join) do
-          fetch(remote)
+      def repository_update_once!
+        remote = repository.default_remote
+        runtime_cache.once ['repository-update', uri, remote, ref].to_s do
+          repository.fetch! remote
+          repository.fetch! remote, :tags => true
+        end
+      end
+
+      def fetch_sha_memo
+        remote = repository.default_remote
+        runtime_cache.memo ['fetch-sha', uri, remote, ref].to_s do
           repository.hash_from(remote, ref)
         end
       end
