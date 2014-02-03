@@ -82,16 +82,17 @@ module Librarian
           repository.clone!(uri)
           raise Error, "failed to clone #{uri}" unless repository.git?
         end
-        repository.reset_hard!
-        repository.clean!
+
+        repository_clean_once!
+
+        unless sha
+          repository_update_once!
+          self.sha = fetch_sha_memo
+        end
+
         unless repository.checked_out?(sha)
-          remote = repository.default_remote
-          repository.fetch!(remote)
-          repository.fetch!(remote, :tags => true)
-
-          self.sha = repository.hash_from(remote, ref) unless sha
-          repository.checkout!(sha) unless repository.checked_out?(sha)
-
+          repository_update_once! unless repository.has_commit?(sha)
+          repository.checkout!(sha)
           raise Error, "failed to checkout #{sha}" unless repository.checked_out?(sha)
         end
       end
@@ -126,6 +127,29 @@ module Librarian
         @filesystem_path ||= path ? repository.path.join(path) : repository.path
       end
 
+      def repository_clean_once!
+        remote = repository.default_remote
+        runtime_cache.once ['repository-clean', uri, ref].to_s do
+          repository.reset_hard!
+          repository.clean!
+        end
+      end
+
+      def repository_update_once!
+        remote = repository.default_remote
+        runtime_cache.once ['repository-update', uri, remote, ref].to_s do
+          repository.fetch! remote
+          repository.fetch! remote, :tags => true
+        end
+      end
+
+      def fetch_sha_memo
+        remote = repository.default_remote
+        runtime_cache.memo ['fetch-sha', uri, remote, ref].to_s do
+          repository.hash_from(remote, ref)
+        end
+      end
+
       def cache_key
         @cache_key ||= begin
           uri_part = uri
@@ -133,6 +157,10 @@ module Librarian
           key_source = [uri_part, ref_part].join
           Digest::MD5.hexdigest(key_source)[0..15]
         end
+      end
+
+      def runtime_cache
+        @runtime_cache ||= environment.runtime_cache.keyspace(self.class.name)
       end
 
     end
