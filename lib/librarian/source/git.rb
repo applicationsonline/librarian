@@ -83,6 +83,8 @@ module Librarian
           raise Error, "failed to clone #{uri}" unless repository.git?
         end
 
+        # Probably unnecessary: nobody should be writing to our cache but us.
+        # Just a precaution.
         repository_clean_once!
 
         unless sha
@@ -93,6 +95,8 @@ module Librarian
         unless repository.checked_out?(sha)
           repository_update_once! unless repository.has_commit?(sha)
           repository.checkout!(sha)
+          # Probably unnecessary: if git fails to checkout, it should exit
+          # nonzero, and we should expect Librarian::Posix::CommandFailure.
           raise Error, "failed to checkout #{sha}" unless repository.checked_out?(sha)
         end
       end
