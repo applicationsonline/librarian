@@ -80,7 +80,7 @@ module Librarian
       end
 
       def keyspace(keyspace)
-        KeyspaceScopedCache.new(self, keyspace)
+        KeyspaceCache.new(self, keyspace)
       end
 
       private
