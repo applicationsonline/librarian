@@ -51,6 +51,23 @@ module Librarian
         specify { expect(triple(key_y){9}).to eql([false, nil, 9]) }
       end
 
+      context "with keyspace wrapper" do
+        let(:krtc) { rtc.keyspace("brah") }
+        let(:key) { "nick" }
+        let(:key_x) { "phar" }
+
+        def triple(keypair)
+          [krtc.include?(key), krtc.get(key), krtc.memo(key){yield}]
+        end
+
+        context "after put" do
+          before { krtc.put(key){6} }
+
+          specify { expect(triple(key){9}).to eql([true, 6, 6]) }
+        end
+
+      end
+
     end
   end
 end
