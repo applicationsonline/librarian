@@ -82,16 +82,20 @@ module Librarian
           repository.clone!(uri)
           raise Error, "failed to clone #{uri}" unless repository.git?
         end
+
         repository.reset_hard!
         repository.clean!
+
+        remote = repository.default_remote
+
+        if sha
+          fetch(remote) unless repository.has_commit?(sha)
+        else
+          self.sha = fetch_hash(remote)
+        end
+
         unless repository.checked_out?(sha)
-          remote = repository.default_remote
-          repository.fetch!(remote)
-          repository.fetch!(remote, :tags => true)
-
-          self.sha = repository.hash_from(remote, ref) unless sha
-          repository.checkout!(sha) unless repository.checked_out?(sha)
-
+          repository.checkout!(sha)
           raise Error, "failed to checkout #{sha}" unless repository.checked_out?(sha)
         end
       end
@@ -126,6 +130,18 @@ module Librarian
         @filesystem_path ||= path ? repository.path.join(path) : repository.path
       end
 
+      def fetch(remote)
+        repository.fetch!(remote)
+        repository.fetch!(remote, :tags => true)
+      end
+
+      def fetch_hash(remote)
+        runtime_cache.memo(['sha', uri, remote, ref].join) do
+          fetch(remote)
+          repository.hash_from(remote, ref)
+        end
+      end
+
       def cache_key
         @cache_key ||= begin
           uri_part = uri
@@ -133,6 +149,10 @@ module Librarian
           key_source = [uri_part, ref_part].join
           Digest::MD5.hexdigest(key_source)[0..15]
         end
+      end
+
+      def runtime_cache
+        @runtime_cache ||= environment.runtime_cache.keyspace(self.class.name)
       end
 
     end
