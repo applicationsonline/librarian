@@ -117,7 +117,7 @@ module Librarian
 
       def repository_cache_path
         @repository_cache_path ||= begin
-          environment.cache_path.join("source/git/#{cache_key}")
+          environment.cache_path + "source/git" + cache_key
         end
       end
 
