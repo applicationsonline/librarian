@@ -1,5 +1,4 @@
 require "librarian/error"
-require "backports/1.9.1/kernel/public_send"
 
 module Librarian
   class Environment
