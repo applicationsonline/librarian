@@ -6,14 +6,14 @@ require "librarian/posix"
 
 require "librarian/source/git/repository"
 
+require "librarian/mock/environment"
+
 require "support/project_path_macro"
 
 describe Librarian::Source::Git::Repository do
   include Support::ProjectPathMacro
 
-  let(:env) do
-    double(:ui => nil, :logger => double(:debug => nil, :info => nil))
-  end
+  let(:env) { Librarian::Mock::Environment.new }
 
   let(:tmp_path) { project_path + "tmp/spec/functional/source/git/repository" }
   after { tmp_path.rmtree if tmp_path && tmp_path.exist? }
