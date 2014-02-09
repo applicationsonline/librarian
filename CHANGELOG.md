@@ -1,5 +1,20 @@
 # Change Log
 
+## 0.1.2
+
+* \#153. Mark the license in the gemspec.
+
+* \#158, \#160, \#159. Handle cyclic dependencies for adapters which opt in to
+  cyclic dependencies.
+
+* \#154. Cache git repository sources which are identical but for their :path
+  attributes (where to look inside the repository for the manifest). Thanks
+  @bcatlin.
+
+* \#161. Fix JRuby exception in posix run! method. Thanks @justenwalker.
+
+* \#163. Don't fetch git repositories multiple times per run. Thanks @njam.
+
 ## 0.1.1
 
 * \#147. Handle the case where HOME is not in the environment. Thanks @bradleyd.
