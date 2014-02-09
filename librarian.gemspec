@@ -1,11 +1,10 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "librarian/version"
 
 Gem::Specification.new do |gem|
   gem.name          = "librarian"
-  gem.version       = Librarian::VERSION
+  gem.version       = File.read(File.expand_path("../VERSION", __FILE__))
   gem.authors       = ["Jay Feldblum"]
   gem.email         = ["y_feldblum@yahoo.com"]
   gem.summary       = %q{A Framework for Bundlers.}
