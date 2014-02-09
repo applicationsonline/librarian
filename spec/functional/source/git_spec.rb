@@ -8,13 +8,11 @@ require "librarian/source/git"
 require "librarian/source/git/repository"
 require "librarian/mock/environment"
 
-describe Librarian::Source::Git do
+require "support/project_path_macro"
 
-  let(:project_path) do
-    project_path = Pathname.new(__FILE__).expand_path
-    project_path = project_path.dirname until project_path.join("Rakefile").exist?
-    project_path
-  end
+describe Librarian::Source::Git do
+  include Support::ProjectPathMacro
+
   let(:tmp_path) { project_path + "tmp/spec/functional/source/git" }
   after { tmp_path.rmtree if tmp_path && tmp_path.exist? }
   let(:env_project_path) { tmp_path + "project" }

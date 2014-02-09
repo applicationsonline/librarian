@@ -6,17 +6,15 @@ require "librarian/posix"
 
 require "librarian/source/git/repository"
 
+require "support/project_path_macro"
+
 describe Librarian::Source::Git::Repository do
+  include Support::ProjectPathMacro
 
   let(:env) do
     double(:ui => nil, :logger => double(:debug => nil, :info => nil))
   end
 
-  let(:project_path) do
-    project_path = Pathname.new(__FILE__).expand_path
-    project_path = project_path.dirname until project_path.join("Rakefile").exist?
-    project_path
-  end
   let(:tmp_path) { project_path + "tmp/spec/functional/source/git/repository" }
   after { tmp_path.rmtree if tmp_path && tmp_path.exist? }
   let(:git_source_path) { tmp_path + SecureRandom.hex(16) }

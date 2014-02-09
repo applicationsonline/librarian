@@ -1,12 +1,10 @@
 require "librarian/posix"
 
-describe Librarian::Posix do
+require "support/project_path_macro"
 
-  let(:project_path) do
-    project_path = Pathname.new(__FILE__).expand_path
-    project_path = project_path.dirname until project_path.join("Rakefile").exist?
-    project_path
-  end
+describe Librarian::Posix do
+  include Support::ProjectPathMacro
+
   let(:tmp_path) { project_path + "tmp/spec/functional/posix" }
   after { tmp_path.rmtree if tmp_path && tmp_path.exist? }
 
