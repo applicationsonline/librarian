@@ -27,7 +27,9 @@ module Librarian
 
         case specfile
         when Pathname
-          instance_eval(File.read(specfile), specfile.to_s, 1)
+          Dir.chdir(File.dirname(specfile.to_s)) do
+            instance_eval(File.read(specfile), specfile.to_s, 1)
+          end
         when String
           instance_eval(specfile)
         when Proc
