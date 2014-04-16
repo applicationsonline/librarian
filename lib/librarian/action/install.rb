@@ -40,7 +40,9 @@ module Librarian
       end
 
       def create_install_path
-        install_path.rmtree if install_path.exist?
+        if install_path.exist?
+          FileUtils.rm_r install_path.children
+        end
         install_path.mkpath
       end
 
