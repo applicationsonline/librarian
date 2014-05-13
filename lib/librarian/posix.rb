@@ -47,77 +47,91 @@ module Librarian
 
     class << self
 
+      def rescuing(*klasses)
+        begin
+          yield
+        rescue *klasses
+        end
+      end
+
+      # Hacky way to run a program because we need to update our own env and
+      # working directory before running the command. Useful when we don't have
+      # either fork or spawn or when we don't have fork and spawn doesn't
+      # support all the options we need.
+      def run_popen3!(command, options = { })
+        out, err = nil, nil
+        chdir = options[:chdir].to_s if options[:chdir]
+        env = options[:env] || { }
+        old_env = Hash[env.keys.map{|k| [k, ENV[k]]}]
+        out, err, wait = nil, nil, nil
+        begin
+          ENV.update env
+          Dir.chdir(chdir || Dir.pwd) do
+            IO.popen3(*command) do |i, o, e, w|
+              rescuing(Errno::EBADF){ i.close } # jruby/1.9 can raise EBADF
+              out, err, wait = o.read, e.read, w
+            end
+          end
+        ensure
+          ENV.update old_env
+        end
+        s = wait ? wait.value : $? # wait is 1.9+-only
+        s.success? or CommandFailure.raise! command, s, err
+        out
+      end
+
+      # Semi-hacky way to run a program because we're just reimplementing spawn.
+      # Useful when we have fork but we don't have spawn or when we have fork
+      # but spawn doesn't support all the options we need.
+      def run_forkexec!(command, options = { })
+        i, o, e = IO.pipe, IO.pipe, IO.pipe
+        pid = fork do
+          $stdin.reopen i[0]
+          $stdout.reopen o[1]
+          $stderr.reopen e[1]
+          [i[1], i[0], o[0], e[0]].each &:close
+          ENV.update options[:env] || { }
+          Dir.chdir options[:chdir].to_s if options[:chdir]
+          exec *command
+        end
+        [i[0], i[1], o[1], e[1]].each &:close
+        Process.waitpid pid
+        $?.success? or CommandFailure.raise! command, $?, e[0].read
+        o[0].read
+      ensure
+        [i, o, e].flatten(1).each{|io| io.close unless io.closed?}
+      end
+
+      # The sensible way to run a program.
+      def run_spawn!(command, options = { })
+        i, o, e = IO.pipe, IO.pipe, IO.pipe
+        opts = {:in => i[0], :out => o[1], :err => e[1]}
+        opts[:chdir] = options[:chdir].to_s if options[:chdir]
+        command = command.dup
+        command.unshift options[:env] || { }
+        command.push opts
+        pid = Process.spawn(*command)
+        [i[0], i[1], o[1], e[1]].each &:close
+        Process.waitpid pid
+        $?.success? or CommandFailure.raise! command, $?, e[0].read
+        o[0].read
+      ensure
+        [i, o, e].flatten(1).each{|io| io.close unless io.closed?}
+      end
+
       if defined?(JRuby) # built with jruby-1.7.9 in mind
 
-        def rescuing(*klasses)
-          begin
-            yield
-          rescue *klasses
-          end
-        end
-
-        def run!(command, options = { })
-          out, err = nil, nil
-          chdir = options[:chdir].to_s if options[:chdir]
-          env = options[:env] || { }
-          old_env = Hash[env.keys.map{|k| [k, ENV[k]]}]
-          out, err, wait = nil, nil, nil
-          begin
-            ENV.update env
-            Dir.chdir(chdir || Dir.pwd) do
-              IO.popen3(*command) do |i, o, e, w|
-                rescuing(Errno::EBADF){ i.close } # jruby/1.9 can raise EBADF
-                out, err, wait = o.read, e.read, w
-              end
-            end
-          ensure
-            ENV.update old_env
-          end
-          s = wait ? wait.value : $? # wait is 1.9+-only
-          s.success? or CommandFailure.raise! command, s, err
-          out
-        end
+        alias_method :run!, :run_popen3!
 
       else
 
         if RUBY_VERSION < "1.9"
 
-          def run!(command, options = { })
-            i, o, e = IO.pipe, IO.pipe, IO.pipe
-            pid = fork do
-              $stdin.reopen i[0]
-              $stdout.reopen o[1]
-              $stderr.reopen e[1]
-              [i[1], i[0], o[0], e[0]].each &:close
-              ENV.update options[:env] || { }
-              Dir.chdir options[:chdir].to_s if options[:chdir]
-              exec *command
-            end
-            [i[0], i[1], o[1], e[1]].each &:close
-            Process.waitpid pid
-            $?.success? or CommandFailure.raise! command, $?, e[0].read
-            o[0].read
-          ensure
-            [i, o, e].flatten(1).each{|io| io.close unless io.closed?}
-          end
+          alias_method :run!, :run_forkexec!
 
         else
 
-          def run!(command, options = { })
-            i, o, e = IO.pipe, IO.pipe, IO.pipe
-            opts = {:in => i[0], :out => o[1], :err => e[1]}
-            opts[:chdir] = options[:chdir].to_s if options[:chdir]
-            command = command.dup
-            command.unshift options[:env] || { }
-            command.push opts
-            pid = Process.spawn(*command)
-            [i[0], i[1], o[1], e[1]].each &:close
-            Process.waitpid pid
-            $?.success? or CommandFailure.raise! command, $?, e[0].read
-            o[0].read
-          ensure
-            [i, o, e].flatten(1).each{|io| io.close unless io.closed?}
-          end
+          alias_method :run!, :run_spawn!
 
         end
 
