@@ -1,9 +1,19 @@
 require "open3"
+require "rbconfig"
 
 require "librarian/error"
 
 module Librarian
   module Posix
+
+    module Platform
+      extend self
+
+      def win?
+        host_os = RbConfig::CONFIG["host_os"].dup.freeze
+        host_os =~ /mswin|mingw/
+      end
+    end
 
     class << self
 
@@ -119,7 +129,9 @@ module Librarian
         [i, o, e].flatten(1).each{|io| io.close unless io.closed?}
       end
 
-      if defined?(JRuby) # built with jruby-1.7.9 in mind
+      # jruby-1.7.9 can't fork and doesn't have a decent spawn
+      # windows can't fork and doesn't have a decent spawn
+      if defined?(JRuby) || Platform.win?
 
         alias_method :run!, :run_popen3!
 
