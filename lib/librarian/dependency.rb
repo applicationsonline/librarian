@@ -22,6 +22,12 @@ module Librarian
         to_gem_requirement == other.to_gem_requirement
       end
 
+      alias :eql? :==
+
+      def hash
+        self.to_s.hash
+      end
+
       def to_s
         to_gem_requirement.to_s
       end
