@@ -89,6 +89,10 @@ module Librarian
       adapter_module::VERSION
     end
 
+    def adapter_manifest_version
+      Librarian::ManifestVersion::GemVersion
+    end
+
     def lockfile_name
       config_db.lockfile_name
     end
