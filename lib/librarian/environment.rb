@@ -203,7 +203,7 @@ module Librarian
     end
 
     def default_home
-      File.expand_path(ENV["HOME"] || Etc.getpwnam(Etc.getlogin).dir)
+      File.expand_path(ENV["HOME"] || Etc.getpwnam(Etc.getpwuid.name).dir)
     end
 
     def no_proxy_list
