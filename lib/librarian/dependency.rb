@@ -18,6 +18,10 @@ module Librarian
         to_gem_requirement.satisfied_by?(version.to_gem_version)
       end
 
+      def specific?
+        to_gem_requirement.specific?
+      end
+
       def ==(other)
         to_gem_requirement == other.to_gem_requirement
       end

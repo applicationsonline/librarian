@@ -26,7 +26,28 @@ module Librarian
         def initialize(manifests, dependencies, queue)
           self.manifests = manifests
           self.dependencies = dependencies # resolved
-          self.queue = queue # scheduled
+          self.queue = sort_queue(queue) # scheduled
+        end
+
+        private
+        def sort_queue(queue)
+          # sort the queue as follows:
+          # 0. any dependency that matches something already in the manifest
+          # 1. any dependency that is specific, i.e. not necessarily the latest version
+          # 2. other dependencies
+          buckets = [[], [], []]
+
+          queue.each { |d|
+            if manifests[d.name]
+              buckets[0]
+            elsif d.requirement.specific?
+              buckets[1]
+            else
+              buckets[2]
+            end << d
+          }
+
+          buckets.flatten
         end
       end
 
