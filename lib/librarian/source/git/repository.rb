@@ -128,7 +128,7 @@ module Librarian
 
           silent = options.delete(:silent)
           pwd = chdir || Dir.pwd
-          git_dir = File.join(path, ".git") if path
+          git_dir = File.join(path.realpath, ".git") if path
           env = {"GIT_DIR" => git_dir}
 
           command = [bin]
