@@ -55,7 +55,7 @@ module Librarian
         end
 
         def fetch!(remote, options = { })
-          command = %W(fetch #{remote} --quiet)
+          command = %W(fetch #{remote} --prune --quiet)
           command << "--tags" if options[:tags]
           run!(command, :chdir => true)
         end
