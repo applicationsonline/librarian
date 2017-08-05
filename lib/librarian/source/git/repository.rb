@@ -21,7 +21,7 @@ module Librarian
           end
 
           def git_version
-            command = %W[#{bin} version --silent]
+            command = %W[#{bin} version]
             Posix.run!(command).strip =~ /\Agit version (\d+(\.\d+)*)/ && $1
           end
         end
